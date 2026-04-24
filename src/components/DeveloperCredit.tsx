@@ -80,6 +80,18 @@ function DevModal({ onClose }: { onClose: () => void }) {
         </motion.button>
 
         <div className="text-center mb-6">
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.05, type: "spring", damping: 14 }}
+            className="mx-auto h-24 w-24 rounded-full overflow-hidden ring-4 ring-[oklch(0.78_0.15_85)] shadow-glow-gold mb-3"
+          >
+            <img
+              src="https://i.postimg.cc/ncLprrg3/IMG-20260217-124734020.jpg"
+              alt="Tahsinullah Riyad"
+              className="h-full w-full object-cover"
+            />
+          </motion.div>
           <motion.h2
             initial={{ y: -10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}

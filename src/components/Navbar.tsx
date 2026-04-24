@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Globe, LogIn, LogOut, User as UserIcon } from "lucide-react";
+import { Menu, X, Globe, LogIn, LogOut, Shield } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
+import { useUserRoles } from "@/lib/roles";
 import { DeveloperCreditButton } from "./DeveloperCredit";
+
+const LOGO_URL = "https://i.postimg.cc/sxgdMH6c/FB-IMG-1776993011009.jpg";
 
 const NAV = [
   { to: "/", key: "nav.home" },
@@ -25,6 +28,7 @@ const NAV = [
 export function Navbar() {
   const { t, lang, setLang } = useI18n();
   const { user, signOut } = useAuth();
+  const { isAdmin } = useUserRoles();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [userMenu, setUserMenu] = useState(false);
@@ -55,8 +59,8 @@ export function Navbar() {
           <div className="flex h-16 items-center justify-between gap-4">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 shrink-0">
-              <div className="relative h-10 w-10 rounded-lg bg-gradient-primary flex items-center justify-center shadow-glow-red">
-                <span className="font-display font-bold text-white text-lg">MC</span>
+              <div className="relative h-10 w-10 rounded-lg overflow-hidden ring-2 ring-primary/40 shadow-glow-red bg-card">
+                <img src={LOGO_URL} alt="Martello Cup" className="h-full w-full object-cover" />
               </div>
               <div className="hidden sm:block">
                 <div className="font-display font-bold text-base leading-none">MARTELLO</div>
@@ -86,6 +90,15 @@ export function Navbar() {
                   </Link>
                 );
               })}
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  className="ml-1 inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-gradient-primary text-white text-sm font-bold shadow-glow-red"
+                >
+                  <Shield className="h-3.5 w-3.5" />
+                  {t("nav.admin")}
+                </Link>
+              )}
             </nav>
 
             {/* Right cluster */}
@@ -128,6 +141,16 @@ export function Navbar() {
                               {user.user_metadata?.display_name || user.email}
                             </p>
                           </div>
+                          {isAdmin && (
+                            <Link
+                              to="/admin"
+                              onClick={() => setUserMenu(false)}
+                              className="w-full flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-muted text-left text-primary font-semibold"
+                            >
+                              <Shield className="h-4 w-4" />
+                              {t("nav.admin")}
+                            </Link>
+                          )}
                           <button
                             onClick={async () => {
                               setUserMenu(false);
@@ -165,11 +188,6 @@ export function Navbar() {
         </div>
       </motion.header>
 
-      {/* Developer credit strip */}
-      <div className="bg-dark text-dark-foreground py-1.5 border-b border-white/5">
-        <DeveloperCreditButton />
-      </div>
-
       {/* Mobile drawer */}
       <AnimatePresence>
         {open && (
@@ -186,15 +204,20 @@ export function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25 }}
-              className="fixed top-0 right-0 bottom-0 z-50 w-[80%] max-w-sm bg-background shadow-elevated xl:hidden overflow-y-auto"
+              className="fixed top-0 right-0 bottom-0 z-50 w-[85%] max-w-sm bg-background shadow-elevated xl:hidden overflow-y-auto flex flex-col"
             >
               <div className="flex items-center justify-between p-4 border-b">
-                <span className="font-display font-bold text-lg">MENU</span>
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-md overflow-hidden ring-2 ring-primary/40">
+                    <img src={LOGO_URL} alt="Martello Cup" className="h-full w-full object-cover" />
+                  </div>
+                  <span className="font-display font-bold text-lg">MENU</span>
+                </div>
                 <button onClick={() => setOpen(false)} className="p-2 rounded-md hover:bg-muted">
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <nav className="flex flex-col py-2">
+              <nav className="flex flex-col py-2 flex-1">
                 {NAV.map((item, i) => {
                   const active = location.pathname === item.to;
                   return (
@@ -217,6 +240,21 @@ export function Navbar() {
                     </motion.div>
                   );
                 })}
+                {isAdmin && (
+                  <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+                    <Link
+                      to="/admin"
+                      className={`flex items-center gap-2 px-6 py-3 text-base font-bold border-l-4 ${
+                        location.pathname === "/admin"
+                          ? "border-primary text-primary bg-accent"
+                          : "border-primary/60 text-primary hover:bg-muted"
+                      }`}
+                    >
+                      <Shield className="h-4 w-4" />
+                      {t("nav.admin")}
+                    </Link>
+                  </motion.div>
+                )}
                 {!user && (
                   <div className="px-6 pt-4 mt-2 border-t border-border">
                     <Link
@@ -253,6 +291,11 @@ export function Navbar() {
                   </div>
                 )}
               </nav>
+
+              {/* Developer credit at the bottom of the menu */}
+              <div className="mt-auto border-t border-border bg-gradient-dark py-3">
+                <DeveloperCreditButton className="text-white/80" />
+              </div>
             </motion.aside>
           </>
         )}
