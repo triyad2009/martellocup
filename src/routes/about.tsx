@@ -31,8 +31,8 @@ function AboutPage() {
         </h2>
         <p className="text-muted-foreground leading-relaxed">
           {lang === "bn"
-            ? "মার্টেলো কাপ গায়নবাড়ি, গাবুরা, শ্যামনগর, সাতক্ষীরার একটি প্রিমিয়ার ফুটবল টুর্নামেন্ট। ৮টি দল প্রতি বছর চ্যাম্পিয়ন হওয়ার জন্য প্রতিযোগিতা করে। স্থানীয় প্রতিভা থেকে শুরু করে অভিজ্ঞ খেলোয়াড় — সকলের জন্য একটি প্ল্যাটফর্ম।"
-            : "Martello Cup is a premier football tournament held in Gayanbari, Gabura, Shyamnagar, Satkhira. Eight teams compete each year for the championship — a platform for local talent and veteran players alike."}
+            ? "মার্টেলো কাপ গাইনবাড়ী, গাবুরা, শ্যামনগর, সাতক্ষীরার একটি প্রিমিয়ার ফুটবল টুর্নামেন্ট। ৮টি দল প্রতি বছর চ্যাম্পিয়ন হওয়ার জন্য প্রতিযোগিতা করে। স্থানীয় প্রতিভা থেকে শুরু করে অভিজ্ঞ খেলোয়াড় — সকলের জন্য একটি প্ল্যাটফর্ম।"
+            : "Martello Cup is a premier football tournament held in Gainbari, Gabura, Shyamnagar, Satkhira. Eight teams compete each year for the championship — a platform for local talent and veteran players alike."}
         </p>
       </motion.section>
 

@@ -11,8 +11,8 @@ const NEWS = [
   {
     titleBn: "মার্টেলো কাপ ২০২৫ আনুষ্ঠানিকভাবে ঘোষণা",
     titleEn: "Martello Cup 2025 Officially Announced",
-    excerptBn: "৮টি দল নিয়ে গায়নবাড়িতে শুরু হচ্ছে এই বছরের সবচেয়ে প্রতীক্ষিত ফুটবল টুর্নামেন্ট।",
-    excerptEn: "The most anticipated football tournament of the year kicks off in Gayanbari with 8 teams.",
+    excerptBn: "৮টি দল নিয়ে গাইনবাড়ীতে শুরু হচ্ছে এই বছরের সবচেয়ে প্রতীক্ষিত ফুটবল টুর্নামেন্ট।",
+    excerptEn: "The most anticipated football tournament of the year kicks off in Gainbari with 8 teams.",
     date: "2025-04-15",
     cat: "Announcement",
     hue: 5,
