@@ -14,16 +14,150 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      registrations: {
+        Row: {
+          address: string | null
+          captain_name: string
+          category: string | null
+          coach_email: string | null
+          coach_name: string
+          coach_phone: string
+          created_at: string
+          description: string | null
+          id: string
+          players_data: Json
+          rejection_reason: string | null
+          short_name: string | null
+          social_links: Json | null
+          status: string
+          team_name: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          captain_name: string
+          category?: string | null
+          coach_email?: string | null
+          coach_name: string
+          coach_phone: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          players_data?: Json
+          rejection_reason?: string | null
+          short_name?: string | null
+          social_links?: Json | null
+          status?: string
+          team_name: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          captain_name?: string
+          category?: string | null
+          coach_email?: string | null
+          coach_name?: string
+          coach_phone?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          players_data?: Json
+          rejection_reason?: string | null
+          short_name?: string | null
+          social_links?: Json | null
+          status?: string
+          team_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      super_admin_emails: {
+        Row: {
+          created_at: string
+          email: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role:
+        | "super_admin"
+        | "admin"
+        | "content_manager"
+        | "match_manager"
+        | "media_manager"
+        | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +284,15 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: [
+        "super_admin",
+        "admin",
+        "content_manager",
+        "match_manager",
+        "media_manager",
+        "viewer",
+      ],
+    },
   },
 } as const
