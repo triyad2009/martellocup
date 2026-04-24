@@ -1,0 +1,172 @@
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "@tanstack/react-router";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X, Globe } from "lucide-react";
+import { useI18n } from "@/lib/i18n";
+import { DeveloperCreditButton } from "./DeveloperCredit";
+
+const NAV = [
+  { to: "/", key: "nav.home" },
+  { to: "/fixtures", key: "nav.fixtures" },
+  { to: "/results", key: "nav.results" },
+  { to: "/points-table", key: "nav.points" },
+  { to: "/teams", key: "nav.teams" },
+  { to: "/players", key: "nav.players" },
+  { to: "/registration", key: "nav.registration" },
+  { to: "/tickets", key: "nav.tickets" },
+  { to: "/gallery", key: "nav.gallery" },
+  { to: "/news", key: "nav.news" },
+  { to: "/sponsors", key: "nav.sponsors" },
+  { to: "/about", key: "nav.about" },
+  { to: "/contact", key: "nav.contact" },
+] as const;
+
+export function Navbar() {
+  const { t, lang, setLang } = useI18n();
+  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    onScroll();
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => setOpen(false), [location.pathname]);
+
+  return (
+    <>
+      <motion.header
+        initial={{ y: -80 }}
+        animate={{ y: 0 }}
+        transition={{ type: "spring", damping: 20 }}
+        className={`sticky top-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? "bg-background/80 backdrop-blur-xl border-b border-border shadow-card"
+            : "bg-transparent"
+        }`}
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <div className="flex h-16 items-center justify-between gap-4">
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2 shrink-0">
+              <div className="relative h-10 w-10 rounded-lg bg-gradient-primary flex items-center justify-center shadow-glow-red">
+                <span className="font-display font-bold text-white text-lg">MC</span>
+              </div>
+              <div className="hidden sm:block">
+                <div className="font-display font-bold text-base leading-none">MARTELLO</div>
+                <div className="font-display text-xs text-primary leading-none mt-0.5">CUP</div>
+              </div>
+            </Link>
+
+            {/* Desktop nav */}
+            <nav className="hidden xl:flex items-center gap-1">
+              {NAV.map((item) => {
+                const active = location.pathname === item.to;
+                return (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    className="relative px-3 py-2 text-sm font-medium transition-colors hover:text-primary"
+                  >
+                    <span className={active ? "text-primary" : "text-foreground"}>
+                      {t(item.key)}
+                    </span>
+                    {active && (
+                      <motion.span
+                        layoutId="nav-underline"
+                        className="absolute left-2 right-2 -bottom-0.5 h-0.5 bg-primary rounded-full"
+                      />
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Right cluster */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setLang(lang === "bn" ? "en" : "bn")}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-card hover:border-primary hover:text-primary transition-colors text-sm font-semibold"
+                aria-label="Toggle language"
+              >
+                <Globe className="h-3.5 w-3.5" />
+                <span className={lang === "bn" ? "text-primary" : ""}>BN</span>
+                <span className="text-muted-foreground">|</span>
+                <span className={lang === "en" ? "text-primary" : ""}>EN</span>
+              </button>
+
+              <button
+                onClick={() => setOpen((o) => !o)}
+                className="xl:hidden p-2 rounded-md hover:bg-muted"
+                aria-label="Menu"
+              >
+                {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
+            </div>
+          </div>
+        </div>
+      </motion.header>
+
+      {/* Developer credit strip */}
+      <div className="bg-dark text-dark-foreground py-1.5 border-b border-white/5">
+        <DeveloperCreditButton />
+      </div>
+
+      {/* Mobile drawer */}
+      <AnimatePresence>
+        {open && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+              className="fixed inset-0 z-40 bg-black/50 xl:hidden"
+            />
+            <motion.aside
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25 }}
+              className="fixed top-0 right-0 bottom-0 z-50 w-[80%] max-w-sm bg-background shadow-elevated xl:hidden overflow-y-auto"
+            >
+              <div className="flex items-center justify-between p-4 border-b">
+                <span className="font-display font-bold text-lg">MENU</span>
+                <button onClick={() => setOpen(false)} className="p-2 rounded-md hover:bg-muted">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <nav className="flex flex-col py-2">
+                {NAV.map((item, i) => {
+                  const active = location.pathname === item.to;
+                  return (
+                    <motion.div
+                      key={item.to}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.03 }}
+                    >
+                      <Link
+                        to={item.to}
+                        className={`block px-6 py-3 text-base font-medium border-l-4 transition-colors ${
+                          active
+                            ? "border-primary text-primary bg-accent"
+                            : "border-transparent hover:border-primary/50 hover:bg-muted"
+                        }`}
+                      >
+                        {t(item.key)}
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </nav>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
