@@ -12,8 +12,12 @@ export function Footer() {
           {/* About */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="h-10 w-10 rounded-lg bg-gradient-primary flex items-center justify-center shadow-glow-red">
-                <span className="font-display font-bold text-white">MC</span>
+              <div className="h-10 w-10 rounded-lg overflow-hidden ring-2 ring-primary/40 shadow-glow-red bg-card">
+                <img
+                  src="https://i.postimg.cc/sxgdMH6c/FB-IMG-1776993011009.jpg"
+                  alt="Martello Cup"
+                  className="h-full w-full object-cover"
+                />
               </div>
               <div>
                 <div className="font-display font-bold">MARTELLO</div>

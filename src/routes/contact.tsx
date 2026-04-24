@@ -39,7 +39,7 @@ function ContactPage() {
           {[
             { icon: Phone, label: lang === "bn" ? "ফোন" : "Phone", value: "+880 1XXX-XXXXXX" },
             { icon: Mail, label: lang === "bn" ? "ইমেইল" : "Email", value: "info@martellocup.com" },
-            { icon: MapPin, label: lang === "bn" ? "ঠিকানা" : "Address", value: lang === "bn" ? "গায়নবাড়ি, গাবুরা, শ্যামনগর, সাতক্ষীরা" : "Gayanbari, Gabura, Shyamnagar, Satkhira" },
+            { icon: MapPin, label: lang === "bn" ? "ঠিকানা" : "Address", value: lang === "bn" ? "গাইনবাড়ী, গাবুরা, শ্যামনগর, সাতক্ষীরা" : "Gainbari, Gabura, Shyamnagar, Satkhira" },
           ].map((c, i) => (
             <motion.div
               key={c.label}

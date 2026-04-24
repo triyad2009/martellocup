@@ -8,12 +8,12 @@ export const Route = createFileRoute("/fixtures")({
 });
 
 const FIXTURES = [
-  { no: 1, round: { bn: "গ্রুপ পর্ব", en: "Group Stage" }, home: "Eagles FC", away: "Tigers United", date: "2025-05-10", time: "16:00", venue: "Gayanbari Ground", status: "upcoming" },
+  { no: 1, round: { bn: "গ্রুপ পর্ব", en: "Group Stage" }, home: "Eagles FC", away: "Tigers United", date: "2025-05-10", time: "16:00", venue: "Gainbari Ground", status: "upcoming" },
   { no: 2, round: { bn: "গ্রুপ পর্ব", en: "Group Stage" }, home: "Sundarban Warriors", away: "Coastal Kings", date: "2025-05-10", time: "18:30", venue: "Gabura Field", status: "upcoming" },
-  { no: 3, round: { bn: "গ্রুপ পর্ব", en: "Group Stage" }, home: "Royal Stars", away: "Atlas Boys", date: "2025-05-11", time: "16:00", venue: "Gayanbari Ground", status: "upcoming" },
+  { no: 3, round: { bn: "গ্রুপ পর্ব", en: "Group Stage" }, home: "Royal Stars", away: "Atlas Boys", date: "2025-05-11", time: "16:00", venue: "Gainbari Ground", status: "upcoming" },
   { no: 4, round: { bn: "গ্রুপ পর্ব", en: "Group Stage" }, home: "Lions XI", away: "Phoenix FC", date: "2025-05-11", time: "18:30", venue: "Shyamnagar Stadium", status: "upcoming" },
-  { no: 5, round: { bn: "কোয়ার্টার ফাইনাল", en: "Quarter Final" }, home: "TBD", away: "TBD", date: "2025-05-15", time: "16:00", venue: "Gayanbari Ground", status: "upcoming" },
-  { no: 6, round: { bn: "ফাইনাল", en: "Final" }, home: "TBD", away: "TBD", date: "2025-05-25", time: "17:00", venue: "Gayanbari Ground", status: "upcoming" },
+  { no: 5, round: { bn: "কোয়ার্টার ফাইনাল", en: "Quarter Final" }, home: "TBD", away: "TBD", date: "2025-05-15", time: "16:00", venue: "Gainbari Ground", status: "upcoming" },
+  { no: 6, round: { bn: "ফাইনাল", en: "Final" }, home: "TBD", away: "TBD", date: "2025-05-25", time: "17:00", venue: "Gainbari Ground", status: "upcoming" },
 ];
 
 function FixturesPage() {

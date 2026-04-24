@@ -33,7 +33,7 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Martello Cup — Premier Football Tournament | Satkhira" },
-      { name: "description", content: "Martello Cup — Premier 8-team football tournament in Gayanbari, Gabura, Shyamnagar, Satkhira. Live scores, fixtures, results and more." },
+      { name: "description", content: "Martello Cup — Premier 8-team football tournament in Gainbari, Gabura, Shyamnagar, Satkhira. Live scores, fixtures, results and more." },
       { name: "author", content: "TAHSINULLAH RIYAD" },
       { property: "og:title", content: "Martello Cup — Premier Football Tournament" },
       { property: "og:description", content: "Where legends are born. Live scores, fixtures, points table and more." },
