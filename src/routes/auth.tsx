@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { LogIn, UserPlus, Mail, Lock, User as UserIcon, Loader2, Trophy } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
@@ -43,10 +43,9 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
-  if (user) {
-    // Already signed in — redirect to home
-    setTimeout(() => navigate({ to: "/" }), 0);
-  }
+  useEffect(() => {
+    if (user) navigate({ to: "/" });
+  }, [user, navigate]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
