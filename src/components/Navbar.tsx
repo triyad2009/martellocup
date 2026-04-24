@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Globe } from "lucide-react";
+import { Menu, X, Globe, LogIn, LogOut, User as UserIcon } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { useAuth } from "@/lib/auth";
 import { DeveloperCreditButton } from "./DeveloperCredit";
 
 const NAV = [
@@ -23,8 +24,10 @@ const NAV = [
 
 export function Navbar() {
   const { t, lang, setLang } = useI18n();
+  const { user, signOut } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [userMenu, setUserMenu] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -89,7 +92,7 @@ export function Navbar() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setLang(lang === "bn" ? "en" : "bn")}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border bg-card hover:border-primary hover:text-primary transition-colors text-sm font-semibold"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border bg-card hover:border-primary hover:text-primary transition-colors text-xs sm:text-sm font-semibold"
                 aria-label="Toggle language"
               >
                 <Globe className="h-3.5 w-3.5" />
@@ -97,6 +100,58 @@ export function Navbar() {
                 <span className="text-muted-foreground">|</span>
                 <span className={lang === "en" ? "text-primary" : ""}>EN</span>
               </button>
+
+              {user ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setUserMenu((o) => !o)}
+                    className="h-9 w-9 rounded-full bg-gradient-primary text-white flex items-center justify-center font-bold text-sm shadow-glow-red hover:scale-105 transition-transform"
+                    aria-label="User menu"
+                  >
+                    {(user.user_metadata?.display_name || user.email || "U")[0].toUpperCase()}
+                  </button>
+                  <AnimatePresence>
+                    {userMenu && (
+                      <>
+                        <div className="fixed inset-0 z-40" onClick={() => setUserMenu(false)} />
+                        <motion.div
+                          initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                          className="absolute right-0 top-11 z-50 w-56 rounded-xl bg-card border border-border shadow-elevated overflow-hidden"
+                        >
+                          <div className="p-3 border-b border-border bg-muted/40">
+                            <p className="text-xs text-muted-foreground">
+                              {lang === "bn" ? "লগইন করেছেন" : "Signed in as"}
+                            </p>
+                            <p className="text-sm font-semibold truncate">
+                              {user.user_metadata?.display_name || user.email}
+                            </p>
+                          </div>
+                          <button
+                            onClick={async () => {
+                              setUserMenu(false);
+                              await signOut();
+                            }}
+                            className="w-full flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-muted text-left text-destructive"
+                          >
+                            <LogOut className="h-4 w-4" />
+                            {lang === "bn" ? "লগআউট" : "Sign Out"}
+                          </button>
+                        </motion.div>
+                      </>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <Link
+                  to="/auth"
+                  className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground hover:bg-primary-glow text-sm font-semibold shadow-glow-red"
+                >
+                  <LogIn className="h-3.5 w-3.5" />
+                  {lang === "bn" ? "লগইন" : "Sign In"}
+                </Link>
+              )}
 
               <button
                 onClick={() => setOpen((o) => !o)}
@@ -162,6 +217,41 @@ export function Navbar() {
                     </motion.div>
                   );
                 })}
+                {!user && (
+                  <div className="px-6 pt-4 mt-2 border-t border-border">
+                    <Link
+                      to="/auth"
+                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground font-semibold shadow-glow-red"
+                    >
+                      <LogIn className="h-4 w-4" />
+                      {lang === "bn" ? "লগইন / সাইন আপ" : "Sign In / Sign Up"}
+                    </Link>
+                  </div>
+                )}
+                {user && (
+                  <div className="px-6 pt-4 mt-2 border-t border-border space-y-2">
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-muted">
+                      <div className="h-10 w-10 rounded-full bg-gradient-primary text-white flex items-center justify-center font-bold">
+                        {(user.user_metadata?.display_name || user.email || "U")[0].toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground">
+                          {lang === "bn" ? "লগইন করেছেন" : "Signed in"}
+                        </p>
+                        <p className="text-sm font-semibold truncate">
+                          {user.user_metadata?.display_name || user.email}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={async () => { await signOut(); }}
+                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-destructive/30 text-destructive hover:bg-destructive/10 font-semibold"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      {lang === "bn" ? "লগআউট" : "Sign Out"}
+                    </button>
+                  </div>
+                )}
               </nav>
             </motion.aside>
           </>
