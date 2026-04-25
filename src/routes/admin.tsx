@@ -633,6 +633,115 @@ function RolesManager({ lang, currentUserId }: { lang: "bn" | "en"; currentUserI
   );
 }
 
+/* -------------------- Ticket Tiers -------------------- */
+
+function TicketTiersManager({ lang }: { lang: "bn" | "en" }) {
+  const [rows, setRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [draft, setDraft] = useState({ name: "", description: "", price: "" });
+
+  const load = async () => {
+    setLoading(true);
+    const { data } = await supabase.from("ticket_tiers").select("*").order("sort_order");
+    setRows(data ?? []);
+    setLoading(false);
+  };
+  useEffect(() => { load(); }, []);
+
+  const add = async () => {
+    if (!draft.name.trim()) {
+      toast.error(lang === "bn" ? "নাম আবশ্যক" : "Name required");
+      return;
+    }
+    const { error } = await supabase.from("ticket_tiers").insert({
+      name: draft.name.trim(),
+      description: draft.description.trim() || null,
+      price: Number(draft.price) || 0,
+      sort_order: rows.length,
+    });
+    if (error) toast.error(error.message);
+    else { setDraft({ name: "", description: "", price: "" }); toast.success(lang === "bn" ? "যোগ হয়েছে" : "Added"); load(); }
+  };
+
+  const update = async (id: string, patch: any) => {
+    const { error } = await supabase.from("ticket_tiers").update(patch).eq("id", id);
+    if (error) toast.error(error.message); else load();
+  };
+
+  const remove = async (id: string) => {
+    const { error } = await supabase.from("ticket_tiers").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else { toast.success(lang === "bn" ? "মুছে ফেলা হয়েছে" : "Deleted"); load(); }
+  };
+
+  return (
+    <section className="space-y-5">
+      <div className="rounded-2xl bg-card border border-border shadow-card p-5 sm:p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Ticket className="h-5 w-5 text-primary" />
+          <h2 className="font-display text-xl font-bold">
+            {lang === "bn" ? "নতুন টিকিটের ধরন" : "New Ticket Tier"}
+          </h2>
+        </div>
+        <div className="grid sm:grid-cols-3 gap-3">
+          <input placeholder={lang === "bn" ? "নাম (যেমন General)" : "Name (e.g. General)"}
+            className="px-3 py-2.5 rounded-lg border border-border bg-background"
+            value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
+          <input placeholder={lang === "bn" ? "মূল্য (৳)" : "Price (৳)"} type="number" inputMode="numeric"
+            className="px-3 py-2.5 rounded-lg border border-border bg-background"
+            value={draft.price} onChange={(e) => setDraft({ ...draft, price: e.target.value })} />
+          <input placeholder={lang === "bn" ? "বিবরণ (ঐচ্ছিক)" : "Description (optional)"}
+            className="px-3 py-2.5 rounded-lg border border-border bg-background"
+            value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} />
+        </div>
+        <button onClick={add}
+          className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold shadow-glow-red">
+          <Plus className="h-4 w-4" /> {lang === "bn" ? "যোগ করুন" : "Add"}
+        </button>
+      </div>
+
+      <div className="rounded-2xl bg-card border border-border shadow-card p-5 sm:p-6">
+        <h2 className="font-display text-xl font-bold mb-4">
+          {lang === "bn" ? "সব ধরন" : "All Tiers"} <span className="text-xs text-muted-foreground">({rows.length})</span>
+        </h2>
+        {loading ? (
+          <div className="py-10 text-center"><Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" /></div>
+        ) : rows.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-6 text-center">
+            {lang === "bn" ? "কোনো টিকিটের ধরন নেই" : "No tiers added"}
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {rows.map((t) => (
+              <div key={t.id} className="rounded-xl border border-border p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="font-semibold">{t.name}</p>
+                    <span className="font-display font-bold text-primary">৳ {t.price}</span>
+                    {!t.is_active && <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-muted">{lang === "bn" ? "নিষ্ক্রিয়" : "off"}</span>}
+                  </div>
+                  {t.description && <p className="text-xs text-muted-foreground mt-1">{t.description}</p>}
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <label className="inline-flex items-center gap-1 text-xs cursor-pointer">
+                    <input type="checkbox" checked={t.is_active}
+                      onChange={(e) => update(t.id, { is_active: e.target.checked })} />
+                    {lang === "bn" ? "সক্রিয়" : "Active"}
+                  </label>
+                  <button onClick={() => remove(t.id)}
+                    className="p-2 rounded-md text-destructive hover:bg-destructive/10">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
 /* -------------------- Helpers -------------------- */
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
