@@ -12,6 +12,13 @@ type Method = {
   instructions: string | null;
 };
 
+type Tier = {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+};
+
 type Props = {
   submissionType: "ticket" | "registration";
   amount?: number;
@@ -22,7 +29,9 @@ type Props = {
 export function PaymentFlow({ submissionType, amount, registrationId, onSuccess }: Props) {
   const { lang } = useI18n();
   const [methods, setMethods] = useState<Method[]>([]);
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  const [tiers, setTiers] = useState<Tier[]>([]);
+  const [tier, setTier] = useState<Tier | null>(null);
+  const [step, setStep] = useState<0 | 1 | 2 | 3 | 4>(submissionType === "ticket" ? 0 : 1);
   const [selected, setSelected] = useState<Method | null>(null);
   const [payerName, setPayerName] = useState("");
   const [payerPhone, setPayerPhone] = useState("");
@@ -34,16 +43,27 @@ export function PaymentFlow({ submissionType, amount, registrationId, onSuccess 
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    supabase
-      .from("payment_methods")
-      .select("id,name,logo_url,account_number,instructions")
-      .eq("is_active", true)
-      .order("sort_order", { ascending: true })
-      .then(({ data }) => {
-        setMethods((data ?? []) as Method[]);
-        setLoading(false);
-      });
-  }, []);
+    Promise.all([
+      supabase
+        .from("payment_methods")
+        .select("id,name,logo_url,account_number,instructions")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true }),
+      submissionType === "ticket"
+        ? supabase
+            .from("ticket_tiers")
+            .select("id,name,description,price")
+            .eq("is_active", true)
+            .order("sort_order", { ascending: true })
+        : Promise.resolve({ data: [] as Tier[] }),
+    ]).then(([m, t]) => {
+      setMethods((m.data ?? []) as Method[]);
+      setTiers((t.data ?? []) as Tier[]);
+      setLoading(false);
+    });
+  }, [submissionType]);
+
+  const effectiveAmount = tier?.price ?? amount;
 
   const T = (bn: string, en: string) => (lang === "bn" ? bn : en);
 
