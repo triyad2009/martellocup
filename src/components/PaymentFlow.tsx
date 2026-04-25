@@ -224,13 +224,29 @@ export function PaymentFlow({ submissionType, amount, registrationId, onSuccess 
                 {T("ফিরুন", "Back")}
               </button>
               <button
-                onClick={() => setStep(3)}
-                className="flex-1 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary-glow text-sm font-bold inline-flex items-center justify-center gap-1"
+                onClick={() => {
+                  if (!copied) {
+                    setError(T("আগে নাম্বারটি কপি করুন", "Please copy the number first"));
+                    return;
+                  }
+                  setError(null);
+                  setStep(3);
+                }}
+                disabled={!copied}
+                className="flex-1 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary-glow text-sm font-bold inline-flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {T("পরবর্তী", "Next")}
                 <ChevronRight className="h-4 w-4" />
               </button>
             </div>
+            {!copied && (
+              <p className="mt-3 text-xs text-muted-foreground text-center">
+                {T("পরবর্তী ধাপে যেতে নাম্বারটি কপি করুন", "Copy the number to continue")}
+              </p>
+            )}
+            {error && step === 2 && (
+              <p className="mt-2 text-sm text-destructive font-medium text-center">{error}</p>
+            )}
           </motion.div>
         )}
 
