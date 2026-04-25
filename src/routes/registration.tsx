@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Users, Plus, Trash2, CheckCircle2, Loader2, ShieldCheck } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
+import { PaymentFlow } from "@/components/PaymentFlow";
 
 export const Route = createFileRoute("/registration")({
   component: RegistrationPage,
@@ -155,6 +156,14 @@ function RegistrationPage() {
           <code className="block bg-muted text-foreground font-mono text-sm rounded-lg px-3 py-2 break-all">
             {done}
           </code>
+
+          <div className="mt-6 text-left">
+            <h3 className="font-display font-bold text-lg mb-2">
+              {lang === "bn" ? "নিবন্ধন ফি পেমেন্ট" : "Registration Fee Payment"}
+            </h3>
+            <PaymentFlow submissionType="registration" registrationId={done} />
+          </div>
+
           <button
             onClick={() => {
               setDone(null);
@@ -165,7 +174,7 @@ function RegistrationPage() {
               setPlayers(Array.from({ length: 11 }, emptyPlayer));
               setAgree(false);
             }}
-            className="mt-6 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground font-semibold hover:bg-primary-glow"
+            className="mt-6 px-5 py-2.5 rounded-lg border border-border font-semibold hover:bg-muted"
           >
             {t("newReg")}
           </button>
