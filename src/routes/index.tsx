@@ -23,28 +23,26 @@ function Index() {
 }
 
 function Hero() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { settings } = useTournamentSettings();
   const startDate = settings ? new Date(settings.tournament_start) : FALLBACK_START;
-  const heroLogo = settings?.hero_logo_url || LOGO_URL;
   const seasonText = settings?.season_name || t("hero.season");
   const locationText = settings?.location || t("hero.location");
 
+  const [started, setStarted] = useState(() => Date.now() >= startDate.getTime());
+  useEffect(() => {
+    if (started) return;
+    const id = setInterval(() => {
+      if (Date.now() >= startDate.getTime()) {
+        setStarted(true);
+        clearInterval(id);
+      }
+    }, 1000);
+    return () => clearInterval(id);
+  }, [startDate, started]);
+
   return (
     <section className="relative min-h-[calc(100vh-7rem)] overflow-hidden bg-gradient-hero animate-gradient flex items-center">
-      {/* Background watermark logo */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
-        <motion.img
-          src={heroLogo}
-          alt=""
-          aria-hidden="true"
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: [0.95, 1.05, 0.95], opacity: 0.12 }}
-          transition={{ scale: { duration: 8, repeat: Infinity, ease: "easeInOut" }, opacity: { duration: 1.2 } }}
-          className="w-[80vw] max-w-[700px] aspect-square object-contain blur-[2px] mix-blend-screen"
-        />
-      </div>
-
       {/* Floating particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(8)].map((_, i) => (
