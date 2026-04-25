@@ -198,9 +198,19 @@ export function PaymentFlow({ submissionType, amount, registrationId, onSuccess 
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
           >
-            <h3 className="font-display font-bold text-lg mb-4">
-              {T("পেমেন্ট মেথড নির্বাচন করুন", "Select Payment Method")}
-            </h3>
+            <div className="flex items-center justify-between mb-4 gap-2">
+              <h3 className="font-display font-bold text-lg">
+                {T("পেমেন্ট মেথড নির্বাচন করুন", "Select Payment Method")}
+              </h3>
+              {submissionType === "ticket" && tier && (
+                <button
+                  onClick={() => { setTier(null); setStep(0); }}
+                  className="text-xs px-2.5 py-1 rounded-md border border-border hover:border-primary inline-flex items-center gap-1"
+                >
+                  <ChevronLeft className="h-3 w-3" /> {tier.name} · ৳{tier.price}
+                </button>
+              )}
+            </div>
             <div className="grid gap-3">
               {methods.map((m) => (
                 <button
