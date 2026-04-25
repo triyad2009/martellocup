@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowDown, MapPin, Trophy, Users, Goal, Calendar } from "lucide-react";
+import { ArrowDown, MapPin, Trophy, Users, Goal, Calendar, Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { Countdown } from "@/components/Countdown";
 import { useTournamentSettings } from "@/lib/settings";
@@ -9,7 +10,6 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const LOGO_URL = "https://i.postimg.cc/sxgdMH6c/FB-IMG-1776993011009.jpg";
 const FALLBACK_START = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
 function Index() {
@@ -23,28 +23,26 @@ function Index() {
 }
 
 function Hero() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { settings } = useTournamentSettings();
   const startDate = settings ? new Date(settings.tournament_start) : FALLBACK_START;
-  const heroLogo = settings?.hero_logo_url || LOGO_URL;
   const seasonText = settings?.season_name || t("hero.season");
   const locationText = settings?.location || t("hero.location");
 
+  const [started, setStarted] = useState(() => Date.now() >= startDate.getTime());
+  useEffect(() => {
+    if (started) return;
+    const id = setInterval(() => {
+      if (Date.now() >= startDate.getTime()) {
+        setStarted(true);
+        clearInterval(id);
+      }
+    }, 1000);
+    return () => clearInterval(id);
+  }, [startDate, started]);
+
   return (
     <section className="relative min-h-[calc(100vh-7rem)] overflow-hidden bg-gradient-hero animate-gradient flex items-center">
-      {/* Background watermark logo */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
-        <motion.img
-          src={heroLogo}
-          alt=""
-          aria-hidden="true"
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: [0.95, 1.05, 0.95], opacity: 0.12 }}
-          transition={{ scale: { duration: 8, repeat: Infinity, ease: "easeInOut" }, opacity: { duration: 1.2 } }}
-          className="w-[80vw] max-w-[700px] aspect-square object-contain blur-[2px] mix-blend-screen"
-        />
-      </div>
-
       {/* Floating particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(8)].map((_, i) => (
@@ -122,17 +120,43 @@ function Hero() {
             <span>{locationText}</span>
           </motion.div>
 
-          {/* Countdown */}
+          {/* Countdown / Started banner */}
           <motion.div
             initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.6 }}
             className="mt-10"
           >
-            <p className="text-xs sm:text-sm uppercase tracking-[0.3em] text-white/60 mb-4">
-              {t("hero.countdown")}
-            </p>
-            <Countdown target={startDate} />
+            {started ? (
+              <motion.div
+                initial={{ scale: 0.7, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", damping: 12 }}
+                className="inline-flex flex-col items-center gap-3"
+              >
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-success/20 border border-success/40 backdrop-blur-md text-success-foreground text-xs font-bold tracking-widest">
+                  <Sparkles className="h-3.5 w-3.5 animate-pulse" />
+                  {lang === "bn" ? "লাইভ" : "LIVE NOW"}
+                </div>
+                <motion.h2
+                  animate={{ scale: [1, 1.04, 1] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                  className="font-display text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-glow-red"
+                >
+                  Martello Cup Started
+                </motion.h2>
+                <p className="text-white/80 text-sm sm:text-base">
+                  {lang === "bn" ? "টুর্নামেন্ট শুরু হয়ে গেছে — উপভোগ করুন!" : "The tournament has begun — enjoy the matches!"}
+                </p>
+              </motion.div>
+            ) : (
+              <>
+                <p className="text-xs sm:text-sm uppercase tracking-[0.3em] text-white/60 mb-4">
+                  {t("hero.countdown")}
+                </p>
+                <Countdown target={startDate} />
+              </>
+            )}
           </motion.div>
 
           {/* CTAs */}

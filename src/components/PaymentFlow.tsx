@@ -12,6 +12,13 @@ type Method = {
   instructions: string | null;
 };
 
+type Tier = {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+};
+
 type Props = {
   submissionType: "ticket" | "registration";
   amount?: number;
@@ -22,7 +29,9 @@ type Props = {
 export function PaymentFlow({ submissionType, amount, registrationId, onSuccess }: Props) {
   const { lang } = useI18n();
   const [methods, setMethods] = useState<Method[]>([]);
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  const [tiers, setTiers] = useState<Tier[]>([]);
+  const [tier, setTier] = useState<Tier | null>(null);
+  const [step, setStep] = useState<0 | 1 | 2 | 3 | 4>(submissionType === "ticket" ? 0 : 1);
   const [selected, setSelected] = useState<Method | null>(null);
   const [payerName, setPayerName] = useState("");
   const [payerPhone, setPayerPhone] = useState("");
@@ -34,16 +43,27 @@ export function PaymentFlow({ submissionType, amount, registrationId, onSuccess 
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    supabase
-      .from("payment_methods")
-      .select("id,name,logo_url,account_number,instructions")
-      .eq("is_active", true)
-      .order("sort_order", { ascending: true })
-      .then(({ data }) => {
-        setMethods((data ?? []) as Method[]);
-        setLoading(false);
-      });
-  }, []);
+    Promise.all([
+      supabase
+        .from("payment_methods")
+        .select("id,name,logo_url,account_number,instructions")
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true }),
+      submissionType === "ticket"
+        ? supabase
+            .from("ticket_tiers")
+            .select("id,name,description,price")
+            .eq("is_active", true)
+            .order("sort_order", { ascending: true })
+        : Promise.resolve({ data: [] as Tier[] }),
+    ]).then(([m, t]) => {
+      setMethods((m.data ?? []) as Method[]);
+      setTiers((t.data ?? []) as Tier[]);
+      setLoading(false);
+    });
+  }, [submissionType]);
+
+  const effectiveAmount = tier?.price ?? amount;
 
   const T = (bn: string, en: string) => (lang === "bn" ? bn : en);
 
@@ -51,7 +71,6 @@ export function PaymentFlow({ submissionType, amount, registrationId, onSuccess 
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
     } catch {
       /* ignore */
     }
@@ -73,7 +92,9 @@ export function PaymentFlow({ submissionType, amount, registrationId, onSuccess 
       submission_type: submissionType,
       payment_method_id: selected.id,
       payment_method_name: selected.name,
-      amount: amount ?? null,
+      amount: effectiveAmount ?? null,
+      ticket_tier_id: tier?.id ?? null,
+      ticket_tier_name: tier?.name ?? null,
       payer_name: payerName.trim(),
       payer_phone: payerPhone.trim(),
       transaction_id: txId.trim() || null,
@@ -129,6 +150,46 @@ export function PaymentFlow({ submissionType, amount, registrationId, onSuccess 
       </div>
 
       <AnimatePresence mode="wait">
+        {/* Step 0: select ticket tier (tickets only) */}
+        {step === 0 && submissionType === "ticket" && (
+          <motion.div
+            key="s0"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+          >
+            <h3 className="font-display font-bold text-lg mb-4">
+              {T("টিকিটের ধরন নির্বাচন করুন", "Select Ticket Type")}
+            </h3>
+            {tiers.length === 0 ? (
+              <div className="rounded-xl border-2 border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+                {T("কোনো টিকিটের ধরন নেই — শীঘ্রই আসছে", "No ticket tiers available yet")}
+              </div>
+            ) : (
+              <div className="grid gap-3">
+                {tiers.map((tr) => (
+                  <button
+                    key={tr.id}
+                    onClick={() => { setTier(tr); setStep(1); }}
+                    className="flex items-center gap-3 p-4 rounded-xl border-2 border-border hover:border-primary hover:bg-accent transition-all text-left"
+                  >
+                    <div className="h-12 w-12 rounded-lg bg-gradient-primary text-white flex items-center justify-center font-display font-bold shrink-0">
+                      {tr.name[0]}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold">{tr.name}</p>
+                      {tr.description && <p className="text-xs text-muted-foreground line-clamp-2">{tr.description}</p>}
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="font-display font-bold text-primary text-lg">৳ {tr.price}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        )}
+
         {/* Step 1: select method */}
         {step === 1 && (
           <motion.div
@@ -137,15 +198,27 @@ export function PaymentFlow({ submissionType, amount, registrationId, onSuccess 
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
           >
-            <h3 className="font-display font-bold text-lg mb-4">
-              {T("পেমেন্ট মেথড নির্বাচন করুন", "Select Payment Method")}
-            </h3>
+            <div className="flex items-center justify-between mb-4 gap-2">
+              <h3 className="font-display font-bold text-lg">
+                {T("পেমেন্ট মেথড নির্বাচন করুন", "Select Payment Method")}
+              </h3>
+              {submissionType === "ticket" && tier && (
+                <button
+                  onClick={() => { setTier(null); setStep(0); }}
+                  className="text-xs px-2.5 py-1 rounded-md border border-border hover:border-primary inline-flex items-center gap-1"
+                >
+                  <ChevronLeft className="h-3 w-3" /> {tier.name} · ৳{tier.price}
+                </button>
+              )}
+            </div>
             <div className="grid gap-3">
               {methods.map((m) => (
                 <button
                   key={m.id}
                   onClick={() => {
                     setSelected(m);
+                    setCopied(false);
+                    setError(null);
                     setStep(2);
                   }}
                   className="flex items-center gap-3 p-4 rounded-xl border-2 border-border hover:border-primary hover:bg-accent transition-all text-left"
@@ -199,21 +272,21 @@ export function PaymentFlow({ submissionType, amount, registrationId, onSuccess 
               </div>
             </div>
 
-            {amount != null && (
+            {effectiveAmount != null && (
               <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 mb-4 text-center">
-                <p className="text-xs text-muted-foreground">{T("পরিমাণ", "Amount")}</p>
-                <p className="font-display font-bold text-2xl text-primary">৳ {amount}</p>
+                <p className="text-xs text-muted-foreground">{T("পরিমাণ", "Amount")}{tier ? ` · ${tier.name}` : ""}</p>
+                <p className="font-display font-bold text-2xl text-primary">৳ {effectiveAmount}</p>
               </div>
             )}
 
-            {selected.instructions && (
-              <div className="rounded-xl bg-card border border-border p-4 mb-4">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-                  {T("সেন্ড মানির নিয়ম", "Send Money Instructions")}
-                </p>
-                <p className="text-sm whitespace-pre-wrap">{selected.instructions}</p>
-              </div>
-            )}
+            <div className="rounded-xl bg-card border border-border p-4 mb-4">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                {T("সেন্ড মানির নিয়ম", "Send Money Instructions")}
+              </p>
+              <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                {selected.instructions || defaultInstructions(selected.name, selected.account_number, lang)}
+              </p>
+            </div>
 
             <div className="flex gap-2">
               <button
@@ -224,13 +297,29 @@ export function PaymentFlow({ submissionType, amount, registrationId, onSuccess 
                 {T("ফিরুন", "Back")}
               </button>
               <button
-                onClick={() => setStep(3)}
-                className="flex-1 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary-glow text-sm font-bold inline-flex items-center justify-center gap-1"
+                onClick={() => {
+                  if (!copied) {
+                    setError(T("আগে নাম্বারটি কপি করুন", "Please copy the number first"));
+                    return;
+                  }
+                  setError(null);
+                  setStep(3);
+                }}
+                disabled={!copied}
+                className="flex-1 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary-glow text-sm font-bold inline-flex items-center justify-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {T("পরবর্তী", "Next")}
                 <ChevronRight className="h-4 w-4" />
               </button>
             </div>
+            {!copied && (
+              <p className="mt-3 text-xs text-muted-foreground text-center">
+                {T("পরবর্তী ধাপে যেতে নাম্বারটি কপি করুন", "Copy the number to continue")}
+              </p>
+            )}
+            {error && step === 2 && (
+              <p className="mt-2 text-sm text-destructive font-medium text-center">{error}</p>
+            )}
           </motion.div>
         )}
 
@@ -328,8 +417,10 @@ export function PaymentFlow({ submissionType, amount, registrationId, onSuccess 
             </p>
             <button
               onClick={() => {
-                setStep(1);
+                setStep(submissionType === "ticket" ? 0 : 1);
+                setTier(null);
                 setSelected(null);
+                setCopied(false);
                 setPayerName("");
                 setPayerPhone("");
                 setTxId("");
@@ -356,3 +447,31 @@ function Field({ label, required, children }: { label: string; required?: boolea
     </label>
   );
 }
+
+function defaultInstructions(name: string, number: string, lang: "bn" | "en"): string {
+  const n = name.toLowerCase();
+  const isBkash = n.includes("bkash") || n.includes("বিকাশ");
+  const isNagad = n.includes("nagad") || n.includes("নগদ");
+  const isRocket = n.includes("rocket") || n.includes("রকেট");
+  const provider = isBkash ? "bKash" : isNagad ? "Nagad" : isRocket ? "Rocket" : name;
+
+  if (lang === "bn") {
+    return [
+      `১) ${provider} অ্যাপ অথবা *247# ডায়াল করুন।`,
+      `২) "Send Money" নির্বাচন করুন।`,
+      `৩) প্রাপকের নাম্বার দিন: ${number}`,
+      `৪) পরিমাণ লিখুন এবং রেফারেন্সে আপনার নাম দিন।`,
+      `৫) আপনার ${provider} পিন দিয়ে কনফার্ম করুন।`,
+      `৬) ট্রানজেকশন আইডি (TrxID) সংগ্রহ করুন এবং পরবর্তী ধাপে দিন।`,
+    ].join("\n");
+  }
+  return [
+    `1) Open the ${provider} app or dial *247#.`,
+    `2) Choose "Send Money".`,
+    `3) Enter recipient number: ${number}`,
+    `4) Type the amount and add your name as reference.`,
+    `5) Confirm with your ${provider} PIN.`,
+    `6) Copy the Transaction ID (TrxID) and submit it in the next step.`,
+  ].join("\n");
+}
+
