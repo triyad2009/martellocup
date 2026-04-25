@@ -2,8 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
-  Shield, Users as UsersIcon, ClipboardList, Calendar, Trophy,
-  Image as ImageIcon, Newspaper, Award, Loader2, Search, UserPlus, UserMinus,
+  Shield, ClipboardList, Loader2, Search, UserPlus, UserMinus,
+  Settings as SettingsIcon, Wallet, Receipt, Plus, Trash2, Save, Check, X,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useUserRoles, type AppRole } from "@/lib/roles";
@@ -28,10 +28,13 @@ type ProfileRow = {
 
 type RoleRow = { user_id: string; role: AppRole };
 
+type TabId = "settings" | "registrations" | "methods" | "payments" | "roles";
+
 function AdminPage() {
   const { user, loading: authLoading } = useAuth();
   const { isAdmin, isSuperAdmin, loading: roleLoading } = useUserRoles();
   const { lang } = useI18n();
+  const [tab, setTab] = useState<TabId>("settings");
 
   if (authLoading || roleLoading) {
     return (
@@ -69,9 +72,17 @@ function AdminPage() {
     );
   }
 
+  const tabs: { id: TabId; label: string; icon: typeof Shield }[] = [
+    { id: "settings", label: lang === "bn" ? "সেটিংস" : "Settings", icon: SettingsIcon },
+    { id: "registrations", label: lang === "bn" ? "নিবন্ধন" : "Registrations", icon: ClipboardList },
+    { id: "methods", label: lang === "bn" ? "পেমেন্ট মেথড" : "Payment Methods", icon: Wallet },
+    { id: "payments", label: lang === "bn" ? "পেমেন্ট জমা" : "Payments", icon: Receipt },
+    ...(isSuperAdmin ? [{ id: "roles" as TabId, label: lang === "bn" ? "ভূমিকা" : "Roles", icon: Shield }] : []),
+  ];
+
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-12">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wide mb-3">
           <Shield className="h-3.5 w-3.5" />
           {isSuperAdmin ? (lang === "bn" ? "সুপার এডমিন" : "SUPER ADMIN") : (lang === "bn" ? "এডমিন" : "ADMIN")}
@@ -79,46 +90,122 @@ function AdminPage() {
         <h1 className="font-display text-3xl sm:text-4xl font-bold">
           {lang === "bn" ? "এডমিন প্যানেল" : "Admin Panel"}
         </h1>
-        <p className="text-muted-foreground mt-1 text-sm">
-          {lang === "bn" ? "টুর্নামেন্টের সকল কন্টেন্ট এখান থেকে নিয়ন্ত্রণ করুন" : "Manage all tournament content from here."}
-        </p>
       </motion.div>
 
-      {/* Quick action cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 mb-10">
-        {[
-          { icon: ClipboardList, label: lang === "bn" ? "নিবন্ধন" : "Registrations", to: "/admin" },
-          { icon: Calendar, label: lang === "bn" ? "ফিক্সচার" : "Fixtures", to: "/admin" },
-          { icon: Trophy, label: lang === "bn" ? "ম্যাচ ফলাফল" : "Match Results", to: "/admin" },
-          { icon: UsersIcon, label: lang === "bn" ? "দল ও খেলোয়াড়" : "Teams & Players", to: "/admin" },
-          { icon: Newspaper, label: lang === "bn" ? "সংবাদ" : "News", to: "/admin" },
-          { icon: ImageIcon, label: lang === "bn" ? "গ্যালারি" : "Gallery", to: "/admin" },
-          { icon: Award, label: lang === "bn" ? "স্পনসর" : "Sponsors", to: "/admin" },
-          { icon: Shield, label: lang === "bn" ? "ভূমিকা" : "User Roles", to: "/admin" },
-        ].map((c, i) => (
-          <motion.div
-            key={c.label + i}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.04 }}
-            className="rounded-2xl bg-card border border-border shadow-card p-4 hover:border-primary hover:shadow-glow-red transition-all cursor-pointer"
-          >
-            <div className="h-10 w-10 rounded-xl bg-gradient-primary text-white flex items-center justify-center mb-2 shadow-glow-red">
-              <c.icon className="h-5 w-5" />
-            </div>
-            <p className="font-semibold text-sm">{c.label}</p>
-          </motion.div>
-        ))}
+      {/* Tabs */}
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-6 -mx-1 px-1">
+        {tabs.map((tb) => {
+          const active = tab === tb.id;
+          return (
+            <button
+              key={tb.id}
+              onClick={() => setTab(tb.id)}
+              className={`shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all ${
+                active
+                  ? "bg-primary text-primary-foreground border-primary shadow-glow-red"
+                  : "bg-card border-border hover:border-primary"
+              }`}
+            >
+              <tb.icon className="h-4 w-4" />
+              {tb.label}
+            </button>
+          );
+        })}
       </div>
 
-      <RegistrationsManager lang={lang} />
-
-      {isSuperAdmin && (
-        <div className="mt-10">
-          <RolesManager lang={lang} currentUserId={user.id} />
-        </div>
-      )}
+      {tab === "settings" && <SettingsManager lang={lang} />}
+      {tab === "registrations" && <RegistrationsManager lang={lang} />}
+      {tab === "methods" && <PaymentMethodsManager lang={lang} />}
+      {tab === "payments" && <PaymentsManager lang={lang} />}
+      {tab === "roles" && isSuperAdmin && <RolesManager lang={lang} currentUserId={user.id} />}
     </div>
+  );
+}
+
+/* -------------------- Tournament Settings -------------------- */
+
+function SettingsManager({ lang }: { lang: "bn" | "en" }) {
+  const [row, setRow] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  const load = async () => {
+    setLoading(true);
+    const { data } = await supabase.from("tournament_settings").select("*").limit(1).maybeSingle();
+    setRow(data);
+    setLoading(false);
+  };
+  useEffect(() => { load(); }, []);
+
+  const save = async () => {
+    if (!row) return;
+    setSaving(true);
+    const { error } = await supabase
+      .from("tournament_settings")
+      .update({
+        season_name: row.season_name,
+        tagline: row.tagline,
+        location: row.location,
+        tournament_start: row.tournament_start,
+        hero_logo_url: row.hero_logo_url,
+      })
+      .eq("id", row.id);
+    setSaving(false);
+    if (error) toast.error(error.message);
+    else toast.success(lang === "bn" ? "সেভ হয়েছে" : "Saved");
+  };
+
+  if (loading) return <div className="py-10 text-center"><Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" /></div>;
+  if (!row) return <p className="text-muted-foreground">No settings row.</p>;
+
+  // datetime-local needs YYYY-MM-DDTHH:MM
+  const dtLocal = (iso: string) => {
+    const d = new Date(iso);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
+  return (
+    <section className="rounded-2xl bg-card border border-border shadow-card p-5 sm:p-6 space-y-4">
+      <div className="flex items-center gap-2">
+        <SettingsIcon className="h-5 w-5 text-primary" />
+        <h2 className="font-display text-xl font-bold">
+          {lang === "bn" ? "টুর্নামেন্ট সেটিংস" : "Tournament Settings"}
+        </h2>
+      </div>
+
+      <Field label={lang === "bn" ? "সিজন নাম / ট্যাগলাইন" : "Season Name / Tagline"}>
+        <input className="w-full px-3 py-2.5 rounded-lg border border-border bg-background"
+          value={row.season_name ?? ""} onChange={(e) => setRow({ ...row, season_name: e.target.value })} />
+      </Field>
+      <Field label={lang === "bn" ? "মূল লেখা" : "Hero Title"}>
+        <input className="w-full px-3 py-2.5 rounded-lg border border-border bg-background"
+          value={row.tagline ?? ""} onChange={(e) => setRow({ ...row, tagline: e.target.value })} />
+      </Field>
+      <Field label={lang === "bn" ? "স্থান" : "Location"}>
+        <input className="w-full px-3 py-2.5 rounded-lg border border-border bg-background"
+          value={row.location ?? ""} onChange={(e) => setRow({ ...row, location: e.target.value })} />
+      </Field>
+      <Field label={lang === "bn" ? "শুরুর তারিখ ও সময়" : "Tournament Start (Date & Time)"}>
+        <input type="datetime-local"
+          className="w-full px-3 py-2.5 rounded-lg border border-border bg-background"
+          value={dtLocal(row.tournament_start)}
+          onChange={(e) => setRow({ ...row, tournament_start: new Date(e.target.value).toISOString() })} />
+      </Field>
+      <Field label={lang === "bn" ? "হিরো লোগো URL (ঐচ্ছিক)" : "Hero Logo URL (optional)"}>
+        <input className="w-full px-3 py-2.5 rounded-lg border border-border bg-background"
+          value={row.hero_logo_url ?? ""} onChange={(e) => setRow({ ...row, hero_logo_url: e.target.value || null })} />
+      </Field>
+
+      <button
+        onClick={save}
+        disabled={saving}
+        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-primary-foreground font-bold shadow-glow-red disabled:opacity-60"
+      >
+        {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+        {lang === "bn" ? "সেভ করুন" : "Save"}
+      </button>
+    </section>
   );
 }
 
@@ -201,6 +288,232 @@ function StatusBadge({ status }: { status: string }) {
     pending: "bg-muted text-muted-foreground",
   };
   return <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${map[status] ?? map.pending}`}>{status}</span>;
+}
+
+/* -------------------- Payment Methods -------------------- */
+
+function PaymentMethodsManager({ lang }: { lang: "bn" | "en" }) {
+  const [rows, setRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [draft, setDraft] = useState({ name: "", logo_url: "", account_number: "", instructions: "" });
+
+  const load = async () => {
+    setLoading(true);
+    const { data } = await supabase.from("payment_methods").select("*").order("sort_order");
+    setRows(data ?? []);
+    setLoading(false);
+  };
+  useEffect(() => { load(); }, []);
+
+  const add = async () => {
+    if (!draft.name.trim() || !draft.account_number.trim()) {
+      toast.error(lang === "bn" ? "নাম ও নাম্বার আবশ্যক" : "Name and number required");
+      return;
+    }
+    const { error } = await supabase.from("payment_methods").insert({
+      name: draft.name.trim(),
+      logo_url: draft.logo_url.trim() || null,
+      account_number: draft.account_number.trim(),
+      instructions: draft.instructions.trim() || null,
+      sort_order: rows.length,
+    });
+    if (error) toast.error(error.message);
+    else {
+      setDraft({ name: "", logo_url: "", account_number: "", instructions: "" });
+      toast.success(lang === "bn" ? "যোগ হয়েছে" : "Added");
+      load();
+    }
+  };
+
+  const update = async (id: string, patch: any) => {
+    const { error } = await supabase.from("payment_methods").update(patch).eq("id", id);
+    if (error) toast.error(error.message);
+    else load();
+  };
+
+  const remove = async (id: string) => {
+    const { error } = await supabase.from("payment_methods").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else { toast.success(lang === "bn" ? "মুছে ফেলা হয়েছে" : "Deleted"); load(); }
+  };
+
+  return (
+    <section className="space-y-5">
+      <div className="rounded-2xl bg-card border border-border shadow-card p-5 sm:p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Plus className="h-5 w-5 text-primary" />
+          <h2 className="font-display text-xl font-bold">
+            {lang === "bn" ? "নতুন পেমেন্ট মেথড" : "New Payment Method"}
+          </h2>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-3">
+          <input placeholder={lang === "bn" ? "নাম (যেমন bKash)" : "Name (e.g. bKash)"}
+            className="px-3 py-2.5 rounded-lg border border-border bg-background"
+            value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
+          <input placeholder={lang === "bn" ? "একাউন্ট নাম্বার" : "Account number"}
+            className="px-3 py-2.5 rounded-lg border border-border bg-background"
+            value={draft.account_number} onChange={(e) => setDraft({ ...draft, account_number: e.target.value })} />
+          <input placeholder={lang === "bn" ? "লোগো URL (ঐচ্ছিক)" : "Logo URL (optional)"}
+            className="px-3 py-2.5 rounded-lg border border-border bg-background sm:col-span-2"
+            value={draft.logo_url} onChange={(e) => setDraft({ ...draft, logo_url: e.target.value })} />
+          <textarea placeholder={lang === "bn" ? "সেন্ড মানির নিয়ম" : "Send-money instructions"}
+            rows={3}
+            className="px-3 py-2.5 rounded-lg border border-border bg-background sm:col-span-2"
+            value={draft.instructions} onChange={(e) => setDraft({ ...draft, instructions: e.target.value })} />
+        </div>
+        <button onClick={add}
+          className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold shadow-glow-red">
+          <Plus className="h-4 w-4" /> {lang === "bn" ? "যোগ করুন" : "Add"}
+        </button>
+      </div>
+
+      <div className="rounded-2xl bg-card border border-border shadow-card p-5 sm:p-6">
+        <h2 className="font-display text-xl font-bold mb-4">
+          {lang === "bn" ? "সব মেথড" : "All Methods"} <span className="text-xs text-muted-foreground">({rows.length})</span>
+        </h2>
+        {loading ? (
+          <div className="py-10 text-center"><Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" /></div>
+        ) : rows.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-6 text-center">
+            {lang === "bn" ? "কোনো মেথড যোগ করা হয়নি" : "No methods added"}
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {rows.map((m) => (
+              <div key={m.id} className="rounded-xl border border-border p-4">
+                <div className="flex items-start gap-3">
+                  {m.logo_url ? (
+                    <img src={m.logo_url} alt="" className="h-12 w-12 rounded-lg object-cover bg-muted shrink-0" />
+                  ) : (
+                    <div className="h-12 w-12 rounded-lg bg-gradient-primary text-white flex items-center justify-center font-bold shrink-0">
+                      {m.name[0]}
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold">{m.name}</p>
+                    <p className="text-sm font-mono">{m.account_number}</p>
+                    {m.instructions && <p className="text-xs text-muted-foreground mt-1 whitespace-pre-wrap">{m.instructions}</p>}
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <label className="inline-flex items-center gap-1 text-xs cursor-pointer">
+                      <input type="checkbox" checked={m.is_active}
+                        onChange={(e) => update(m.id, { is_active: e.target.checked })} />
+                      {lang === "bn" ? "সক্রিয়" : "Active"}
+                    </label>
+                    <button onClick={() => remove(m.id)}
+                      className="p-2 rounded-md text-destructive hover:bg-destructive/10">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/* -------------------- Payment Submissions -------------------- */
+
+function PaymentsManager({ lang }: { lang: "bn" | "en" }) {
+  const [rows, setRows] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
+
+  const load = async () => {
+    setLoading(true);
+    const { data } = await supabase.from("payment_submissions").select("*").order("created_at", { ascending: false });
+    setRows(data ?? []);
+    setLoading(false);
+  };
+  useEffect(() => { load(); }, []);
+
+  const setStatus = async (id: string, status: string) => {
+    const { error } = await supabase.from("payment_submissions").update({ status }).eq("id", id);
+    if (error) toast.error(error.message);
+    else { toast.success(lang === "bn" ? "আপডেট হয়েছে" : "Updated"); load(); }
+  };
+
+  const remove = async (id: string) => {
+    const { error } = await supabase.from("payment_submissions").delete().eq("id", id);
+    if (error) toast.error(error.message);
+    else { toast.success(lang === "bn" ? "মুছে ফেলা হয়েছে" : "Deleted"); load(); }
+  };
+
+  const filtered = filter === "all" ? rows : rows.filter((r) => r.status === filter);
+
+  return (
+    <section className="rounded-2xl bg-card border border-border shadow-card p-5 sm:p-6">
+      <div className="flex items-center gap-2 mb-4 flex-wrap">
+        <Receipt className="h-5 w-5 text-primary" />
+        <h2 className="font-display text-xl font-bold">
+          {lang === "bn" ? "পেমেন্ট জমা" : "Payment Submissions"}
+        </h2>
+        <div className="ml-auto flex gap-1.5">
+          {(["all", "pending", "approved", "rejected"] as const).map((f) => (
+            <button key={f} onClick={() => setFilter(f)}
+              className={`text-xs px-2.5 py-1 rounded-md font-semibold ${
+                filter === f ? "bg-primary text-primary-foreground" : "border border-border"
+              }`}>
+              {f}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="py-10 text-center"><Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" /></div>
+      ) : filtered.length === 0 ? (
+        <p className="text-sm text-muted-foreground py-6 text-center">
+          {lang === "bn" ? "কোনো জমা নেই" : "No submissions"}
+        </p>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map((p) => (
+            <div key={p.id} className="rounded-xl border border-border p-4">
+              <div className="flex flex-col sm:flex-row sm:items-start gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <p className="font-semibold">{p.payer_name}</p>
+                    <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-muted">
+                      {p.submission_type}
+                    </span>
+                    <StatusBadge status={p.status} />
+                  </div>
+                  <div className="text-xs text-muted-foreground space-y-0.5">
+                    <p>📞 {p.payer_phone} · {p.payment_method_name}</p>
+                    <p>
+                      {lang === "bn" ? "সেন্ডার শেষ ৪:" : "Sender last 4:"}{" "}
+                      <span className="font-mono font-bold">{p.sender_last4}</span>
+                      {p.transaction_id && <> · TxID: <span className="font-mono">{p.transaction_id}</span></>}
+                    </p>
+                    {p.amount && <p>৳ {p.amount}</p>}
+                    <p className="opacity-60">{new Date(p.created_at).toLocaleString()}</p>
+                  </div>
+                </div>
+                <div className="flex gap-2 flex-wrap shrink-0">
+                  <button onClick={() => setStatus(p.id, "approved")}
+                    className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-md bg-success text-success-foreground font-semibold">
+                    <Check className="h-3.5 w-3.5" /> {lang === "bn" ? "অনুমোদন" : "Approve"}
+                  </button>
+                  <button onClick={() => setStatus(p.id, "rejected")}
+                    className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-md bg-destructive text-destructive-foreground font-semibold">
+                    <X className="h-3.5 w-3.5" /> {lang === "bn" ? "বাতিল" : "Reject"}
+                  </button>
+                  <button onClick={() => remove(p.id)}
+                    className="p-1.5 rounded-md text-destructive hover:bg-destructive/10">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
 }
 
 /* -------------------- Roles -------------------- */
@@ -315,5 +628,16 @@ function RolesManager({ lang, currentUserId }: { lang: "bn" | "en"; currentUserI
         </div>
       )}
     </section>
+  );
+}
+
+/* -------------------- Helpers -------------------- */
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="block text-sm font-medium mb-1">{label}</span>
+      {children}
+    </label>
   );
 }

@@ -62,9 +62,13 @@ export function Navbar() {
               <div className="relative h-10 w-10 rounded-lg overflow-hidden ring-2 ring-primary/40 shadow-glow-red bg-card">
                 <img src={LOGO_URL} alt="Martello Cup" className="h-full w-full object-cover" />
               </div>
-              <div className="hidden sm:block">
-                <div className="font-display font-bold text-base leading-none">MARTELLO</div>
-                <div className="font-display text-xs text-primary leading-none mt-0.5">CUP</div>
+              <div className="block">
+                <div className="font-display font-bold text-base sm:text-lg leading-none tracking-tight">
+                  Martello <span className="text-primary">Cup</span>
+                </div>
+                <div className="hidden sm:block font-display text-[10px] text-muted-foreground leading-none mt-1 tracking-widest">
+                  FOOTBALL · CONNECTIVITY · HAPPINESS
+                </div>
               </div>
             </Link>
 

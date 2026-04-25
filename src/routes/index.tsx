@@ -3,13 +3,14 @@ import { motion } from "framer-motion";
 import { ArrowDown, MapPin, Trophy, Users, Goal, Calendar } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { Countdown } from "@/components/Countdown";
+import { useTournamentSettings } from "@/lib/settings";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
-// Tournament starts ~30 days from now (placeholder; admin-editable later)
-const TOURNAMENT_START = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+const LOGO_URL = "https://i.postimg.cc/sxgdMH6c/FB-IMG-1776993011009.jpg";
+const FALLBACK_START = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
 function Index() {
   return (
@@ -23,8 +24,27 @@ function Index() {
 
 function Hero() {
   const { t } = useI18n();
+  const { settings } = useTournamentSettings();
+  const startDate = settings ? new Date(settings.tournament_start) : FALLBACK_START;
+  const heroLogo = settings?.hero_logo_url || LOGO_URL;
+  const seasonText = settings?.season_name || t("hero.season");
+  const locationText = settings?.location || t("hero.location");
+
   return (
     <section className="relative min-h-[calc(100vh-7rem)] overflow-hidden bg-gradient-hero animate-gradient flex items-center">
+      {/* Background watermark logo */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+        <motion.img
+          src={heroLogo}
+          alt=""
+          aria-hidden="true"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: [0.95, 1.05, 0.95], opacity: 0.12 }}
+          transition={{ scale: { duration: 8, repeat: Infinity, ease: "easeInOut" }, opacity: { duration: 1.2 } }}
+          className="w-[80vw] max-w-[700px] aspect-square object-contain blur-[2px] mix-blend-screen"
+        />
+      </div>
+
       {/* Floating particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(8)].map((_, i) => (
@@ -71,7 +91,7 @@ function Hero() {
             transition={{ type: "spring", damping: 15 }}
             className="inline-block px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-bold tracking-widest mb-6"
           >
-            ⚽ {t("hero.season")}
+            ⚽ {seasonText}
           </motion.div>
 
           <motion.h1
@@ -99,7 +119,7 @@ function Hero() {
             className="mt-3 flex items-center justify-center gap-2 text-sm text-white/70"
           >
             <MapPin className="h-4 w-4" />
-            <span>{t("hero.location")}</span>
+            <span>{locationText}</span>
           </motion.div>
 
           {/* Countdown */}
@@ -112,7 +132,7 @@ function Hero() {
             <p className="text-xs sm:text-sm uppercase tracking-[0.3em] text-white/60 mb-4">
               {t("hero.countdown")}
             </p>
-            <Countdown target={TOURNAMENT_START} />
+            <Countdown target={startDate} />
           </motion.div>
 
           {/* CTAs */}
