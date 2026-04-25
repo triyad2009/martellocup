@@ -28,7 +28,7 @@ type ProfileRow = {
 
 type RoleRow = { user_id: string; role: AppRole };
 
-type TabId = "settings" | "registrations" | "methods" | "payments" | "roles";
+type TabId = "settings" | "registrations" | "tiers" | "methods" | "payments" | "roles";
 
 function AdminPage() {
   const { user, loading: authLoading } = useAuth();
