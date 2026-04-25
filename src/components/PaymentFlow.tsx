@@ -146,6 +146,8 @@ export function PaymentFlow({ submissionType, amount, registrationId, onSuccess 
                   key={m.id}
                   onClick={() => {
                     setSelected(m);
+                    setCopied(false);
+                    setError(null);
                     setStep(2);
                   }}
                   className="flex items-center gap-3 p-4 rounded-xl border-2 border-border hover:border-primary hover:bg-accent transition-all text-left"
