@@ -150,6 +150,46 @@ export function PaymentFlow({ submissionType, amount, registrationId, onSuccess 
       </div>
 
       <AnimatePresence mode="wait">
+        {/* Step 0: select ticket tier (tickets only) */}
+        {step === 0 && submissionType === "ticket" && (
+          <motion.div
+            key="s0"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+          >
+            <h3 className="font-display font-bold text-lg mb-4">
+              {T("টিকিটের ধরন নির্বাচন করুন", "Select Ticket Type")}
+            </h3>
+            {tiers.length === 0 ? (
+              <div className="rounded-xl border-2 border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+                {T("কোনো টিকিটের ধরন নেই — শীঘ্রই আসছে", "No ticket tiers available yet")}
+              </div>
+            ) : (
+              <div className="grid gap-3">
+                {tiers.map((tr) => (
+                  <button
+                    key={tr.id}
+                    onClick={() => { setTier(tr); setStep(1); }}
+                    className="flex items-center gap-3 p-4 rounded-xl border-2 border-border hover:border-primary hover:bg-accent transition-all text-left"
+                  >
+                    <div className="h-12 w-12 rounded-lg bg-gradient-primary text-white flex items-center justify-center font-display font-bold shrink-0">
+                      {tr.name[0]}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold">{tr.name}</p>
+                      {tr.description && <p className="text-xs text-muted-foreground line-clamp-2">{tr.description}</p>}
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="font-display font-bold text-primary text-lg">৳ {tr.price}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        )}
+
         {/* Step 1: select method */}
         {step === 1 && (
           <motion.div
