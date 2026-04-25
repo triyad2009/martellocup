@@ -50,7 +50,7 @@ export const dict: Dict = {
   "section.viewAll": { bn: "সব দেখুন", en: "View All" },
 
   // Dev
-  "dev.label": { bn: "ডেভেলপ করেছেন", en: "Develop By" },
+  "dev.label": { bn: "Develop By", en: "Develop By" },
   "dev.subtitle": { bn: "ফুল স্ট্যাক ডেভেলপার", en: "Full Stack Developer" },
   "dev.close": { bn: "বন্ধ করুন", en: "Close" },
 
