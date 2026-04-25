@@ -120,17 +120,43 @@ function Hero() {
             <span>{locationText}</span>
           </motion.div>
 
-          {/* Countdown */}
+          {/* Countdown / Started banner */}
           <motion.div
             initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.6 }}
             className="mt-10"
           >
-            <p className="text-xs sm:text-sm uppercase tracking-[0.3em] text-white/60 mb-4">
-              {t("hero.countdown")}
-            </p>
-            <Countdown target={startDate} />
+            {started ? (
+              <motion.div
+                initial={{ scale: 0.7, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", damping: 12 }}
+                className="inline-flex flex-col items-center gap-3"
+              >
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-success/20 border border-success/40 backdrop-blur-md text-success-foreground text-xs font-bold tracking-widest">
+                  <Sparkles className="h-3.5 w-3.5 animate-pulse" />
+                  {lang === "bn" ? "লাইভ" : "LIVE NOW"}
+                </div>
+                <motion.h2
+                  animate={{ scale: [1, 1.04, 1] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                  className="font-display text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-glow-red"
+                >
+                  Martello Cup Started
+                </motion.h2>
+                <p className="text-white/80 text-sm sm:text-base">
+                  {lang === "bn" ? "টুর্নামেন্ট শুরু হয়ে গেছে — উপভোগ করুন!" : "The tournament has begun — enjoy the matches!"}
+                </p>
+              </motion.div>
+            ) : (
+              <>
+                <p className="text-xs sm:text-sm uppercase tracking-[0.3em] text-white/60 mb-4">
+                  {t("hero.countdown")}
+                </p>
+                <Countdown target={startDate} />
+              </>
+            )}
           </motion.div>
 
           {/* CTAs */}
