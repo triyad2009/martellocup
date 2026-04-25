@@ -14,6 +14,104 @@ export type Database = {
   }
   public: {
     Tables: {
+      payment_methods: {
+        Row: {
+          account_number: string
+          created_at: string
+          id: string
+          instructions: string | null
+          is_active: boolean
+          logo_url: string | null
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          account_number: string
+          created_at?: string
+          id?: string
+          instructions?: string | null
+          is_active?: boolean
+          logo_url?: string | null
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          account_number?: string
+          created_at?: string
+          id?: string
+          instructions?: string | null
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payment_submissions: {
+        Row: {
+          amount: number | null
+          created_at: string
+          id: string
+          notes: string | null
+          payer_name: string
+          payer_phone: string
+          payment_method_id: string | null
+          payment_method_name: string | null
+          registration_id: string | null
+          rejection_reason: string | null
+          sender_last4: string
+          status: string
+          submission_type: string
+          transaction_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payer_name: string
+          payer_phone: string
+          payment_method_id?: string | null
+          payment_method_name?: string | null
+          registration_id?: string | null
+          rejection_reason?: string | null
+          sender_last4: string
+          status?: string
+          submission_type?: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          payer_name?: string
+          payer_phone?: string
+          payment_method_id?: string | null
+          payment_method_name?: string | null
+          registration_id?: string | null
+          rejection_reason?: string | null
+          sender_last4?: string
+          status?: string
+          submission_type?: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_submissions_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -113,6 +211,42 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string
+        }
+        Relationships: []
+      }
+      tournament_settings: {
+        Row: {
+          created_at: string
+          hero_logo_url: string | null
+          id: string
+          is_singleton: boolean
+          location: string
+          season_name: string
+          tagline: string
+          tournament_start: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          hero_logo_url?: string | null
+          id?: string
+          is_singleton?: boolean
+          location?: string
+          season_name?: string
+          tagline?: string
+          tournament_start?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          hero_logo_url?: string | null
+          id?: string
+          is_singleton?: boolean
+          location?: string
+          season_name?: string
+          tagline?: string
+          tournament_start?: string
+          updated_at?: string
         }
         Relationships: []
       }
