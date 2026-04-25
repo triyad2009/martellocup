@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Shield, ClipboardList, Loader2, Search, UserPlus, UserMinus,
-  Settings as SettingsIcon, Wallet, Receipt, Plus, Trash2, Save, Check, X,
+  Settings as SettingsIcon, Wallet, Receipt, Plus, Trash2, Save, Check, X, Ticket,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useUserRoles, type AppRole } from "@/lib/roles";
