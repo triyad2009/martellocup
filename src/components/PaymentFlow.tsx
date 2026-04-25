@@ -372,3 +372,31 @@ function Field({ label, required, children }: { label: string; required?: boolea
     </label>
   );
 }
+
+function defaultInstructions(name: string, number: string, lang: "bn" | "en"): string {
+  const n = name.toLowerCase();
+  const isBkash = n.includes("bkash") || n.includes("বিকাশ");
+  const isNagad = n.includes("nagad") || n.includes("নগদ");
+  const isRocket = n.includes("rocket") || n.includes("রকেট");
+  const provider = isBkash ? "bKash" : isNagad ? "Nagad" : isRocket ? "Rocket" : name;
+
+  if (lang === "bn") {
+    return [
+      `১) ${provider} অ্যাপ অথবা *247# ডায়াল করুন।`,
+      `২) "Send Money" নির্বাচন করুন।`,
+      `৩) প্রাপকের নাম্বার দিন: ${number}`,
+      `৪) পরিমাণ লিখুন এবং রেফারেন্সে আপনার নাম দিন।`,
+      `৫) আপনার ${provider} পিন দিয়ে কনফার্ম করুন।`,
+      `৬) ট্রানজেকশন আইডি (TrxID) সংগ্রহ করুন এবং পরবর্তী ধাপে দিন।`,
+    ].join("\n");
+  }
+  return [
+    `1) Open the ${provider} app or dial *247#.`,
+    `2) Choose "Send Money".`,
+    `3) Enter recipient number: ${number}`,
+    `4) Type the amount and add your name as reference.`,
+    `5) Confirm with your ${provider} PIN.`,
+    `6) Copy the Transaction ID (TrxID) and submit it in the next step.`,
+  ].join("\n");
+}
+
