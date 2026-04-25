@@ -23,7 +23,7 @@ export const dict: Dict = {
   // Hero
   "hero.title": { bn: "মার্টেলো কাপ", en: "MARTELLO CUP" },
   "hero.tagline": { bn: "যেখানে কিংবদন্তি জন্ম নেয়", en: "Where Legends Are Born" },
-  "hero.season": { bn: "মৌসুম ২০২৫", en: "SEASON 2025" },
+  "hero.season": { bn: "Football.Connectivity.Happiness", en: "Football.Connectivity.Happiness" },
   "hero.location": { bn: "গাইনবাড়ী, গাবুরা, শ্যামনগর, সাতক্ষীরা", en: "Gainbari, Gabura, Shyamnagar, Satkhira" },
   "nav.admin": { bn: "এডমিন", en: "Admin" },
   "hero.cta.fixtures": { bn: "ফিক্সচার দেখুন", en: "View Fixtures" },
