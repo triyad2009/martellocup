@@ -91,7 +91,7 @@ function Hero() {
             transition={{ type: "spring", damping: 15 }}
             className="inline-block px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-bold tracking-widest mb-6"
           >
-            ⚽ {t("hero.season")}
+            ⚽ {seasonText}
           </motion.div>
 
           <motion.h1
@@ -119,7 +119,7 @@ function Hero() {
             className="mt-3 flex items-center justify-center gap-2 text-sm text-white/70"
           >
             <MapPin className="h-4 w-4" />
-            <span>{t("hero.location")}</span>
+            <span>{locationText}</span>
           </motion.div>
 
           {/* Countdown */}
@@ -132,7 +132,7 @@ function Hero() {
             <p className="text-xs sm:text-sm uppercase tracking-[0.3em] text-white/60 mb-4">
               {t("hero.countdown")}
             </p>
-            <Countdown target={TOURNAMENT_START} />
+            <Countdown target={startDate} />
           </motion.div>
 
           {/* CTAs */}
