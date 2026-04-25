@@ -417,8 +417,10 @@ export function PaymentFlow({ submissionType, amount, registrationId, onSuccess 
             </p>
             <button
               onClick={() => {
-                setStep(1);
+                setStep(submissionType === "ticket" ? 0 : 1);
+                setTier(null);
                 setSelected(null);
+                setCopied(false);
                 setPayerName("");
                 setPayerPhone("");
                 setTxId("");
