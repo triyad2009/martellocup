@@ -36,9 +36,18 @@ export function DeveloperCreditButton({ className = "" }: { className?: string }
         <span className="text-muted-foreground">{t("dev.label")}</span>
         <motion.button
           onClick={() => setOpen(true)}
-          whileHover={{ scale: 1.05, filter: "brightness(1.15)" }}
+          whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.95 }}
-          className="bg-gradient-dev animate-gradient text-white font-bold px-3 py-1 rounded-md shadow-glow-red animate-pulse-glow tracking-wide"
+          animate={{
+            boxShadow: [
+              "0 0 12px oklch(0.65 0.22 25 / 0.55), 0 0 24px oklch(0.78 0.15 85 / 0.35)",
+              "0 0 22px oklch(0.65 0.22 25 / 0.85), 0 0 44px oklch(0.78 0.15 85 / 0.55)",
+              "0 0 12px oklch(0.65 0.22 25 / 0.55), 0 0 24px oklch(0.78 0.15 85 / 0.35)",
+            ],
+          }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+          className="relative bg-gradient-dev animate-gradient text-white font-extrabold px-4 py-1.5 rounded-md tracking-wider drop-shadow-[0_0_10px_oklch(0.65_0.22_25_/_0.6)]"
+          style={{ textShadow: "0 0 8px oklch(0.78 0.15 85 / 0.7), 0 0 18px oklch(0.65 0.22 25 / 0.55)" }}
         >
           TAHSINULLAH RIYAD
         </motion.button>
