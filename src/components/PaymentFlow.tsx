@@ -206,14 +206,14 @@ export function PaymentFlow({ submissionType, amount, registrationId, onSuccess 
               </div>
             )}
 
-            {selected.instructions && (
-              <div className="rounded-xl bg-card border border-border p-4 mb-4">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
-                  {T("সেন্ড মানির নিয়ম", "Send Money Instructions")}
-                </p>
-                <p className="text-sm whitespace-pre-wrap">{selected.instructions}</p>
-              </div>
-            )}
+            <div className="rounded-xl bg-card border border-border p-4 mb-4">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground mb-2">
+                {T("সেন্ড মানির নিয়ম", "Send Money Instructions")}
+              </p>
+              <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                {selected.instructions || defaultInstructions(selected.name, selected.account_number, lang)}
+              </p>
+            </div>
 
             <div className="flex gap-2">
               <button
