@@ -222,10 +222,10 @@ export function PaymentFlow({ submissionType, amount, registrationId, onSuccess 
               </div>
             </div>
 
-            {amount != null && (
+            {effectiveAmount != null && (
               <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 mb-4 text-center">
-                <p className="text-xs text-muted-foreground">{T("পরিমাণ", "Amount")}</p>
-                <p className="font-display font-bold text-2xl text-primary">৳ {amount}</p>
+                <p className="text-xs text-muted-foreground">{T("পরিমাণ", "Amount")}{tier ? ` · ${tier.name}` : ""}</p>
+                <p className="font-display font-bold text-2xl text-primary">৳ {effectiveAmount}</p>
               </div>
             )}
 
