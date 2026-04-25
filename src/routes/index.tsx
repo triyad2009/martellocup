@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowDown, MapPin, Trophy, Users, Goal, Calendar } from "lucide-react";
+import { ArrowDown, MapPin, Trophy, Users, Goal, Calendar, Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { Countdown } from "@/components/Countdown";
 import { useTournamentSettings } from "@/lib/settings";
@@ -9,7 +10,6 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const LOGO_URL = "https://i.postimg.cc/sxgdMH6c/FB-IMG-1776993011009.jpg";
 const FALLBACK_START = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
 function Index() {
