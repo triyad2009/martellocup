@@ -75,6 +75,7 @@ function AdminPage() {
   const tabs: { id: TabId; label: string; icon: typeof Shield }[] = [
     { id: "settings", label: lang === "bn" ? "সেটিংস" : "Settings", icon: SettingsIcon },
     { id: "registrations", label: lang === "bn" ? "নিবন্ধন" : "Registrations", icon: ClipboardList },
+    { id: "tiers", label: lang === "bn" ? "টিকিটের ধরন" : "Ticket Tiers", icon: Ticket },
     { id: "methods", label: lang === "bn" ? "পেমেন্ট মেথড" : "Payment Methods", icon: Wallet },
     { id: "payments", label: lang === "bn" ? "পেমেন্ট জমা" : "Payments", icon: Receipt },
     ...(isSuperAdmin ? [{ id: "roles" as TabId, label: lang === "bn" ? "ভূমিকা" : "Roles", icon: Shield }] : []),
