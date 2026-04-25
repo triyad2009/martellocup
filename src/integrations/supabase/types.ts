@@ -65,6 +65,8 @@ export type Database = {
           sender_last4: string
           status: string
           submission_type: string
+          ticket_tier_id: string | null
+          ticket_tier_name: string | null
           transaction_id: string | null
           updated_at: string
         }
@@ -82,6 +84,8 @@ export type Database = {
           sender_last4: string
           status?: string
           submission_type?: string
+          ticket_tier_id?: string | null
+          ticket_tier_name?: string | null
           transaction_id?: string | null
           updated_at?: string
         }
@@ -99,6 +103,8 @@ export type Database = {
           sender_last4?: string
           status?: string
           submission_type?: string
+          ticket_tier_id?: string | null
+          ticket_tier_name?: string | null
           transaction_id?: string | null
           updated_at?: string
         }
@@ -108,6 +114,13 @@ export type Database = {
             columns: ["payment_method_id"]
             isOneToOne: false
             referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_submissions_ticket_tier_id_fkey"
+            columns: ["ticket_tier_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_tiers"
             referencedColumns: ["id"]
           },
         ]
@@ -211,6 +224,39 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string
+        }
+        Relationships: []
+      }
+      ticket_tiers: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          price: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          price?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          price?: number
+          sort_order?: number
+          updated_at?: string
         }
         Relationships: []
       }
