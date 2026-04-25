@@ -51,7 +51,6 @@ export function PaymentFlow({ submissionType, amount, registrationId, onSuccess 
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
     } catch {
       /* ignore */
     }
