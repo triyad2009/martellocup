@@ -23,7 +23,7 @@ function Index() {
 }
 
 function Hero() {
-  const { t, lang } = useI18n();
+  const { t } = useI18n();
   const { settings } = useTournamentSettings();
   const startDate = settings ? new Date(settings.tournament_start) : FALLBACK_START;
   const heroLogo = settings?.hero_logo_url || LOGO_URL;
