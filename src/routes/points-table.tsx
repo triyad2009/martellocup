@@ -1,90 +1,95 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { TrendingUp, Trophy } from "lucide-react";
+import { BarChart3 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { useTable } from "@/lib/content";
 
 export const Route = createFileRoute("/points-table")({
   component: PointsPage,
 });
 
-const TABLE = [
-  { pos: 1, team: "Royal Stars", p: 3, w: 3, d: 0, l: 0, gf: 8, ga: 2, pts: 9, form: ["W","W","W"] },
-  { pos: 2, team: "Eagles FC", p: 3, w: 2, d: 1, l: 0, gf: 6, ga: 3, pts: 7, form: ["W","D","W"] },
-  { pos: 3, team: "Sundarban Warriors", p: 3, w: 1, d: 2, l: 0, gf: 4, ga: 3, pts: 5, form: ["D","W","D"] },
-  { pos: 4, team: "Lions XI", p: 3, w: 1, d: 1, l: 1, gf: 5, ga: 4, pts: 4, form: ["W","L","D"] },
-  { pos: 5, team: "Tigers United", p: 3, w: 1, d: 0, l: 2, gf: 3, ga: 5, pts: 3, form: ["L","W","L"] },
-  { pos: 6, team: "Coastal Kings", p: 3, w: 0, d: 2, l: 1, gf: 2, ga: 4, pts: 2, form: ["D","L","D"] },
-  { pos: 7, team: "Atlas Boys", p: 3, w: 0, d: 1, l: 2, gf: 3, ga: 6, pts: 1, form: ["L","D","L"] },
-  { pos: 8, team: "Phoenix FC", p: 3, w: 0, d: 1, l: 2, gf: 1, ga: 5, pts: 1, form: ["L","D","L"] },
-];
+type Row = {
+  id: string;
+  position: number;
+  team: string;
+  played: number;
+  won: number;
+  drawn: number;
+  lost: number;
+  goals_for: number;
+  goals_against: number;
+  points: number;
+  form: string | null;
+};
 
 const formColor = (r: string) =>
-  r === "W" ? "bg-success text-success-foreground" : r === "D" ? "bg-warning text-white" : "bg-destructive text-destructive-foreground";
+  r === "W" ? "bg-success text-success-foreground" : r === "D" ? "bg-muted" : "bg-destructive text-destructive-foreground";
 
 function PointsPage() {
   const { lang } = useI18n();
+  const { rows, loading } = useTable<Row>("points_table", { order: "position", ascending: true });
+
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-16">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-14">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
-        <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-primary text-white shadow-glow-red mb-4">
-          <TrendingUp className="h-8 w-8" />
+        <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-primary text-white shadow-glow-red mb-4">
+          <BarChart3 className="h-7 w-7" />
         </div>
-        <h1 className="font-display text-4xl sm:text-5xl font-bold">
+        <h1 className="font-display text-4xl sm:text-5xl font-bold mb-2">
           {lang === "bn" ? "পয়েন্ট তালিকা" : "Points Table"}
         </h1>
-        <p className="text-muted-foreground mt-2">
-          {lang === "bn" ? "ম্যাচ ফলাফল থেকে স্বয়ংক্রিয়ভাবে গণনা করা" : "Auto-calculated from match results"}
-        </p>
       </motion.div>
 
-      <div className="rounded-2xl bg-card border border-border shadow-card overflow-hidden">
-        <div className="overflow-x-auto">
+      {loading ? (
+        <p className="text-center text-muted-foreground py-10">{lang === "bn" ? "লোড হচ্ছে..." : "Loading..."}</p>
+      ) : rows.length === 0 ? (
+        <div className="rounded-2xl border-2 border-dashed border-border bg-muted/30 p-10 text-center">
+          <BarChart3 className="h-10 w-10 text-primary mx-auto mb-3" />
+          <p className="text-muted-foreground">
+            {lang === "bn" ? "এডমিন থেকে পয়েন্ট তালিকা যোগ করুন।" : "Add points table from the admin panel."}
+          </p>
+        </div>
+      ) : (
+        <div className="rounded-2xl bg-card border border-border shadow-card overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-dark text-dark-foreground">
+            <thead className="bg-muted/50 text-xs uppercase tracking-wider">
               <tr>
-                <th className="px-3 py-3 text-left font-display">#</th>
-                <th className="px-3 py-3 text-left font-display sticky left-0 bg-dark">{lang === "bn" ? "দল" : "Team"}</th>
-                <th className="px-2 py-3 font-display">P</th>
-                <th className="px-2 py-3 font-display text-success">W</th>
-                <th className="px-2 py-3 font-display text-warning">D</th>
-                <th className="px-2 py-3 font-display text-destructive">L</th>
-                <th className="px-2 py-3 font-display">GF</th>
-                <th className="px-2 py-3 font-display">GA</th>
-                <th className="px-2 py-3 font-display">GD</th>
-                <th className="px-3 py-3 font-display text-primary">Pts</th>
-                <th className="px-3 py-3 font-display text-left">{lang === "bn" ? "ফর্ম" : "Form"}</th>
+                <th className="text-left px-3 py-3">#</th>
+                <th className="text-left px-3 py-3">{lang === "bn" ? "দল" : "Team"}</th>
+                <th className="px-2 py-3">P</th>
+                <th className="px-2 py-3">W</th>
+                <th className="px-2 py-3">D</th>
+                <th className="px-2 py-3">L</th>
+                <th className="px-2 py-3">GF</th>
+                <th className="px-2 py-3">GA</th>
+                <th className="px-2 py-3 font-bold">Pts</th>
+                <th className="px-2 py-3 hidden sm:table-cell">{lang === "bn" ? "ফর্ম" : "Form"}</th>
               </tr>
             </thead>
             <tbody>
-              {TABLE.map((t, i) => (
+              {rows.map((r, i) => (
                 <motion.tr
-                  key={t.team}
-                  initial={{ opacity: 0, x: -10 }}
-                  whileInView={{ opacity: 1, x: 0 }}
+                  key={r.id}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.04 }}
-                  className={`border-t border-border ${
-                    t.pos === 1 ? "bg-warning/10" : t.pos === 2 ? "bg-muted/40" : ""
-                  } hover:bg-muted/60`}
+                  transition={{ delay: i * 0.03 }}
+                  className={`border-t border-border ${i < 2 ? "bg-primary/5" : ""}`}
                 >
-                  <td className="px-3 py-3 font-bold">
-                    {t.pos === 1 && <Trophy className="inline h-4 w-4 text-warning mr-1" />}
-                    {t.pos}
-                  </td>
-                  <td className="px-3 py-3 font-semibold sticky left-0 bg-inherit">{t.team}</td>
-                  <td className="px-2 py-3 text-center">{t.p}</td>
-                  <td className="px-2 py-3 text-center text-success font-semibold">{t.w}</td>
-                  <td className="px-2 py-3 text-center text-warning font-semibold">{t.d}</td>
-                  <td className="px-2 py-3 text-center text-destructive font-semibold">{t.l}</td>
-                  <td className="px-2 py-3 text-center">{t.gf}</td>
-                  <td className="px-2 py-3 text-center">{t.ga}</td>
-                  <td className="px-2 py-3 text-center font-semibold">{t.gf - t.ga > 0 ? `+${t.gf - t.ga}` : t.gf - t.ga}</td>
-                  <td className="px-3 py-3 text-center font-display font-bold text-primary text-base">{t.pts}</td>
-                  <td className="px-3 py-3">
-                    <div className="flex gap-1">
-                      {t.form.map((r, j) => (
-                        <span key={j} className={`h-5 w-5 rounded-full text-[10px] font-bold flex items-center justify-center ${formColor(r)}`}>
-                          {r}
+                  <td className="px-3 py-3 font-bold">{r.position}</td>
+                  <td className="px-3 py-3 font-semibold">{r.team}</td>
+                  <td className="px-2 py-3 text-center">{r.played}</td>
+                  <td className="px-2 py-3 text-center">{r.won}</td>
+                  <td className="px-2 py-3 text-center">{r.drawn}</td>
+                  <td className="px-2 py-3 text-center">{r.lost}</td>
+                  <td className="px-2 py-3 text-center">{r.goals_for}</td>
+                  <td className="px-2 py-3 text-center">{r.goals_against}</td>
+                  <td className="px-2 py-3 text-center font-display font-bold text-primary">{r.points}</td>
+                  <td className="px-2 py-3 hidden sm:table-cell">
+                    <div className="flex gap-1 justify-center">
+                      {(r.form || "").split("").slice(-5).map((c, idx) => (
+                        <span key={idx} className={`h-5 w-5 rounded text-[10px] font-bold inline-flex items-center justify-center ${formColor(c)}`}>
+                          {c}
                         </span>
                       ))}
                     </div>
@@ -94,7 +99,7 @@ function PointsPage() {
             </tbody>
           </table>
         </div>
-      </div>
+      )}
     </div>
   );
 }

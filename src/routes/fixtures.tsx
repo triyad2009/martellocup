@@ -2,87 +2,93 @@ import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Calendar, Clock, MapPin, Trophy } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { useTable } from "@/lib/content";
 
 export const Route = createFileRoute("/fixtures")({
   component: FixturesPage,
 });
 
-const FIXTURES = [
-  { no: 1, round: { bn: "গ্রুপ পর্ব", en: "Group Stage" }, home: "Eagles FC", away: "Tigers United", date: "2025-05-10", time: "16:00", venue: "Gainbari Ground", status: "upcoming" },
-  { no: 2, round: { bn: "গ্রুপ পর্ব", en: "Group Stage" }, home: "Sundarban Warriors", away: "Coastal Kings", date: "2025-05-10", time: "18:30", venue: "Gabura Field", status: "upcoming" },
-  { no: 3, round: { bn: "গ্রুপ পর্ব", en: "Group Stage" }, home: "Royal Stars", away: "Atlas Boys", date: "2025-05-11", time: "16:00", venue: "Gainbari Ground", status: "upcoming" },
-  { no: 4, round: { bn: "গ্রুপ পর্ব", en: "Group Stage" }, home: "Lions XI", away: "Phoenix FC", date: "2025-05-11", time: "18:30", venue: "Shyamnagar Stadium", status: "upcoming" },
-  { no: 5, round: { bn: "কোয়ার্টার ফাইনাল", en: "Quarter Final" }, home: "TBD", away: "TBD", date: "2025-05-15", time: "16:00", venue: "Gainbari Ground", status: "upcoming" },
-  { no: 6, round: { bn: "ফাইনাল", en: "Final" }, home: "TBD", away: "TBD", date: "2025-05-25", time: "17:00", venue: "Gainbari Ground", status: "upcoming" },
-];
+type Fixture = {
+  id: string;
+  round: string | null;
+  home_team: string;
+  away_team: string;
+  match_date: string;
+  match_time: string | null;
+  venue: string | null;
+  status: string;
+};
 
 function FixturesPage() {
   const { lang } = useI18n();
+  const { rows, loading } = useTable<Fixture>("fixtures", { order: "match_date", ascending: true });
+
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-16">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-14">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
-        <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-primary text-white shadow-glow-red mb-4">
-          <Calendar className="h-8 w-8" />
+        <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-primary text-white shadow-glow-red mb-4">
+          <Calendar className="h-7 w-7" />
         </div>
-        <h1 className="font-display text-4xl sm:text-5xl font-bold">
+        <h1 className="font-display text-4xl sm:text-5xl font-bold mb-2">
           {lang === "bn" ? "ফিক্সচার" : "Fixtures"}
         </h1>
-        <p className="text-muted-foreground mt-2">
-          {lang === "bn" ? "সকল আসন্ন এবং সম্পন্ন ম্যাচ" : "All upcoming and scheduled matches"}
+        <p className="text-muted-foreground">
+          {lang === "bn" ? "আসন্ন ও নির্ধারিত ম্যাচসমূহ" : "Upcoming and scheduled matches"}
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {FIXTURES.map((m, i) => (
-          <motion.div
-            key={m.no}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.05 }}
-            whileHover={{ y: -4 }}
-            className="rounded-2xl bg-card border border-border shadow-card p-5 hover:shadow-elevated transition-shadow"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-1 rounded-full">
-                {m.round[lang]}
-              </span>
-              <span className="text-xs font-bold text-muted-foreground">#{m.no}</span>
-            </div>
-            <div className="grid grid-cols-3 items-center gap-3 mb-4">
-              <div className="text-center">
-                <div className="h-12 w-12 mx-auto rounded-full bg-gradient-primary text-white flex items-center justify-center font-display font-bold text-sm shadow-glow-red mb-2">
-                  {m.home.slice(0, 2).toUpperCase()}
-                </div>
-                <p className="text-sm font-semibold leading-tight">{m.home}</p>
+      {loading ? (
+        <p className="text-center text-muted-foreground py-10">{lang === "bn" ? "লোড হচ্ছে..." : "Loading..."}</p>
+      ) : rows.length === 0 ? (
+        <div className="rounded-2xl border-2 border-dashed border-border bg-muted/30 p-10 text-center">
+          <Trophy className="h-10 w-10 text-primary mx-auto mb-3" />
+          <p className="text-muted-foreground">
+            {lang === "bn" ? "এডমিন থেকে ফিক্সচার যোগ করুন।" : "Add fixtures from the admin panel."}
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-4">
+          {rows.map((m, i) => (
+            <motion.div
+              key={m.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.05 }}
+              whileHover={{ scale: 1.01 }}
+              className="rounded-2xl bg-card border border-border shadow-card p-5"
+            >
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                {m.round && (
+                  <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-1 rounded-full bg-primary/10 text-primary">
+                    {m.round}
+                  </span>
+                )}
+                <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-1 rounded-full bg-muted text-muted-foreground">
+                  {m.status}
+                </span>
               </div>
-              <div className="text-center">
-                <p className="font-display text-2xl font-bold text-muted-foreground">VS</p>
+              <div className="mt-4 grid grid-cols-3 items-center gap-3">
+                <div className="text-right font-display font-bold text-lg sm:text-2xl">{m.home_team}</div>
+                <div className="text-center text-xs sm:text-sm text-muted-foreground font-bold">VS</div>
+                <div className="text-left font-display font-bold text-lg sm:text-2xl">{m.away_team}</div>
               </div>
-              <div className="text-center">
-                <div className="h-12 w-12 mx-auto rounded-full bg-dark text-white flex items-center justify-center font-display font-bold text-sm mb-2">
-                  {m.away.slice(0, 2).toUpperCase()}
-                </div>
-                <p className="text-sm font-semibold leading-tight">{m.away}</p>
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1">
+                  <Calendar className="h-3.5 w-3.5" />
+                  {new Date(m.match_date).toLocaleDateString()}
+                </span>
+                {m.match_time && (
+                  <span className="inline-flex items-center gap-1"><Clock className="h-3.5 w-3.5" /> {m.match_time}</span>
+                )}
+                {m.venue && (
+                  <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {m.venue}</span>
+                )}
               </div>
-            </div>
-            <div className="grid grid-cols-3 gap-2 text-xs text-muted-foreground border-t border-border pt-3">
-              <div className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {m.date}</div>
-              <div className="flex items-center gap-1"><Clock className="h-3 w-3" /> {m.time}</div>
-              <div className="flex items-center gap-1 truncate"><MapPin className="h-3 w-3" /> {m.venue}</div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      <div className="mt-10 rounded-2xl bg-gradient-to-br from-primary/10 to-card border border-primary/20 p-6 text-center">
-        <Trophy className="h-10 w-10 text-primary mx-auto mb-2" />
-        <p className="text-sm text-muted-foreground">
-          {lang === "bn"
-            ? "সম্পূর্ণ সময়সূচী অ্যাডমিন প্যানেল থেকে আপডেট হবে।"
-            : "Full schedule will be updated from the Admin Panel."}
-        </p>
-      </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

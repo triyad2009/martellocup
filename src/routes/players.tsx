@@ -1,82 +1,95 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { User, Goal as GoalIcon } from "lucide-react";
+import { User } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { useTable } from "@/lib/content";
 
 export const Route = createFileRoute("/players")({
   component: PlayersPage,
 });
 
-const PLAYERS = [
-  { name: "Karim Ahmed", team: "Eagles FC", pos: "FW", jersey: 9, goals: 5 },
-  { name: "Rafiq Mia", team: "Eagles FC", pos: "MF", jersey: 8, goals: 2 },
-  { name: "Shahriar Khan", team: "Royal Stars", pos: "FW", jersey: 10, goals: 6 },
-  { name: "Asif Rahman", team: "Atlas Boys", pos: "FW", jersey: 11, goals: 4 },
-  { name: "Imran Hossain", team: "Sundarban Warriors", pos: "GK", jersey: 1, goals: 0 },
-  { name: "Tonu Das", team: "Lions XI", pos: "MF", jersey: 7, goals: 3 },
-  { name: "Sumon Ali", team: "Tigers United", pos: "FW", jersey: 9, goals: 3 },
-  { name: "Faruk Hassan", team: "Coastal Kings", pos: "DF", jersey: 4, goals: 1 },
-  { name: "Nayem Islam", team: "Phoenix FC", pos: "MF", jersey: 6, goals: 1 },
-  { name: "Sajid Mahmud", team: "Royal Stars", pos: "DF", jersey: 5, goals: 0 },
-  { name: "Hridoy Khan", team: "Eagles FC", pos: "GK", jersey: 1, goals: 0 },
-  { name: "Mizan Patwary", team: "Lions XI", pos: "FW", jersey: 9, goals: 2 },
-];
+type Player = {
+  id: string;
+  name: string;
+  team: string | null;
+  position: string | null;
+  jersey: number | null;
+  goals: number;
+  photo_url: string | null;
+};
 
 const posColor: Record<string, string> = {
-  GK: "bg-warning/15 text-warning border-warning/30",
-  DF: "bg-info/15 text-info border-info/30",
-  MF: "bg-success/15 text-success border-success/30",
-  FW: "bg-primary/15 text-primary border-primary/30",
+  GK: "bg-warning/15 text-warning border-warning/40",
+  DF: "bg-info/15 text-info border-info/40",
+  MF: "bg-primary/15 text-primary border-primary/40",
+  FW: "bg-success/15 text-success border-success/40",
 };
 
 function PlayersPage() {
   const { lang } = useI18n();
+  const { rows, loading } = useTable<Player>("players");
+
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-16">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-10 sm:py-14">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
-        <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-primary text-white shadow-glow-red mb-4">
-          <User className="h-8 w-8" />
+        <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-primary text-white shadow-glow-red mb-4">
+          <User className="h-7 w-7" />
         </div>
-        <h1 className="font-display text-4xl sm:text-5xl font-bold">
+        <h1 className="font-display text-4xl sm:text-5xl font-bold mb-2">
           {lang === "bn" ? "খেলোয়াড়" : "Players"}
         </h1>
-        <p className="text-muted-foreground mt-2">
-          {lang === "bn" ? "টুর্নামেন্টের সকল খেলোয়াড়" : "All tournament players"}
+        <p className="text-muted-foreground">
+          {lang === "bn" ? "টুর্নামেন্টে অংশগ্রহণকারী খেলোয়াড়রা" : "Players competing in the tournament"}
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {PLAYERS.map((p, i) => (
-          <motion.div
-            key={p.name}
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.04 }}
-            whileHover={{ y: -4 }}
-            className="rounded-2xl bg-card border border-border shadow-card p-4 flex items-center gap-4"
-          >
-            <div className="relative shrink-0">
-              <div className="h-16 w-16 rounded-full bg-gradient-primary text-white flex items-center justify-center font-display font-bold text-xl shadow-glow-red">
-                {p.name.split(" ").map((w) => w[0]).join("").slice(0, 2)}
+      {loading ? (
+        <p className="text-center text-muted-foreground py-10">{lang === "bn" ? "লোড হচ্ছে..." : "Loading..."}</p>
+      ) : rows.length === 0 ? (
+        <div className="rounded-2xl border-2 border-dashed border-border bg-muted/30 p-10 text-center">
+          <User className="h-10 w-10 text-primary mx-auto mb-3" />
+          <p className="text-muted-foreground">{lang === "bn" ? "এডমিন থেকে খেলোয়াড় যোগ করুন।" : "Add players from the admin panel."}</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          {rows.map((p, i) => (
+            <motion.div
+              key={p.id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.04 }}
+              whileHover={{ y: -4 }}
+              className="rounded-2xl bg-card border border-border shadow-card overflow-hidden text-center"
+            >
+              <div className="relative h-28 bg-gradient-primary flex items-center justify-center">
+                {p.photo_url ? (
+                  <img src={p.photo_url} alt={p.name} className="h-full w-full object-cover" />
+                ) : (
+                  <span className="font-display text-4xl text-white font-bold">{p.name[0]}</span>
+                )}
+                {p.jersey != null && (
+                  <span className="absolute top-2 right-2 h-7 w-7 rounded-full bg-white text-primary font-display font-bold text-sm inline-flex items-center justify-center shadow">
+                    {p.jersey}
+                  </span>
+                )}
               </div>
-              <span className="absolute -bottom-1 -right-1 bg-dark text-white h-6 w-6 rounded-full text-xs font-bold flex items-center justify-center border-2 border-card">
-                {p.jersey}
-              </span>
-            </div>
-            <div className="min-w-0 flex-1">
-              <h3 className="font-display font-bold text-base leading-tight truncate">{p.name}</h3>
-              <p className="text-xs text-muted-foreground truncate">{p.team}</p>
-              <div className="flex items-center gap-2 mt-1.5">
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${posColor[p.pos]}`}>{p.pos}</span>
-                <span className="text-xs text-muted-foreground flex items-center gap-0.5">
-                  <GoalIcon className="h-3 w-3" /> {p.goals}
-                </span>
+              <div className="p-3">
+                <p className="font-display font-bold truncate">{p.name}</p>
+                {p.team && <p className="text-[11px] text-muted-foreground truncate">{p.team}</p>}
+                <div className="mt-2 flex items-center justify-center gap-2 text-xs">
+                  {p.position && (
+                    <span className={`px-1.5 py-0.5 rounded border font-bold ${posColor[p.position] ?? "bg-muted"}`}>
+                      {p.position}
+                    </span>
+                  )}
+                  <span className="text-muted-foreground">⚽ {p.goals}</span>
+                </div>
               </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

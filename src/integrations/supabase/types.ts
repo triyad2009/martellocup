@@ -14,6 +14,276 @@ export type Database = {
   }
   public: {
     Tables: {
+      about_content: {
+        Row: {
+          created_at: string
+          description_bn: string
+          description_en: string
+          id: string
+          is_singleton: boolean
+          mission_bn: string
+          mission_en: string
+          updated_at: string
+          vision_bn: string
+          vision_en: string
+        }
+        Insert: {
+          created_at?: string
+          description_bn?: string
+          description_en?: string
+          id?: string
+          is_singleton?: boolean
+          mission_bn?: string
+          mission_en?: string
+          updated_at?: string
+          vision_bn?: string
+          vision_en?: string
+        }
+        Update: {
+          created_at?: string
+          description_bn?: string
+          description_en?: string
+          id?: string
+          is_singleton?: boolean
+          mission_bn?: string
+          mission_en?: string
+          updated_at?: string
+          vision_bn?: string
+          vision_en?: string
+        }
+        Relationships: []
+      }
+      committee_members: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          photo_url: string | null
+          role_bn: string
+          role_en: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          photo_url?: string | null
+          role_bn: string
+          role_en: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          photo_url?: string | null
+          role_bn?: string
+          role_en?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      contact_info: {
+        Row: {
+          address_bn: string | null
+          address_en: string | null
+          created_at: string
+          email: string | null
+          facebook_url: string | null
+          id: string
+          instagram_url: string | null
+          is_singleton: boolean
+          phone: string | null
+          updated_at: string
+          youtube_url: string | null
+        }
+        Insert: {
+          address_bn?: string | null
+          address_en?: string | null
+          created_at?: string
+          email?: string | null
+          facebook_url?: string | null
+          id?: string
+          instagram_url?: string | null
+          is_singleton?: boolean
+          phone?: string | null
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Update: {
+          address_bn?: string | null
+          address_en?: string | null
+          created_at?: string
+          email?: string | null
+          facebook_url?: string | null
+          id?: string
+          instagram_url?: string | null
+          is_singleton?: boolean
+          phone?: string | null
+          updated_at?: string
+          youtube_url?: string | null
+        }
+        Relationships: []
+      }
+      fixtures: {
+        Row: {
+          away_team: string
+          created_at: string
+          home_team: string
+          id: string
+          match_date: string
+          match_time: string | null
+          round: string | null
+          sort_order: number
+          status: string
+          updated_at: string
+          venue: string | null
+        }
+        Insert: {
+          away_team: string
+          created_at?: string
+          home_team: string
+          id?: string
+          match_date: string
+          match_time?: string | null
+          round?: string | null
+          sort_order?: number
+          status?: string
+          updated_at?: string
+          venue?: string | null
+        }
+        Update: {
+          away_team?: string
+          created_at?: string
+          home_team?: string
+          id?: string
+          match_date?: string
+          match_time?: string | null
+          round?: string | null
+          sort_order?: number
+          status?: string
+          updated_at?: string
+          venue?: string | null
+        }
+        Relationships: []
+      }
+      gallery_images: {
+        Row: {
+          caption_bn: string | null
+          caption_en: string | null
+          created_at: string
+          id: string
+          image_url: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          caption_bn?: string | null
+          caption_en?: string | null
+          created_at?: string
+          id?: string
+          image_url: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          caption_bn?: string | null
+          caption_en?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      hero_stats: {
+        Row: {
+          created_at: string
+          goals_count: number
+          id: string
+          is_singleton: boolean
+          matches_count: number
+          players_count: number
+          teams_count: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          goals_count?: number
+          id?: string
+          is_singleton?: boolean
+          matches_count?: number
+          players_count?: number
+          teams_count?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          goals_count?: number
+          id?: string
+          is_singleton?: boolean
+          matches_count?: number
+          players_count?: number
+          teams_count?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      news: {
+        Row: {
+          category: string | null
+          content_bn: string | null
+          content_en: string | null
+          cover_url: string | null
+          created_at: string
+          excerpt_bn: string | null
+          excerpt_en: string | null
+          id: string
+          is_published: boolean
+          published_date: string
+          sort_order: number
+          title_bn: string
+          title_en: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          content_bn?: string | null
+          content_en?: string | null
+          cover_url?: string | null
+          created_at?: string
+          excerpt_bn?: string | null
+          excerpt_en?: string | null
+          id?: string
+          is_published?: boolean
+          published_date?: string
+          sort_order?: number
+          title_bn: string
+          title_en: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          content_bn?: string | null
+          content_en?: string | null
+          cover_url?: string | null
+          created_at?: string
+          excerpt_bn?: string | null
+          excerpt_en?: string | null
+          id?: string
+          is_published?: boolean
+          published_date?: string
+          sort_order?: number
+          title_bn?: string
+          title_en?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payment_methods: {
         Row: {
           account_number: string
@@ -125,6 +395,93 @@ export type Database = {
           },
         ]
       }
+      players: {
+        Row: {
+          created_at: string
+          goals: number
+          id: string
+          jersey: number | null
+          name: string
+          photo_url: string | null
+          position: string | null
+          sort_order: number
+          team: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          goals?: number
+          id?: string
+          jersey?: number | null
+          name: string
+          photo_url?: string | null
+          position?: string | null
+          sort_order?: number
+          team?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          goals?: number
+          id?: string
+          jersey?: number | null
+          name?: string
+          photo_url?: string | null
+          position?: string | null
+          sort_order?: number
+          team?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      points_table: {
+        Row: {
+          created_at: string
+          drawn: number
+          form: string | null
+          goals_against: number
+          goals_for: number
+          id: string
+          lost: number
+          played: number
+          points: number
+          position: number
+          team: string
+          updated_at: string
+          won: number
+        }
+        Insert: {
+          created_at?: string
+          drawn?: number
+          form?: string | null
+          goals_against?: number
+          goals_for?: number
+          id?: string
+          lost?: number
+          played?: number
+          points?: number
+          position?: number
+          team: string
+          updated_at?: string
+          won?: number
+        }
+        Update: {
+          created_at?: string
+          drawn?: number
+          form?: string | null
+          goals_against?: number
+          goals_for?: number
+          id?: string
+          lost?: number
+          played?: number
+          points?: number
+          position?: number
+          team?: string
+          updated_at?: string
+          won?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -212,6 +569,81 @@ export type Database = {
         }
         Relationships: []
       }
+      results: {
+        Row: {
+          away_score: number
+          away_team: string
+          created_at: string
+          home_score: number
+          home_team: string
+          id: string
+          match_date: string
+          motm: string | null
+          scorers: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          away_score?: number
+          away_team: string
+          created_at?: string
+          home_score?: number
+          home_team: string
+          id?: string
+          match_date: string
+          motm?: string | null
+          scorers?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          away_score?: number
+          away_team?: string
+          created_at?: string
+          home_score?: number
+          home_team?: string
+          id?: string
+          match_date?: string
+          motm?: string | null
+          scorers?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sponsors: {
+        Row: {
+          created_at: string
+          id: string
+          logo_url: string | null
+          name: string
+          sort_order: number
+          tier: string
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name: string
+          sort_order?: number
+          tier?: string
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name?: string
+          sort_order?: number
+          tier?: string
+          updated_at?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       super_admin_emails: {
         Row: {
           created_at: string
@@ -224,6 +656,51 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string
+        }
+        Relationships: []
+      }
+      teams: {
+        Row: {
+          coach: string | null
+          color_from: string | null
+          color_to: string | null
+          created_at: string
+          group_name: string | null
+          id: string
+          logo_url: string | null
+          name_bn: string
+          name_en: string
+          player_count: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          coach?: string | null
+          color_from?: string | null
+          color_to?: string | null
+          created_at?: string
+          group_name?: string | null
+          id?: string
+          logo_url?: string | null
+          name_bn: string
+          name_en: string
+          player_count?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          coach?: string | null
+          color_from?: string | null
+          color_to?: string | null
+          created_at?: string
+          group_name?: string | null
+          id?: string
+          logo_url?: string | null
+          name_bn?: string
+          name_en?: string
+          player_count?: number
+          sort_order?: number
+          updated_at?: string
         }
         Relationships: []
       }

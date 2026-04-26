@@ -1,79 +1,89 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Award, Calendar } from "lucide-react";
+import { Trophy, Star } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { useTable } from "@/lib/content";
 
 export const Route = createFileRoute("/results")({
   component: ResultsPage,
 });
 
-const RESULTS = [
-  { no: 1, home: "Eagles FC", hScore: 2, away: "Tigers United", aScore: 1, date: "2025-04-20", motm: "Karim Ahmed", scorers: ["Karim 23'", "Rafiq 67'", "Sumon 81'"] },
-  { no: 2, home: "Sundarban Warriors", hScore: 0, away: "Coastal Kings", aScore: 0, date: "2025-04-19", motm: "Imran Hossain", scorers: [] },
-  { no: 3, home: "Royal Stars", hScore: 3, away: "Atlas Boys", aScore: 2, date: "2025-04-18", motm: "Shahriar Khan", scorers: ["Shahriar x2", "Tonu 55'", "Asif 12', 78'"] },
-];
+type Result = {
+  id: string;
+  home_team: string;
+  away_team: string;
+  home_score: number;
+  away_score: number;
+  match_date: string;
+  motm: string | null;
+  scorers: string | null;
+};
 
 function ResultsPage() {
   const { lang } = useI18n();
+  const { rows, loading } = useTable<Result>("results", { order: "match_date", ascending: false });
+
   return (
-    <div className="mx-auto max-w-5xl px-4 sm:px-6 py-10 sm:py-16">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-14">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
-        <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-primary text-white shadow-glow-red mb-4">
-          <Award className="h-8 w-8" />
+        <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-primary text-white shadow-glow-red mb-4">
+          <Trophy className="h-7 w-7" />
         </div>
-        <h1 className="font-display text-4xl sm:text-5xl font-bold">
+        <h1 className="font-display text-4xl sm:text-5xl font-bold mb-2">
           {lang === "bn" ? "ফলাফল" : "Results"}
         </h1>
-        <p className="text-muted-foreground mt-2">
-          {lang === "bn" ? "সম্পন্ন ম্যাচসমূহের ফলাফল" : "Completed match results"}
-        </p>
+        <p className="text-muted-foreground">{lang === "bn" ? "সাম্প্রতিক ম্যাচের ফলাফল" : "Recent match results"}</p>
       </motion.div>
 
-      <div className="space-y-4">
-        {RESULTS.map((m, i) => {
-          const homeWin = m.hScore > m.aScore;
-          const awayWin = m.aScore > m.hScore;
-          return (
-            <motion.div
-              key={m.no}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-              className="rounded-2xl bg-card border border-border shadow-card p-5 sm:p-6"
-            >
-              <div className="flex items-center justify-between mb-3 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {m.date}</span>
-                <span className="font-bold text-success">FT</span>
-              </div>
-              <div className="grid grid-cols-7 items-center gap-2">
-                <div className={`col-span-3 text-right ${homeWin ? "text-foreground font-bold" : "text-muted-foreground"}`}>
-                  <p className="text-base sm:text-lg leading-tight">{m.home}</p>
+      {loading ? (
+        <p className="text-center text-muted-foreground py-10">{lang === "bn" ? "লোড হচ্ছে..." : "Loading..."}</p>
+      ) : rows.length === 0 ? (
+        <div className="rounded-2xl border-2 border-dashed border-border bg-muted/30 p-10 text-center">
+          <Trophy className="h-10 w-10 text-primary mx-auto mb-3" />
+          <p className="text-muted-foreground">
+            {lang === "bn" ? "এডমিন থেকে ফলাফল যোগ করুন।" : "Add results from the admin panel."}
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-4">
+          {rows.map((r, i) => {
+            const homeWin = r.home_score > r.away_score;
+            const awayWin = r.away_score > r.home_score;
+            return (
+              <motion.div
+                key={r.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+                className="rounded-2xl bg-card border border-border shadow-card p-5"
+              >
+                <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
+                  <span>{new Date(r.match_date).toLocaleDateString()}</span>
+                  <span className="font-bold uppercase tracking-widest">FT</span>
                 </div>
-                <div className="col-span-1 text-center">
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted">
-                    <span className="font-display text-2xl font-bold">{m.hScore}</span>
-                    <span className="text-muted-foreground">-</span>
-                    <span className="font-display text-2xl font-bold">{m.aScore}</span>
+                <div className="grid grid-cols-3 items-center gap-3">
+                  <div className={`text-right font-display font-bold text-lg sm:text-xl ${homeWin ? "text-primary" : ""}`}>{r.home_team}</div>
+                  <div className="text-center font-display font-extrabold text-3xl sm:text-4xl">{r.home_score} - {r.away_score}</div>
+                  <div className={`text-left font-display font-bold text-lg sm:text-xl ${awayWin ? "text-primary" : ""}`}>{r.away_team}</div>
+                </div>
+                {(r.scorers || r.motm) && (
+                  <div className="mt-4 pt-4 border-t border-border space-y-1 text-xs text-muted-foreground">
+                    {r.scorers && <p>⚽ {r.scorers}</p>}
+                    {r.motm && (
+                      <p className="inline-flex items-center gap-1">
+                        <Star className="h-3 w-3 text-primary" />
+                        {lang === "bn" ? "ম্যাচসেরা: " : "MOTM: "}
+                        <span className="font-semibold text-foreground">{r.motm}</span>
+                      </p>
+                    )}
                   </div>
-                </div>
-                <div className={`col-span-3 text-left ${awayWin ? "text-foreground font-bold" : "text-muted-foreground"}`}>
-                  <p className="text-base sm:text-lg leading-tight">{m.away}</p>
-                </div>
-              </div>
-              {m.scorers.length > 0 && (
-                <div className="mt-4 pt-3 border-t border-border text-xs text-muted-foreground">
-                  ⚽ {m.scorers.join(" · ")}
-                </div>
-              )}
-              <div className="mt-2 text-xs">
-                <span className="text-muted-foreground">{lang === "bn" ? "ম্যাচসেরা: " : "MOTM: "}</span>
-                <span className="font-semibold text-primary">{m.motm}</span>
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
+                )}
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
