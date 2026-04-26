@@ -13,7 +13,7 @@ export function useTable<T = any>(
   useEffect(() => {
     let active = true;
     const load = async () => {
-      let q = supabase.from(table).select("*").order(order, { ascending });
+      let q = (supabase as any).from(table).select("*").order(order, { ascending });
       if (filter) q = filter(q);
       const { data } = await q;
       if (!active) return;
