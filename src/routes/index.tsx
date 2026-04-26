@@ -203,24 +203,18 @@ function Hero() {
 
 function StatsBar() {
   const { t } = useI18n();
+  const { row } = useSingletonRow<{ teams_count: number; matches_count: number; goals_count: number; players_count: number }>("hero_stats");
   const stats = [
-    { v: 8, label: t("stats.teams"), icon: Users },
-    { v: 16, label: t("stats.matches"), icon: Calendar },
-    { v: 0, label: t("stats.goals"), icon: Goal },
-    { v: 176, label: t("stats.players"), icon: Trophy },
+    { v: row?.teams_count ?? 0, label: t("stats.teams"), icon: Users },
+    { v: row?.matches_count ?? 0, label: t("stats.matches"), icon: Calendar },
+    { v: row?.goals_count ?? 0, label: t("stats.goals"), icon: Goal },
+    { v: row?.players_count ?? 0, label: t("stats.players"), icon: Trophy },
   ];
   return (
     <section className="bg-card border-y border-border py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 grid grid-cols-2 md:grid-cols-4 gap-6">
         {stats.map((s, i) => (
-          <motion.div
-            key={s.label}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.1 }}
-            className="text-center"
-          >
+          <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="text-center">
             <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-primary text-white mb-3 shadow-glow-red">
               <s.icon className="h-6 w-6" />
             </div>
@@ -233,21 +227,79 @@ function StatsBar() {
   );
 }
 
-function Placeholder() {
+function HighlightsSection() {
+  const { lang } = useI18n();
+  const { rows: news } = useTable<any>("news", { order: "published_date", ascending: false });
+  const { rows: fixtures } = useTable<any>("fixtures", { order: "match_date", ascending: true });
+  const upcoming = fixtures.filter((f) => new Date(f.match_date) >= new Date(new Date().toDateString())).slice(0, 3);
+  const latestNews = news.slice(0, 3);
+
+  if (latestNews.length === 0 && upcoming.length === 0) {
+    return (
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 py-16 text-center">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="rounded-2xl border-2 border-dashed border-border bg-muted/30 p-10 max-w-2xl mx-auto">
+          <Trophy className="h-12 w-12 text-primary mx-auto mb-4" />
+          <h2 className="font-display text-2xl font-bold mb-2">
+            {lang === "bn" ? "শীঘ্রই আসছে" : "Coming Soon"}
+          </h2>
+          <p className="text-muted-foreground">
+            {lang === "bn" ? "এডমিন প্যানেল থেকে সংবাদ ও ফিক্সচার যোগ করলে এখানে দেখা যাবে।" : "Add news and fixtures from the admin panel — they'll appear here."}
+          </p>
+        </motion.div>
+      </section>
+    );
+  }
+
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 py-20 text-center">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="rounded-2xl border-2 border-dashed border-border bg-muted/30 p-10"
-      >
-        <Trophy className="h-12 w-12 text-primary mx-auto mb-4" />
-        <h2 className="font-display text-2xl font-bold mb-2">More Coming Soon</h2>
-        <p className="text-muted-foreground max-w-xl mx-auto">
-          Live ticker, upcoming matches, results, points table preview, news, gallery, sponsors and full admin panel are next on the build roadmap.
-        </p>
-      </motion.div>
+    <section className="mx-auto max-w-7xl px-4 sm:px-6 py-14 grid lg:grid-cols-2 gap-8">
+      {upcoming.length > 0 && (
+        <div>
+          <SectionHeader icon={<Calendar className="h-5 w-5" />} title={lang === "bn" ? "আসন্ন ম্যাচ" : "Upcoming Matches"} to="/fixtures" lang={lang} />
+          <div className="space-y-3">
+            {upcoming.map((f, i) => (
+              <motion.div key={f.id} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className="rounded-xl bg-card border border-border shadow-card p-4">
+                <div className="grid grid-cols-3 items-center gap-2">
+                  <p className="text-right font-bold truncate">{f.home_team}</p>
+                  <p className="text-center text-xs text-muted-foreground font-bold">VS</p>
+                  <p className="text-left font-bold truncate">{f.away_team}</p>
+                </div>
+                <p className="text-xs text-muted-foreground text-center mt-2">
+                  {new Date(f.match_date).toLocaleDateString()} {f.match_time && `· ${f.match_time}`} {f.venue && `· ${f.venue}`}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
+      {latestNews.length > 0 && (
+        <div>
+          <SectionHeader icon={<Newspaper className="h-5 w-5" />} title={lang === "bn" ? "সর্বশেষ সংবাদ" : "Latest News"} to="/news" lang={lang} />
+          <div className="space-y-3">
+            {latestNews.map((n, i) => (
+              <motion.div key={n.id} initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className="rounded-xl bg-card border border-border shadow-card p-4 flex gap-3">
+                {n.cover_url && <img src={n.cover_url} alt="" className="h-16 w-16 rounded-lg object-cover shrink-0" />}
+                <div className="min-w-0">
+                  <p className="font-display font-bold leading-snug line-clamp-2">{lang === "bn" ? n.title_bn : n.title_en}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{new Date(n.published_date).toLocaleDateString()}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
+  );
+}
+
+function SectionHeader({ icon, title, to, lang }: { icon: React.ReactNode; title: string; to: string; lang: "bn" | "en" }) {
+  return (
+    <div className="flex items-center justify-between mb-4">
+      <h2 className="font-display text-2xl font-bold inline-flex items-center gap-2">
+        <span className="text-primary">{icon}</span> {title}
+      </h2>
+      <Link to={to} className="text-sm font-semibold text-primary inline-flex items-center gap-1 hover:gap-2 transition-all">
+        {lang === "bn" ? "সব" : "View all"} <ArrowRight className="h-4 w-4" />
+      </Link>
+    </div>
   );
 }
