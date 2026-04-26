@@ -41,7 +41,7 @@ export function useSingletonRow<T = any>(table: string) {
   useEffect(() => {
     let active = true;
     const load = async () => {
-      const { data } = await supabase.from(table).select("*").limit(1).maybeSingle();
+      const { data } = await (supabase as any).from(table).select("*").limit(1).maybeSingle();
       if (!active) return;
       setRow((data as T) ?? null);
       setLoading(false);
