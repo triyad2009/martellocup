@@ -153,6 +153,8 @@ function AdminPage() {
       {tab === "tiers" && <TicketTiersManager lang={lang} />}
       {tab === "methods" && <PaymentMethodsManager lang={lang} />}
       {tab === "payments" && <PaymentsManager lang={lang} />}
+      {tab === "jerseys" && <JerseyProductsManager lang={lang} />}
+      {tab === "jersey_orders" && <JerseyOrdersManager lang={lang} />}
       {tab === "roles" && isSuperAdmin && <RolesManager lang={lang} currentUserId={user.id} />}
     </div>
   );
