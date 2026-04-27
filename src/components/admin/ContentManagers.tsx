@@ -125,7 +125,7 @@ export function TeamsManager({ lang }: { lang: Lang }) {
           <Input placeholder={t(lang, "কোচ", "Coach")} value={d.coach} onChange={(e) => setD({ ...d, coach: e.target.value })} />
           <Input placeholder={t(lang, "গ্রুপ (A/B)", "Group (A/B)")} value={d.group_name} onChange={(e) => setD({ ...d, group_name: e.target.value })} />
         </div>
-        <MediaUpload value={d.logo_url} onChange={(u) => setD({ ...d, logo_url: u })} folder="teams" label={t(lang, "লোগো", "Logo")} />
+        <MediaUpload value={d.logo_url} onChange={(u) => setD({ ...d, logo_url: u ?? "" })} folder="teams" label={t(lang, "লোগো", "Logo")} />
         <button onClick={add} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold">
           <Plus className="h-4 w-4" /> {t(lang, "যোগ", "Add")}
         </button>
@@ -177,7 +177,7 @@ export function PlayersManager({ lang }: { lang: Lang }) {
           <Input placeholder={t(lang, "জার্সি #", "Jersey #")} type="number" value={d.jersey} onChange={(e) => setD({ ...d, jersey: e.target.value })} />
           <Input placeholder={t(lang, "গোল", "Goals")} type="number" value={d.goals} onChange={(e) => setD({ ...d, goals: e.target.value })} />
         </div>
-        <MediaUpload value={d.photo_url} onChange={(u) => setD({ ...d, photo_url: u })} folder="players" label={t(lang, "ছবি", "Photo")} />
+        <MediaUpload value={d.photo_url} onChange={(u) => setD({ ...d, photo_url: u ?? "" })} folder="players" label={t(lang, "ছবি", "Photo")} />
         <button onClick={add} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold">
           <Plus className="h-4 w-4" /> {t(lang, "যোগ", "Add")}
         </button>
@@ -388,7 +388,7 @@ export function NewsManager({ lang }: { lang: Lang }) {
           <TArea placeholder="বিস্তারিত (BN)" rows={4} value={d.content_bn} onChange={(e) => setD({ ...d, content_bn: e.target.value })} />
           <Input placeholder={t(lang, "ক্যাটাগরি", "Category")} value={d.category} onChange={(e) => setD({ ...d, category: e.target.value })} />
         </div>
-        <MediaUpload value={d.cover_url} onChange={(u) => setD({ ...d, cover_url: u })} folder="news" label={t(lang, "কভার ছবি", "Cover")} />
+        <MediaUpload value={d.cover_url} onChange={(u) => setD({ ...d, cover_url: u ?? "" })} folder="news" label={t(lang, "কভার ছবি", "Cover")} />
         <button onClick={add} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold">
           <Plus className="h-4 w-4" /> {t(lang, "প্রকাশ", "Publish")}
         </button>
@@ -434,7 +434,7 @@ export function GalleryManager({ lang }: { lang: Lang }) {
   return (
     <div className="space-y-5">
       <Section title={t(lang, "নতুন ছবি", "New Image")}>
-        <MediaUpload value={d.image_url} onChange={(u) => setD({ ...d, image_url: u })} folder="gallery" label={t(lang, "ছবি আপলোড", "Upload Image")} />
+        <MediaUpload value={d.image_url} onChange={(u) => setD({ ...d, image_url: u ?? "" })} folder="gallery" label={t(lang, "ছবি আপলোড", "Upload Image")} />
         <div className="grid sm:grid-cols-2 gap-3">
           <Input placeholder="Caption (EN)" value={d.caption_en} onChange={(e) => setD({ ...d, caption_en: e.target.value })} />
           <Input placeholder="ক্যাপশন (BN)" value={d.caption_bn} onChange={(e) => setD({ ...d, caption_bn: e.target.value })} />
@@ -487,7 +487,7 @@ export function SponsorsManager({ lang }: { lang: Lang }) {
           </select>
           <Input placeholder="Website URL" value={d.website_url} onChange={(e) => setD({ ...d, website_url: e.target.value })} />
         </div>
-        <MediaUpload value={d.logo_url} onChange={(u) => setD({ ...d, logo_url: u })} folder="sponsors" label="Logo" />
+        <MediaUpload value={d.logo_url} onChange={(u) => setD({ ...d, logo_url: u ?? "" })} folder="sponsors" label="Logo" />
         <button onClick={add} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold">
           <Plus className="h-4 w-4" /> {t(lang, "যোগ", "Add")}
         </button>
@@ -569,7 +569,7 @@ export function AboutManager({ lang }: { lang: Lang }) {
           <Input placeholder="Role (EN)" value={c.role_en} onChange={(e) => setC({ ...c, role_en: e.target.value })} />
           <Input placeholder="পদবি (BN)" value={c.role_bn} onChange={(e) => setC({ ...c, role_bn: e.target.value })} />
         </div>
-        <MediaUpload value={c.photo_url} onChange={(u) => setC({ ...c, photo_url: u })} folder="committee" label="Photo" />
+        <MediaUpload value={c.photo_url} onChange={(u) => setC({ ...c, photo_url: u ?? "" })} folder="committee" label="Photo" />
         <button onClick={addMember} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold">
           <Plus className="h-4 w-4" /> {t(lang, "যোগ", "Add")}
         </button>
