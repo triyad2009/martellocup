@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   Shield, ClipboardList, Loader2, Search, UserPlus, UserMinus,
   Settings as SettingsIcon, Wallet, Receipt, Plus, Trash2, Save, Check, X, Ticket,
-  BarChart3, Users, User as UserIcon, CalendarDays, Trophy, ListOrdered, Newspaper, Image as ImageIcon, Heart, Info, Phone,
+  BarChart3, Users, User as UserIcon, CalendarDays, Trophy, ListOrdered, Newspaper, Image as ImageIcon, Heart, Info, Phone, Shirt, Package,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useUserRoles, type AppRole } from "@/lib/roles";
