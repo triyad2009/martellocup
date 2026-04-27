@@ -99,6 +99,8 @@ function AdminPage() {
     { id: "tiers", label: lang === "bn" ? "টিকিট" : "Tickets", icon: Ticket },
     { id: "methods", label: lang === "bn" ? "পেমেন্ট মেথড" : "Payment Methods", icon: Wallet },
     { id: "payments", label: lang === "bn" ? "পেমেন্ট জমা" : "Payments", icon: Receipt },
+    { id: "jerseys", label: lang === "bn" ? "জার্সি" : "Jerseys", icon: Shirt },
+    { id: "jersey_orders", label: lang === "bn" ? "জার্সি অর্ডার" : "Jersey Orders", icon: Package },
     ...(isSuperAdmin ? [{ id: "roles" as TabId, label: lang === "bn" ? "ভূমিকা" : "Roles", icon: Shield }] : []),
   ];
 
