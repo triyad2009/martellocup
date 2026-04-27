@@ -18,6 +18,7 @@ const NAV = [
   { to: "/players", key: "nav.players" },
   { to: "/registration", key: "nav.registration" },
   { to: "/tickets", key: "nav.tickets" },
+  { to: "/jersey", key: "nav.jersey" },
   { to: "/gallery", key: "nav.gallery" },
   { to: "/news", key: "nav.news" },
   { to: "/sponsors", key: "nav.sponsors" },
