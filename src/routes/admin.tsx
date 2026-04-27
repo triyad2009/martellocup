@@ -4,12 +4,17 @@ import { motion } from "framer-motion";
 import {
   Shield, ClipboardList, Loader2, Search, UserPlus, UserMinus,
   Settings as SettingsIcon, Wallet, Receipt, Plus, Trash2, Save, Check, X, Ticket,
+  BarChart3, Users, User as UserIcon, CalendarDays, Trophy, ListOrdered, Newspaper, Image as ImageIcon, Heart, Info, Phone,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useUserRoles, type AppRole } from "@/lib/roles";
 import { useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import {
+  HeroStatsManager, TeamsManager, PlayersManager, FixturesManager, ResultsManager,
+  PointsManager, NewsManager, GalleryManager, SponsorsManager, AboutManager, ContactManager,
+} from "@/components/admin/ContentManagers";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
@@ -28,7 +33,10 @@ type ProfileRow = {
 
 type RoleRow = { user_id: string; role: AppRole };
 
-type TabId = "settings" | "registrations" | "tiers" | "methods" | "payments" | "roles";
+type TabId =
+  | "settings" | "hero" | "teams" | "players" | "fixtures" | "results" | "points"
+  | "news" | "gallery" | "sponsors" | "about" | "contact"
+  | "registrations" | "tiers" | "methods" | "payments" | "roles";
 
 function AdminPage() {
   const { user, loading: authLoading } = useAuth();
@@ -74,8 +82,19 @@ function AdminPage() {
 
   const tabs: { id: TabId; label: string; icon: typeof Shield }[] = [
     { id: "settings", label: lang === "bn" ? "সেটিংস" : "Settings", icon: SettingsIcon },
+    { id: "hero", label: lang === "bn" ? "হিরো" : "Hero", icon: BarChart3 },
+    { id: "teams", label: lang === "bn" ? "দল" : "Teams", icon: Users },
+    { id: "players", label: lang === "bn" ? "খেলোয়াড়" : "Players", icon: UserIcon },
+    { id: "fixtures", label: lang === "bn" ? "ফিক্সচার" : "Fixtures", icon: CalendarDays },
+    { id: "results", label: lang === "bn" ? "ফলাফল" : "Results", icon: Trophy },
+    { id: "points", label: lang === "bn" ? "পয়েন্ট" : "Points", icon: ListOrdered },
+    { id: "news", label: lang === "bn" ? "সংবাদ" : "News", icon: Newspaper },
+    { id: "gallery", label: lang === "bn" ? "গ্যালারি" : "Gallery", icon: ImageIcon },
+    { id: "sponsors", label: lang === "bn" ? "স্পন্সর" : "Sponsors", icon: Heart },
+    { id: "about", label: lang === "bn" ? "আমাদের সম্পর্কে" : "About", icon: Info },
+    { id: "contact", label: lang === "bn" ? "যোগাযোগ" : "Contact", icon: Phone },
     { id: "registrations", label: lang === "bn" ? "নিবন্ধন" : "Registrations", icon: ClipboardList },
-    { id: "tiers", label: lang === "bn" ? "টিকিটের ধরন" : "Ticket Tiers", icon: Ticket },
+    { id: "tiers", label: lang === "bn" ? "টিকিট" : "Tickets", icon: Ticket },
     { id: "methods", label: lang === "bn" ? "পেমেন্ট মেথড" : "Payment Methods", icon: Wallet },
     { id: "payments", label: lang === "bn" ? "পেমেন্ট জমা" : "Payments", icon: Receipt },
     ...(isSuperAdmin ? [{ id: "roles" as TabId, label: lang === "bn" ? "ভূমিকা" : "Roles", icon: Shield }] : []),
@@ -115,6 +134,17 @@ function AdminPage() {
       </div>
 
       {tab === "settings" && <SettingsManager lang={lang} />}
+      {tab === "hero" && <HeroStatsManager lang={lang} />}
+      {tab === "teams" && <TeamsManager lang={lang} />}
+      {tab === "players" && <PlayersManager lang={lang} />}
+      {tab === "fixtures" && <FixturesManager lang={lang} />}
+      {tab === "results" && <ResultsManager lang={lang} />}
+      {tab === "points" && <PointsManager lang={lang} />}
+      {tab === "news" && <NewsManager lang={lang} />}
+      {tab === "gallery" && <GalleryManager lang={lang} />}
+      {tab === "sponsors" && <SponsorsManager lang={lang} />}
+      {tab === "about" && <AboutManager lang={lang} />}
+      {tab === "contact" && <ContactManager lang={lang} />}
       {tab === "registrations" && <RegistrationsManager lang={lang} />}
       {tab === "tiers" && <TicketTiersManager lang={lang} />}
       {tab === "methods" && <PaymentMethodsManager lang={lang} />}
