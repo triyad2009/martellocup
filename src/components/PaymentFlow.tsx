@@ -20,13 +20,14 @@ type Tier = {
 };
 
 type Props = {
-  submissionType: "ticket" | "registration";
+  submissionType: "ticket" | "registration" | "jersey";
   amount?: number;
   registrationId?: string;
+  jerseyOrderId?: string;
   onSuccess?: () => void;
 };
 
-export function PaymentFlow({ submissionType, amount, registrationId, onSuccess }: Props) {
+export function PaymentFlow({ submissionType, amount, registrationId, jerseyOrderId, onSuccess }: Props) {
   const { lang } = useI18n();
   const [methods, setMethods] = useState<Method[]>([]);
   const [tiers, setTiers] = useState<Tier[]>([]);
