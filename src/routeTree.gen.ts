@@ -17,6 +17,7 @@ import { Route as RegistrationRouteImport } from './routes/registration'
 import { Route as PointsTableRouteImport } from './routes/points-table'
 import { Route as PlayersRouteImport } from './routes/players'
 import { Route as NewsRouteImport } from './routes/news'
+import { Route as JerseyRouteImport } from './routes/jersey'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as FixturesRouteImport } from './routes/fixtures'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -65,6 +66,11 @@ const NewsRoute = NewsRouteImport.update({
   path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JerseyRoute = JerseyRouteImport.update({
+  id: '/jersey',
+  path: '/jersey',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GalleryRoute = GalleryRouteImport.update({
   id: '/gallery',
   path: '/gallery',
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/fixtures': typeof FixturesRoute
   '/gallery': typeof GalleryRoute
+  '/jersey': typeof JerseyRoute
   '/news': typeof NewsRoute
   '/players': typeof PlayersRoute
   '/points-table': typeof PointsTableRoute
@@ -126,6 +133,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/fixtures': typeof FixturesRoute
   '/gallery': typeof GalleryRoute
+  '/jersey': typeof JerseyRoute
   '/news': typeof NewsRoute
   '/players': typeof PlayersRoute
   '/points-table': typeof PointsTableRoute
@@ -144,6 +152,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/fixtures': typeof FixturesRoute
   '/gallery': typeof GalleryRoute
+  '/jersey': typeof JerseyRoute
   '/news': typeof NewsRoute
   '/players': typeof PlayersRoute
   '/points-table': typeof PointsTableRoute
@@ -163,6 +172,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/fixtures'
     | '/gallery'
+    | '/jersey'
     | '/news'
     | '/players'
     | '/points-table'
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/fixtures'
     | '/gallery'
+    | '/jersey'
     | '/news'
     | '/players'
     | '/points-table'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/fixtures'
     | '/gallery'
+    | '/jersey'
     | '/news'
     | '/players'
     | '/points-table'
@@ -215,6 +227,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   FixturesRoute: typeof FixturesRoute
   GalleryRoute: typeof GalleryRoute
+  JerseyRoute: typeof JerseyRoute
   NewsRoute: typeof NewsRoute
   PlayersRoute: typeof PlayersRoute
   PointsTableRoute: typeof PointsTableRoute
@@ -283,6 +296,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/jersey': {
+      id: '/jersey'
+      path: '/jersey'
+      fullPath: '/jersey'
+      preLoaderRoute: typeof JerseyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/gallery': {
       id: '/gallery'
       path: '/gallery'
@@ -343,6 +363,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   FixturesRoute: FixturesRoute,
   GalleryRoute: GalleryRoute,
+  JerseyRoute: JerseyRoute,
   NewsRoute: NewsRoute,
   PlayersRoute: PlayersRoute,
   PointsTableRoute: PointsTableRoute,
