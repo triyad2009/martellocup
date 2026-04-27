@@ -134,6 +134,17 @@ function AdminPage() {
       </div>
 
       {tab === "settings" && <SettingsManager lang={lang} />}
+      {tab === "hero" && <HeroStatsManager lang={lang} />}
+      {tab === "teams" && <TeamsManager lang={lang} />}
+      {tab === "players" && <PlayersManager lang={lang} />}
+      {tab === "fixtures" && <FixturesManager lang={lang} />}
+      {tab === "results" && <ResultsManager lang={lang} />}
+      {tab === "points" && <PointsManager lang={lang} />}
+      {tab === "news" && <NewsManager lang={lang} />}
+      {tab === "gallery" && <GalleryManager lang={lang} />}
+      {tab === "sponsors" && <SponsorsManager lang={lang} />}
+      {tab === "about" && <AboutManager lang={lang} />}
+      {tab === "contact" && <ContactManager lang={lang} />}
       {tab === "registrations" && <RegistrationsManager lang={lang} />}
       {tab === "tiers" && <TicketTiersManager lang={lang} />}
       {tab === "methods" && <PaymentMethodsManager lang={lang} />}
