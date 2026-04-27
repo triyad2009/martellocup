@@ -101,7 +101,8 @@ export function PaymentFlow({ submissionType, amount, registrationId, jerseyOrde
       transaction_id: txId.trim() || null,
       sender_last4: last4,
       registration_id: registrationId ?? null,
-    });
+      jersey_order_id: jerseyOrderId ?? null,
+    } as any);
     setSubmitting(false);
     if (insErr) {
       setError(insErr.message);
