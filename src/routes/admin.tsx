@@ -4,12 +4,17 @@ import { motion } from "framer-motion";
 import {
   Shield, ClipboardList, Loader2, Search, UserPlus, UserMinus,
   Settings as SettingsIcon, Wallet, Receipt, Plus, Trash2, Save, Check, X, Ticket,
+  BarChart3, Users, User as UserIcon, CalendarDays, Trophy, ListOrdered, Newspaper, Image as ImageIcon, Heart, Info, Phone,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useUserRoles, type AppRole } from "@/lib/roles";
 import { useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import {
+  HeroStatsManager, TeamsManager, PlayersManager, FixturesManager, ResultsManager,
+  PointsManager, NewsManager, GalleryManager, SponsorsManager, AboutManager, ContactManager,
+} from "@/components/admin/ContentManagers";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
