@@ -637,3 +637,191 @@ export function ContactManager({ lang }: { lang: Lang }) {
     </Section>
   );
 }
+
+/* ───── Jersey Products ───── */
+type JerseyProduct = {
+  id: string;
+  name: string;
+  description: string | null;
+  image_url: string | null;
+  price: number;
+  delivery_charge: number;
+  available_sizes: string[];
+  is_active: boolean;
+  sort_order: number;
+};
+const ALL_SIZES = ["S", "M", "L", "XL", "XXL"];
+
+export function JerseyProductsManager({ lang }: { lang: Lang }) {
+  const [rows, setRows] = useState<JerseyProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const load = async () => {
+    const { data } = await (supabase as any)
+      .from("jersey_products").select("*").order("sort_order");
+    setRows((data ?? []) as JerseyProduct[]); setLoading(false);
+  };
+  useEffect(() => { load(); }, []);
+
+  const add = async () => {
+    const { error } = await (supabase as any).from("jersey_products").insert({
+      name: t(lang, "নতুন জার্সি", "New Jersey"),
+      price: 0, delivery_charge: 0, available_sizes: ALL_SIZES, sort_order: rows.length,
+    });
+    if (error) return toast.error(error.message);
+    toast.success(t(lang, "যোগ হয়েছে", "Added")); load();
+  };
+  const update = async (id: string, patch: Partial<JerseyProduct>) => {
+    const { error } = await (supabase as any).from("jersey_products").update(patch).eq("id", id);
+    if (error) toast.error(error.message); else load();
+  };
+  const remove = async (id: string) => {
+    if (!confirm(t(lang, "মুছে ফেলবেন?", "Delete?"))) return;
+    const { error } = await (supabase as any).from("jersey_products").delete().eq("id", id);
+    if (error) toast.error(error.message); else { toast.success(t(lang, "মুছে ফেলা হয়েছে", "Deleted")); load(); }
+  };
+  const toggleSize = (p: JerseyProduct, s: string) => {
+    const next = p.available_sizes.includes(s)
+      ? p.available_sizes.filter((x) => x !== s)
+      : [...p.available_sizes, s];
+    update(p.id, { available_sizes: next });
+  };
+
+  if (loading) return <div className="flex justify-center py-10"><Loader2 className="h-6 w-6 animate-spin" /></div>;
+
+  return (
+    <Section title={t(lang, "জার্সি ম্যানেজমেন্ট", "Jersey Management")}>
+      <button onClick={add} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-semibold text-sm">
+        <Plus className="h-4 w-4" /> {t(lang, "নতুন জার্সি", "Add Jersey")}
+      </button>
+      <div className="grid sm:grid-cols-2 gap-4">
+        {rows.map((p) => (
+          <div key={p.id} className="rounded-xl border border-border p-4 space-y-3">
+            <MediaUpload value={p.image_url} onChange={(u) => update(p.id, { image_url: u })} folder="jerseys" label={t(lang, "জার্সি ছবি", "Jersey Image")} />
+            <Input value={p.name} onChange={(e) => update(p.id, { name: e.target.value })} placeholder={t(lang, "নাম", "Name")} />
+            <TArea value={p.description ?? ""} onChange={(e) => update(p.id, { description: e.target.value })} placeholder={t(lang, "বিবরণ", "Description")} rows={2} />
+            <div className="grid grid-cols-2 gap-2">
+              <label className="text-xs">
+                <span className="text-muted-foreground">{t(lang, "দাম", "Price")}</span>
+                <Input type="number" value={p.price} onChange={(e) => update(p.id, { price: parseFloat(e.target.value) || 0 })} />
+              </label>
+              <label className="text-xs">
+                <span className="text-muted-foreground">{t(lang, "ডেলিভারি", "Delivery")}</span>
+                <Input type="number" value={p.delivery_charge} onChange={(e) => update(p.id, { delivery_charge: parseFloat(e.target.value) || 0 })} />
+              </label>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-1.5">{t(lang, "উপলব্ধ সাইজ", "Available Sizes")}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {ALL_SIZES.map((s) => (
+                  <button key={s} onClick={() => toggleSize(p, s)} className={`px-3 py-1 rounded-md border text-xs font-bold ${p.available_sizes.includes(s) ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}>{s}</button>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center justify-between pt-2 border-t border-border">
+              <label className="inline-flex items-center gap-2 text-xs">
+                <input type="checkbox" checked={p.is_active} onChange={(e) => update(p.id, { is_active: e.target.checked })} />
+                {t(lang, "সক্রিয়", "Active")}
+              </label>
+              <button onClick={() => remove(p.id)} className="text-destructive p-2 hover:bg-destructive/10 rounded-md"><Trash2 className="h-4 w-4" /></button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+/* ───── Jersey Orders ───── */
+type JerseyOrder = {
+  id: string;
+  product_name: string;
+  customer_name: string;
+  customer_phone: string;
+  delivery_address: string;
+  jersey_print_name: string;
+  jersey_number: number | null;
+  size: string;
+  quantity: number;
+  total_amount: number;
+  notes: string | null;
+  status: string;
+  rejection_reason: string | null;
+  created_at: string;
+};
+
+export function JerseyOrdersManager({ lang }: { lang: Lang }) {
+  const [rows, setRows] = useState<JerseyOrder[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected" | "delivered">("all");
+  const load = async () => {
+    const { data } = await (supabase as any).from("jersey_orders").select("*").order("created_at", { ascending: false });
+    setRows((data ?? []) as JerseyOrder[]); setLoading(false);
+  };
+  useEffect(() => { load(); }, []);
+
+  const setStatus = async (id: string, status: string, reason?: string) => {
+    const patch: any = { status };
+    if (reason !== undefined) patch.rejection_reason = reason;
+    const { error } = await (supabase as any).from("jersey_orders").update(patch).eq("id", id);
+    if (error) toast.error(error.message); else { toast.success(t(lang, "আপডেট হয়েছে", "Updated")); load(); }
+  };
+  const remove = async (id: string) => {
+    if (!confirm(t(lang, "মুছবেন?", "Delete?"))) return;
+    const { error } = await (supabase as any).from("jersey_orders").delete().eq("id", id);
+    if (error) toast.error(error.message); else load();
+  };
+
+  if (loading) return <div className="flex justify-center py-10"><Loader2 className="h-6 w-6 animate-spin" /></div>;
+  const visible = filter === "all" ? rows : rows.filter((r) => r.status === filter);
+  const statuses: Array<typeof filter> = ["all", "pending", "approved", "delivered", "rejected"];
+
+  return (
+    <Section title={t(lang, "জার্সি অর্ডার", "Jersey Orders")}>
+      <div className="flex flex-wrap gap-2">
+        {statuses.map((s) => (
+          <button key={s} onClick={() => setFilter(s)} className={`px-3 py-1.5 rounded-md text-xs font-semibold border ${filter === s ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}>
+            {s} ({s === "all" ? rows.length : rows.filter((r) => r.status === s).length})
+          </button>
+        ))}
+      </div>
+      {visible.length === 0 ? (
+        <p className="text-center text-sm text-muted-foreground py-8">{t(lang, "কোনো অর্ডার নেই", "No orders")}</p>
+      ) : (
+        <div className="space-y-3">
+          {visible.map((o) => (
+            <div key={o.id} className="rounded-xl border border-border p-4 space-y-2">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-bold">{o.product_name} <span className="text-xs font-normal text-muted-foreground">· {o.size} × {o.quantity}</span></p>
+                  <p className="text-sm">
+                    {t(lang, "প্রিন্ট", "Print")}: <span className="font-mono font-bold uppercase">{o.jersey_print_name}</span>
+                    {o.jersey_number != null && <> · #{o.jersey_number}</>}
+                  </p>
+                </div>
+                <span className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase ${
+                  o.status === "approved" ? "bg-success/15 text-success" :
+                  o.status === "delivered" ? "bg-primary/15 text-primary" :
+                  o.status === "rejected" ? "bg-destructive/15 text-destructive" :
+                  "bg-muted text-muted-foreground"
+                }`}>{o.status}</span>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-2 text-xs text-muted-foreground">
+                <p>👤 {o.customer_name} · 📞 {o.customer_phone}</p>
+                <p>💰 ৳ {o.total_amount}</p>
+                <p className="sm:col-span-2">📍 {o.delivery_address}</p>
+                {o.notes && <p className="sm:col-span-2">📝 {o.notes}</p>}
+                {o.rejection_reason && <p className="sm:col-span-2 text-destructive">✗ {o.rejection_reason}</p>}
+              </div>
+              <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
+                {o.status !== "approved" && <button onClick={() => setStatus(o.id, "approved")} className="px-3 py-1 rounded-md bg-success/15 text-success text-xs font-semibold">{t(lang, "অনুমোদন", "Approve")}</button>}
+                {o.status !== "delivered" && <button onClick={() => setStatus(o.id, "delivered")} className="px-3 py-1 rounded-md bg-primary/15 text-primary text-xs font-semibold">{t(lang, "ডেলিভার্ড", "Mark Delivered")}</button>}
+                {o.status !== "rejected" && <button onClick={() => { const r = prompt(t(lang, "কারণ", "Reason")) || ""; setStatus(o.id, "rejected", r); }} className="px-3 py-1 rounded-md bg-destructive/15 text-destructive text-xs font-semibold">{t(lang, "প্রত্যাখ্যান", "Reject")}</button>}
+                <button onClick={() => remove(o.id)} className="ml-auto p-1.5 text-destructive hover:bg-destructive/10 rounded-md"><Trash2 className="h-4 w-4" /></button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </Section>
+  );
+}

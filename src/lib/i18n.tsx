@@ -14,6 +14,7 @@ export const dict: Dict = {
   "nav.players": { bn: "খেলোয়াড়", en: "Players" },
   "nav.registration": { bn: "নিবন্ধন", en: "Registration" },
   "nav.tickets": { bn: "টিকিট", en: "Tickets" },
+  "nav.jersey": { bn: "জার্সি", en: "Jersey" },
   "nav.gallery": { bn: "গ্যালারি", en: "Gallery" },
   "nav.news": { bn: "সংবাদ", en: "News" },
   "nav.sponsors": { bn: "স্পনসর", en: "Sponsors" },

@@ -233,6 +233,119 @@ export type Database = {
         }
         Relationships: []
       }
+      jersey_orders: {
+        Row: {
+          created_at: string
+          customer_name: string
+          customer_phone: string
+          delivery_address: string
+          delivery_charge: number
+          id: string
+          jersey_number: number | null
+          jersey_print_name: string
+          notes: string | null
+          product_id: string | null
+          product_name: string
+          quantity: number
+          rejection_reason: string | null
+          size: string
+          status: string
+          total_amount: number
+          unit_price: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_name: string
+          customer_phone: string
+          delivery_address: string
+          delivery_charge?: number
+          id?: string
+          jersey_number?: number | null
+          jersey_print_name: string
+          notes?: string | null
+          product_id?: string | null
+          product_name: string
+          quantity?: number
+          rejection_reason?: string | null
+          size: string
+          status?: string
+          total_amount?: number
+          unit_price?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_name?: string
+          customer_phone?: string
+          delivery_address?: string
+          delivery_charge?: number
+          id?: string
+          jersey_number?: number | null
+          jersey_print_name?: string
+          notes?: string | null
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          rejection_reason?: string | null
+          size?: string
+          status?: string
+          total_amount?: number
+          unit_price?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jersey_orders_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "jersey_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jersey_products: {
+        Row: {
+          available_sizes: string[]
+          created_at: string
+          delivery_charge: number
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          price: number
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          available_sizes?: string[]
+          created_at?: string
+          delivery_charge?: number
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name: string
+          price?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          available_sizes?: string[]
+          created_at?: string
+          delivery_charge?: number
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name?: string
+          price?: number
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       news: {
         Row: {
           category: string | null
@@ -325,6 +438,7 @@ export type Database = {
           amount: number | null
           created_at: string
           id: string
+          jersey_order_id: string | null
           notes: string | null
           payer_name: string
           payer_phone: string
@@ -344,6 +458,7 @@ export type Database = {
           amount?: number | null
           created_at?: string
           id?: string
+          jersey_order_id?: string | null
           notes?: string | null
           payer_name: string
           payer_phone: string
@@ -363,6 +478,7 @@ export type Database = {
           amount?: number | null
           created_at?: string
           id?: string
+          jersey_order_id?: string | null
           notes?: string | null
           payer_name?: string
           payer_phone?: string
@@ -379,6 +495,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "payment_submissions_jersey_order_id_fkey"
+            columns: ["jersey_order_id"]
+            isOneToOne: false
+            referencedRelation: "jersey_orders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "payment_submissions_payment_method_id_fkey"
             columns: ["payment_method_id"]
