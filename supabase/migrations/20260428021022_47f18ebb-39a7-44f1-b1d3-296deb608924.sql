@@ -1,0 +1,1 @@
+ALTER TABLE public.jersey_products ADD COLUMN IF NOT EXISTS size_chart JSONB DEFAULT '{}'::jsonb;
