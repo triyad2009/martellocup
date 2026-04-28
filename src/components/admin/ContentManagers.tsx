@@ -775,6 +775,7 @@ type JerseyOrder = {
   total_amount: number;
   notes: string | null;
   status: string;
+  payment_method: string;
   rejection_reason: string | null;
   created_at: string;
   updated_at: string;
