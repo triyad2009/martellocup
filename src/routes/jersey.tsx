@@ -413,6 +413,33 @@ function JerseyPage() {
               </div>
             </div>
 
+            {/* Payment method */}
+            {product.cod_enabled && (
+              <div className="mb-4">
+                <label className="text-sm font-semibold mb-2 block">
+                  {T("পেমেন্ট পদ্ধতি", "Payment Method")} *
+                </label>
+                <div className="grid sm:grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("online")}
+                    className={`p-3 rounded-lg border-2 text-left transition-all ${paymentMethod === "online" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}
+                  >
+                    <p className="font-bold text-sm">{T("অনলাইন পেমেন্ট", "Online Payment")}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{T("bKash / Nagad / ব্যাংক", "bKash / Nagad / Bank")}</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("cod")}
+                    className={`p-3 rounded-lg border-2 text-left transition-all ${paymentMethod === "cod" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}
+                  >
+                    <p className="font-bold text-sm">{T("ক্যাশ অন ডেলিভারি", "Cash on Delivery")}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{T("পণ্য পেয়ে নগদে পরিশোধ", "Pay in cash on delivery")}</p>
+                  </button>
+                </div>
+              </div>
+            )}
+
             {error && (
               <p className="mb-3 text-sm text-destructive font-medium text-center">{error}</p>
             )}
@@ -432,7 +459,9 @@ function JerseyPage() {
                 className="flex-1 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary-glow text-sm font-bold inline-flex items-center justify-center gap-2 disabled:opacity-60"
               >
                 {creating && <Loader2 className="h-4 w-4 animate-spin" />}
-                {T("পেমেন্টে যান", "Continue to Payment")}
+                {product.cod_enabled && paymentMethod === "cod"
+                  ? T("অর্ডার নিশ্চিত করুন", "Confirm Order")
+                  : T("পেমেন্টে যান", "Continue to Payment")}
                 <ChevronRight className="h-4 w-4" />
               </button>
             </div>
