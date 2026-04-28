@@ -739,10 +739,16 @@ export function JerseyProductsManager({ lang }: { lang: Lang }) {
               </div>
             </div>
             <div className="flex items-center justify-between pt-2 border-t border-border">
-              <label className="inline-flex items-center gap-2 text-xs">
-                <input type="checkbox" checked={p.is_active} onChange={(e) => update(p.id, { is_active: e.target.checked })} />
-                {t(lang, "সক্রিয়", "Active")}
-              </label>
+              <div className="flex items-center gap-3">
+                <label className="inline-flex items-center gap-2 text-xs">
+                  <input type="checkbox" checked={p.is_active} onChange={(e) => update(p.id, { is_active: e.target.checked })} />
+                  {t(lang, "সক্রিয়", "Active")}
+                </label>
+                <label className="inline-flex items-center gap-2 text-xs">
+                  <input type="checkbox" checked={!!p.cod_enabled} onChange={(e) => update(p.id, { cod_enabled: e.target.checked })} />
+                  {t(lang, "ক্যাশ অন ডেলিভারি", "Cash on Delivery")}
+                </label>
+              </div>
               <button onClick={() => remove(p.id)} className="text-destructive p-2 hover:bg-destructive/10 rounded-md"><Trash2 className="h-4 w-4" /></button>
             </div>
           </div>
