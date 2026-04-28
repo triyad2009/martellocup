@@ -647,6 +647,7 @@ type JerseyProduct = {
   price: number;
   delivery_charge: number;
   available_sizes: string[];
+  size_chart: Record<string, { chest?: string; length?: string }> | null;
   is_active: boolean;
   sort_order: number;
 };
