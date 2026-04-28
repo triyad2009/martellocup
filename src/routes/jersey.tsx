@@ -31,10 +31,11 @@ type Product = {
   price: number;
   delivery_charge: number;
   available_sizes: string[];
+  size_chart: Record<string, { chest?: string; length?: string }> | null;
   is_active: boolean;
 };
 
-const SIZE_CHART: Record<string, { chest: string; length: string }> = {
+const DEFAULT_SIZE_CHART: Record<string, { chest: string; length: string }> = {
   S: { chest: "36-38\"", length: "27\"" },
   M: { chest: "38-40\"", length: "28\"" },
   L: { chest: "40-42\"", length: "29\"" },
