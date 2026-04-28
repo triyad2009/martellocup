@@ -33,6 +33,7 @@ type Product = {
   available_sizes: string[];
   size_chart: Record<string, { chest?: string; length?: string }> | null;
   is_active: boolean;
+  cod_enabled: boolean;
 };
 
 const DEFAULT_SIZE_CHART: Record<string, { chest: string; length: string }> = {
