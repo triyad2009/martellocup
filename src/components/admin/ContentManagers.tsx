@@ -649,6 +649,7 @@ type JerseyProduct = {
   available_sizes: string[];
   size_chart: Record<string, { chest?: string; length?: string }> | null;
   is_active: boolean;
+  cod_enabled: boolean;
   sort_order: number;
 };
 const ALL_SIZES = ["S", "M", "L", "XL", "XXL"];
@@ -738,10 +739,16 @@ export function JerseyProductsManager({ lang }: { lang: Lang }) {
               </div>
             </div>
             <div className="flex items-center justify-between pt-2 border-t border-border">
-              <label className="inline-flex items-center gap-2 text-xs">
-                <input type="checkbox" checked={p.is_active} onChange={(e) => update(p.id, { is_active: e.target.checked })} />
-                {t(lang, "সক্রিয়", "Active")}
-              </label>
+              <div className="flex items-center gap-3">
+                <label className="inline-flex items-center gap-2 text-xs">
+                  <input type="checkbox" checked={p.is_active} onChange={(e) => update(p.id, { is_active: e.target.checked })} />
+                  {t(lang, "সক্রিয়", "Active")}
+                </label>
+                <label className="inline-flex items-center gap-2 text-xs">
+                  <input type="checkbox" checked={!!p.cod_enabled} onChange={(e) => update(p.id, { cod_enabled: e.target.checked })} />
+                  {t(lang, "ক্যাশ অন ডেলিভারি", "Cash on Delivery")}
+                </label>
+              </div>
               <button onClick={() => remove(p.id)} className="text-destructive p-2 hover:bg-destructive/10 rounded-md"><Trash2 className="h-4 w-4" /></button>
             </div>
           </div>
@@ -768,6 +775,7 @@ type JerseyOrder = {
   total_amount: number;
   notes: string | null;
   status: string;
+  payment_method: string;
   rejection_reason: string | null;
   created_at: string;
   updated_at: string;
@@ -866,12 +874,17 @@ export function JerseyOrdersManager({ lang }: { lang: Lang }) {
                     </p>
                     <p className="text-[11px] text-muted-foreground mt-0.5">{t(lang, "অর্ডার আইডি", "Order ID")}: <span className="font-mono">{o.id.slice(0, 8)}</span> · {fmtDate(o.created_at)}</p>
                   </div>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase ${
-                    o.status === "approved" ? "bg-success/15 text-success" :
-                    o.status === "delivered" ? "bg-primary/15 text-primary" :
-                    o.status === "rejected" ? "bg-destructive/15 text-destructive" :
-                    "bg-muted text-muted-foreground"
-                  }`}>{o.status}</span>
+                  <div className="flex flex-col items-end gap-1 shrink-0">
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase ${
+                      o.status === "approved" ? "bg-success/15 text-success" :
+                      o.status === "delivered" ? "bg-primary/15 text-primary" :
+                      o.status === "rejected" ? "bg-destructive/15 text-destructive" :
+                      "bg-muted text-muted-foreground"
+                    }`}>{o.status}</span>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${o.payment_method === "cod" ? "bg-amber-500/15 text-amber-600" : "bg-blue-500/15 text-blue-600"}`}>
+                      {o.payment_method === "cod" ? t(lang, "ক্যাশ অন ডেলিভারি", "COD") : t(lang, "অনলাইন", "Online")}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-x-4 gap-y-1 text-xs">

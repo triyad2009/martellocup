@@ -244,6 +244,7 @@ export type Database = {
           jersey_number: number | null
           jersey_print_name: string
           notes: string | null
+          payment_method: string
           product_id: string | null
           product_name: string
           quantity: number
@@ -264,6 +265,7 @@ export type Database = {
           jersey_number?: number | null
           jersey_print_name: string
           notes?: string | null
+          payment_method?: string
           product_id?: string | null
           product_name: string
           quantity?: number
@@ -284,6 +286,7 @@ export type Database = {
           jersey_number?: number | null
           jersey_print_name?: string
           notes?: string | null
+          payment_method?: string
           product_id?: string | null
           product_name?: string
           quantity?: number
@@ -307,6 +310,7 @@ export type Database = {
       jersey_products: {
         Row: {
           available_sizes: string[]
+          cod_enabled: boolean
           created_at: string
           delivery_charge: number
           description: string | null
@@ -321,6 +325,7 @@ export type Database = {
         }
         Insert: {
           available_sizes?: string[]
+          cod_enabled?: boolean
           created_at?: string
           delivery_charge?: number
           description?: string | null
@@ -335,6 +340,7 @@ export type Database = {
         }
         Update: {
           available_sizes?: string[]
+          cod_enabled?: boolean
           created_at?: string
           delivery_charge?: number
           description?: string | null

@@ -33,6 +33,7 @@ type Product = {
   available_sizes: string[];
   size_chart: Record<string, { chest?: string; length?: string }> | null;
   is_active: boolean;
+  cod_enabled: boolean;
 };
 
 const DEFAULT_SIZE_CHART: Record<string, { chest: string; length: string }> = {
@@ -61,9 +62,11 @@ function JerseyPage() {
   const [customer, setCustomer] = useState({ name: "", phone: "", address: "" });
   const [notes, setNotes] = useState("");
   const [showSizeChart, setShowSizeChart] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"online" | "cod">("online");
   const [creating, setCreating] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [orderAmount, setOrderAmount] = useState<number>(0);
+  const [codSuccess, setCodSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // reset selection if product list changes
@@ -107,6 +110,7 @@ function JerseyPage() {
         delivery_charge: product.delivery_charge,
         total_amount: total,
         notes: notes.trim() || null,
+        payment_method: product.cod_enabled && paymentMethod === "cod" ? "cod" : "online",
       })
       .select("id")
       .single();
@@ -117,6 +121,9 @@ function JerseyPage() {
     }
     setOrderId(data.id);
     setOrderAmount(total);
+    if (product.cod_enabled && paymentMethod === "cod") {
+      setCodSuccess(true);
+    }
     setStep(2);
   };
 
@@ -406,6 +413,33 @@ function JerseyPage() {
               </div>
             </div>
 
+            {/* Payment method */}
+            {product.cod_enabled && (
+              <div className="mb-4">
+                <label className="text-sm font-semibold mb-2 block">
+                  {T("পেমেন্ট পদ্ধতি", "Payment Method")} *
+                </label>
+                <div className="grid sm:grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("online")}
+                    className={`p-3 rounded-lg border-2 text-left transition-all ${paymentMethod === "online" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}
+                  >
+                    <p className="font-bold text-sm">{T("অনলাইন পেমেন্ট", "Online Payment")}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{T("bKash / Nagad / ব্যাংক", "bKash / Nagad / Bank")}</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("cod")}
+                    className={`p-3 rounded-lg border-2 text-left transition-all ${paymentMethod === "cod" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"}`}
+                  >
+                    <p className="font-bold text-sm">{T("ক্যাশ অন ডেলিভারি", "Cash on Delivery")}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{T("পণ্য পেয়ে নগদে পরিশোধ", "Pay in cash on delivery")}</p>
+                  </button>
+                </div>
+              </div>
+            )}
+
             {error && (
               <p className="mb-3 text-sm text-destructive font-medium text-center">{error}</p>
             )}
@@ -425,21 +459,44 @@ function JerseyPage() {
                 className="flex-1 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary-glow text-sm font-bold inline-flex items-center justify-center gap-2 disabled:opacity-60"
               >
                 {creating && <Loader2 className="h-4 w-4 animate-spin" />}
-                {T("পেমেন্টে যান", "Continue to Payment")}
+                {product.cod_enabled && paymentMethod === "cod"
+                  ? T("অর্ডার নিশ্চিত করুন", "Confirm Order")
+                  : T("পেমেন্টে যান", "Continue to Payment")}
                 <ChevronRight className="h-4 w-4" />
               </button>
             </div>
           </motion.div>
         )}
 
-        {/* Step 2: payment */}
+        {/* Step 2: payment or COD confirmation */}
         {step === 2 && orderId && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-            <PaymentFlow
-              submissionType="jersey"
-              amount={orderAmount}
-              jerseyOrderId={orderId}
-            />
+            {codSuccess ? (
+              <div className="rounded-2xl bg-card border border-border p-8 text-center shadow-card">
+                <div className="h-16 w-16 rounded-full bg-success/15 text-success flex items-center justify-center mx-auto mb-4">
+                  <Check className="h-8 w-8" />
+                </div>
+                <h2 className="font-display text-2xl font-bold mb-2">
+                  {T("অর্ডার সফল হয়েছে!", "Order Placed Successfully!")}
+                </h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {T(
+                    "আপনার ক্যাশ অন ডেলিভারি অর্ডার নেওয়া হয়েছে। আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।",
+                    "Your Cash on Delivery order has been received. We'll contact you shortly to confirm.",
+                  )}
+                </p>
+                <div className="rounded-xl bg-muted p-4 inline-block text-left text-sm space-y-1">
+                  <p><span className="text-muted-foreground">{T("অর্ডার আইডি", "Order ID")}:</span> <span className="font-mono font-bold">{orderId.slice(0, 8)}</span></p>
+                  <p><span className="text-muted-foreground">{T("পরিশোধযোগ্য", "Pay on delivery")}:</span> <span className="font-bold text-primary">৳ {orderAmount}</span></p>
+                </div>
+              </div>
+            ) : (
+              <PaymentFlow
+                submissionType="jersey"
+                amount={orderAmount}
+                jerseyOrderId={orderId}
+              />
+            )}
           </motion.div>
         )}
       </section>

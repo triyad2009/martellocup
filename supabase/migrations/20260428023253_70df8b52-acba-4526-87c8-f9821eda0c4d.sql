@@ -1,0 +1,2 @@
+ALTER TABLE public.jersey_products ADD COLUMN IF NOT EXISTS cod_enabled boolean NOT NULL DEFAULT false;
+ALTER TABLE public.jersey_orders ADD COLUMN IF NOT EXISTS payment_method text NOT NULL DEFAULT 'online';
