@@ -315,6 +315,7 @@ export type Database = {
           is_active: boolean
           name: string
           price: number
+          size_chart: Json | null
           sort_order: number
           updated_at: string
         }
@@ -328,6 +329,7 @@ export type Database = {
           is_active?: boolean
           name: string
           price?: number
+          size_chart?: Json | null
           sort_order?: number
           updated_at?: string
         }
@@ -341,6 +343,7 @@ export type Database = {
           is_active?: boolean
           name?: string
           price?: number
+          size_chart?: Json | null
           sort_order?: number
           updated_at?: string
         }

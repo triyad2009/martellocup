@@ -647,6 +647,7 @@ type JerseyProduct = {
   price: number;
   delivery_charge: number;
   available_sizes: string[];
+  size_chart: Record<string, { chest?: string; length?: string }> | null;
   is_active: boolean;
   sort_order: number;
 };
@@ -715,6 +716,25 @@ export function JerseyProductsManager({ lang }: { lang: Lang }) {
                 {ALL_SIZES.map((s) => (
                   <button key={s} onClick={() => toggleSize(p, s)} className={`px-3 py-1 rounded-md border text-xs font-bold ${p.available_sizes.includes(s) ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}>{s}</button>
                 ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-1.5">{t(lang, "সাইজ চার্ট (চেস্ট / লেংথ ইঞ্চিতে)", "Size Chart (Chest / Length in inches)")}</p>
+              <div className="space-y-1.5">
+                {p.available_sizes.map((s) => {
+                  const chart = p.size_chart?.[s] || {};
+                  const setChart = (key: "chest" | "length", val: string) => {
+                    const next = { ...(p.size_chart || {}), [s]: { ...chart, [key]: val } };
+                    update(p.id, { size_chart: next });
+                  };
+                  return (
+                    <div key={s} className="grid grid-cols-[2.5rem_1fr_1fr] gap-1.5 items-center">
+                      <span className="text-xs font-bold text-center">{s}</span>
+                      <Input className="h-8 text-xs" placeholder={t(lang, "চেস্ট", "Chest")} defaultValue={chart.chest ?? ""} onBlur={(e) => setChart("chest", e.target.value)} />
+                      <Input className="h-8 text-xs" placeholder={t(lang, "লেংথ", "Length")} defaultValue={chart.length ?? ""} onBlur={(e) => setChart("length", e.target.value)} />
+                    </div>
+                  );
+                })}
               </div>
             </div>
             <div className="flex items-center justify-between pt-2 border-t border-border">

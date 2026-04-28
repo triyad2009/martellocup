@@ -31,10 +31,11 @@ type Product = {
   price: number;
   delivery_charge: number;
   available_sizes: string[];
+  size_chart: Record<string, { chest?: string; length?: string }> | null;
   is_active: boolean;
 };
 
-const SIZE_CHART: Record<string, { chest: string; length: string }> = {
+const DEFAULT_SIZE_CHART: Record<string, { chest: string; length: string }> = {
   S: { chest: "36-38\"", length: "27\"" },
   M: { chest: "38-40\"", length: "28\"" },
   L: { chest: "40-42\"", length: "29\"" },
@@ -290,13 +291,16 @@ function JerseyPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {product.available_sizes.map((s) => (
-                        <tr key={s} className="border-t border-border/50">
-                          <td className="py-1.5 font-bold">{s}</td>
-                          <td className="py-1.5">{SIZE_CHART[s]?.chest || "—"}</td>
-                          <td className="py-1.5">{SIZE_CHART[s]?.length || "—"}</td>
-                        </tr>
-                      ))}
+                      {product.available_sizes.map((s) => {
+                        const chart = product.size_chart?.[s] || DEFAULT_SIZE_CHART[s];
+                        return (
+                          <tr key={s} className="border-t border-border/50">
+                            <td className="py-1.5 font-bold">{s}</td>
+                            <td className="py-1.5">{chart?.chest || "—"}</td>
+                            <td className="py-1.5">{chart?.length || "—"}</td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
