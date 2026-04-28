@@ -718,6 +718,25 @@ export function JerseyProductsManager({ lang }: { lang: Lang }) {
                 ))}
               </div>
             </div>
+            <div>
+              <p className="text-xs text-muted-foreground mb-1.5">{t(lang, "সাইজ চার্ট (চেস্ট / লেংথ ইঞ্চিতে)", "Size Chart (Chest / Length in inches)")}</p>
+              <div className="space-y-1.5">
+                {p.available_sizes.map((s) => {
+                  const chart = p.size_chart?.[s] || {};
+                  const setChart = (key: "chest" | "length", val: string) => {
+                    const next = { ...(p.size_chart || {}), [s]: { ...chart, [key]: val } };
+                    update(p.id, { size_chart: next });
+                  };
+                  return (
+                    <div key={s} className="grid grid-cols-[2.5rem_1fr_1fr] gap-1.5 items-center">
+                      <span className="text-xs font-bold text-center">{s}</span>
+                      <Input className="h-8 text-xs" placeholder={t(lang, "চেস্ট", "Chest")} defaultValue={chart.chest ?? ""} onBlur={(e) => setChart("chest", e.target.value)} />
+                      <Input className="h-8 text-xs" placeholder={t(lang, "লেংথ", "Length")} defaultValue={chart.length ?? ""} onBlur={(e) => setChart("length", e.target.value)} />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
             <div className="flex items-center justify-between pt-2 border-t border-border">
               <label className="inline-flex items-center gap-2 text-xs">
                 <input type="checkbox" checked={p.is_active} onChange={(e) => update(p.id, { is_active: e.target.checked })} />
