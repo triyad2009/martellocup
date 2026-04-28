@@ -874,12 +874,17 @@ export function JerseyOrdersManager({ lang }: { lang: Lang }) {
                     </p>
                     <p className="text-[11px] text-muted-foreground mt-0.5">{t(lang, "অর্ডার আইডি", "Order ID")}: <span className="font-mono">{o.id.slice(0, 8)}</span> · {fmtDate(o.created_at)}</p>
                   </div>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase ${
-                    o.status === "approved" ? "bg-success/15 text-success" :
-                    o.status === "delivered" ? "bg-primary/15 text-primary" :
-                    o.status === "rejected" ? "bg-destructive/15 text-destructive" :
-                    "bg-muted text-muted-foreground"
-                  }`}>{o.status}</span>
+                  <div className="flex flex-col items-end gap-1 shrink-0">
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase ${
+                      o.status === "approved" ? "bg-success/15 text-success" :
+                      o.status === "delivered" ? "bg-primary/15 text-primary" :
+                      o.status === "rejected" ? "bg-destructive/15 text-destructive" :
+                      "bg-muted text-muted-foreground"
+                    }`}>{o.status}</span>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase ${o.payment_method === "cod" ? "bg-amber-500/15 text-amber-600" : "bg-blue-500/15 text-blue-600"}`}>
+                      {o.payment_method === "cod" ? t(lang, "ক্যাশ অন ডেলিভারি", "COD") : t(lang, "অনলাইন", "Online")}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-x-4 gap-y-1 text-xs">
