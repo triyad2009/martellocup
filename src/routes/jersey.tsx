@@ -110,6 +110,7 @@ function JerseyPage() {
         delivery_charge: product.delivery_charge,
         total_amount: total,
         notes: notes.trim() || null,
+        payment_method: product.cod_enabled && paymentMethod === "cod" ? "cod" : "online",
       })
       .select("id")
       .single();
@@ -120,6 +121,9 @@ function JerseyPage() {
     }
     setOrderId(data.id);
     setOrderAmount(total);
+    if (product.cod_enabled && paymentMethod === "cod") {
+      setCodSuccess(true);
+    }
     setStep(2);
   };
 
