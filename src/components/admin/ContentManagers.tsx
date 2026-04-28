@@ -649,6 +649,7 @@ type JerseyProduct = {
   available_sizes: string[];
   size_chart: Record<string, { chest?: string; length?: string }> | null;
   is_active: boolean;
+  cod_enabled: boolean;
   sort_order: number;
 };
 const ALL_SIZES = ["S", "M", "L", "XL", "XXL"];
