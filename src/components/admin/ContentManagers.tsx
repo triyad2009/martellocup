@@ -754,6 +754,7 @@ export function JerseyProductsManager({ lang }: { lang: Lang }) {
 /* ───── Jersey Orders ───── */
 type JerseyOrder = {
   id: string;
+  product_id: string | null;
   product_name: string;
   customer_name: string;
   customer_phone: string;
@@ -762,20 +763,53 @@ type JerseyOrder = {
   jersey_number: number | null;
   size: string;
   quantity: number;
+  unit_price: number;
+  delivery_charge: number;
   total_amount: number;
   notes: string | null;
   status: string;
   rejection_reason: string | null;
   created_at: string;
+  updated_at: string;
+};
+
+type JerseyPayment = {
+  id: string;
+  jersey_order_id: string | null;
+  payer_name: string;
+  payer_phone: string;
+  sender_last4: string;
+  transaction_id: string | null;
+  amount: number | null;
+  payment_method_name: string | null;
+  status: string;
+  rejection_reason: string | null;
+  notes: string | null;
+  created_at: string;
 };
 
 export function JerseyOrdersManager({ lang }: { lang: Lang }) {
   const [rows, setRows] = useState<JerseyOrder[]>([]);
+  const [payments, setPayments] = useState<Record<string, JerseyPayment[]>>({});
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected" | "delivered">("all");
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+
   const load = async () => {
-    const { data } = await (supabase as any).from("jersey_orders").select("*").order("created_at", { ascending: false });
-    setRows((data ?? []) as JerseyOrder[]); setLoading(false);
+    const { data: orders } = await (supabase as any)
+      .from("jersey_orders").select("*").order("created_at", { ascending: false });
+    const { data: pays } = await (supabase as any)
+      .from("payment_submissions").select("*")
+      .eq("submission_type", "jersey")
+      .order("created_at", { ascending: false });
+    const map: Record<string, JerseyPayment[]> = {};
+    ((pays ?? []) as JerseyPayment[]).forEach((p) => {
+      if (!p.jersey_order_id) return;
+      (map[p.jersey_order_id] ||= []).push(p);
+    });
+    setRows((orders ?? []) as JerseyOrder[]);
+    setPayments(map);
+    setLoading(false);
   };
   useEffect(() => { load(); }, []);
 
@@ -785,10 +819,20 @@ export function JerseyOrdersManager({ lang }: { lang: Lang }) {
     const { error } = await (supabase as any).from("jersey_orders").update(patch).eq("id", id);
     if (error) toast.error(error.message); else { toast.success(t(lang, "আপডেট হয়েছে", "Updated")); load(); }
   };
+  const setPayStatus = async (id: string, status: string, reason?: string) => {
+    const patch: any = { status };
+    if (reason !== undefined) patch.rejection_reason = reason;
+    const { error } = await (supabase as any).from("payment_submissions").update(patch).eq("id", id);
+    if (error) toast.error(error.message); else { toast.success(t(lang, "আপডেট হয়েছে", "Updated")); load(); }
+  };
   const remove = async (id: string) => {
     if (!confirm(t(lang, "মুছবেন?", "Delete?"))) return;
     const { error } = await (supabase as any).from("jersey_orders").delete().eq("id", id);
     if (error) toast.error(error.message); else load();
+  };
+
+  const fmtDate = (s: string) => {
+    try { return new Date(s).toLocaleString(lang === "bn" ? "bn-BD" : "en-GB"); } catch { return s; }
   };
 
   if (loading) return <div className="flex justify-center py-10"><Loader2 className="h-6 w-6 animate-spin" /></div>;
@@ -808,38 +852,87 @@ export function JerseyOrdersManager({ lang }: { lang: Lang }) {
         <p className="text-center text-sm text-muted-foreground py-8">{t(lang, "কোনো অর্ডার নেই", "No orders")}</p>
       ) : (
         <div className="space-y-3">
-          {visible.map((o) => (
-            <div key={o.id} className="rounded-xl border border-border p-4 space-y-2">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="font-bold">{o.product_name} <span className="text-xs font-normal text-muted-foreground">· {o.size} × {o.quantity}</span></p>
-                  <p className="text-sm">
-                    {t(lang, "প্রিন্ট", "Print")}: <span className="font-mono font-bold uppercase">{o.jersey_print_name}</span>
-                    {o.jersey_number != null && <> · #{o.jersey_number}</>}
-                  </p>
+          {visible.map((o) => {
+            const op = expanded[o.id];
+            const pays = payments[o.id] || [];
+            return (
+              <div key={o.id} className="rounded-xl border border-border p-4 space-y-2">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-bold">{o.product_name} <span className="text-xs font-normal text-muted-foreground">· {o.size} × {o.quantity}</span></p>
+                    <p className="text-sm">
+                      {t(lang, "প্রিন্ট", "Print")}: <span className="font-mono font-bold uppercase">{o.jersey_print_name}</span>
+                      {o.jersey_number != null && <> · #{o.jersey_number}</>}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">{t(lang, "অর্ডার আইডি", "Order ID")}: <span className="font-mono">{o.id.slice(0, 8)}</span> · {fmtDate(o.created_at)}</p>
+                  </div>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase ${
+                    o.status === "approved" ? "bg-success/15 text-success" :
+                    o.status === "delivered" ? "bg-primary/15 text-primary" :
+                    o.status === "rejected" ? "bg-destructive/15 text-destructive" :
+                    "bg-muted text-muted-foreground"
+                  }`}>{o.status}</span>
                 </div>
-                <span className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase ${
-                  o.status === "approved" ? "bg-success/15 text-success" :
-                  o.status === "delivered" ? "bg-primary/15 text-primary" :
-                  o.status === "rejected" ? "bg-destructive/15 text-destructive" :
-                  "bg-muted text-muted-foreground"
-                }`}>{o.status}</span>
+
+                <div className="grid sm:grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                  <p><span className="text-muted-foreground">👤 {t(lang, "নাম", "Name")}:</span> <span className="font-semibold">{o.customer_name}</span></p>
+                  <p><span className="text-muted-foreground">📞 {t(lang, "ফোন", "Phone")}:</span> <a href={`tel:${o.customer_phone}`} className="font-semibold text-primary">{o.customer_phone}</a></p>
+                  <p className="sm:col-span-2"><span className="text-muted-foreground">📍 {t(lang, "ঠিকানা", "Address")}:</span> {o.delivery_address}</p>
+                  <p><span className="text-muted-foreground">{t(lang, "একক দাম", "Unit Price")}:</span> ৳ {o.unit_price}</p>
+                  <p><span className="text-muted-foreground">{t(lang, "ডেলিভারি", "Delivery")}:</span> ৳ {o.delivery_charge}</p>
+                  <p className="sm:col-span-2 text-sm"><span className="text-muted-foreground">💰 {t(lang, "সর্বমোট", "Total")}:</span> <span className="font-bold text-base">৳ {o.total_amount}</span></p>
+                  {o.notes && <p className="sm:col-span-2"><span className="text-muted-foreground">📝 {t(lang, "নোট", "Note")}:</span> {o.notes}</p>}
+                  {o.rejection_reason && <p className="sm:col-span-2 text-destructive">✗ {o.rejection_reason}</p>}
+                </div>
+
+                <button
+                  onClick={() => setExpanded((e) => ({ ...e, [o.id]: !e[o.id] }))}
+                  className="w-full text-left text-xs font-semibold text-primary py-1.5 px-2 rounded-md bg-primary/5 hover:bg-primary/10"
+                >
+                  {op ? "▼" : "▶"} {t(lang, "পেমেন্ট তথ্য", "Payment Info")} ({pays.length})
+                </button>
+
+                {op && (
+                  <div className="space-y-2 pt-1">
+                    {pays.length === 0 ? (
+                      <p className="text-xs text-muted-foreground italic px-2">{t(lang, "এখনো কোনো পেমেন্ট সাবমিট হয়নি", "No payment submitted yet")}</p>
+                    ) : pays.map((p) => (
+                      <div key={p.id} className="rounded-lg border border-border bg-muted/30 p-3 space-y-1.5 text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold">{p.payment_method_name || "—"} · ৳ {p.amount ?? "—"}</span>
+                          <span className={`px-2 py-0.5 rounded-full font-bold uppercase text-[10px] ${
+                            p.status === "approved" ? "bg-success/15 text-success" :
+                            p.status === "rejected" ? "bg-destructive/15 text-destructive" :
+                            "bg-muted text-muted-foreground"
+                          }`}>{p.status}</span>
+                        </div>
+                        <div className="grid sm:grid-cols-2 gap-x-3 gap-y-0.5">
+                          <p><span className="text-muted-foreground">{t(lang, "পেয়ার", "Payer")}:</span> {p.payer_name}</p>
+                          <p><span className="text-muted-foreground">{t(lang, "ফোন", "Phone")}:</span> <a href={`tel:${p.payer_phone}`} className="text-primary">{p.payer_phone}</a></p>
+                          <p><span className="text-muted-foreground">{t(lang, "প্রেরকের শেষ ৪", "Sender Last 4")}:</span> <span className="font-mono">{p.sender_last4}</span></p>
+                          <p><span className="text-muted-foreground">TxID:</span> <span className="font-mono">{p.transaction_id || "—"}</span></p>
+                          <p className="sm:col-span-2 text-muted-foreground">{fmtDate(p.created_at)}</p>
+                          {p.notes && <p className="sm:col-span-2"><span className="text-muted-foreground">📝</span> {p.notes}</p>}
+                          {p.rejection_reason && <p className="sm:col-span-2 text-destructive">✗ {p.rejection_reason}</p>}
+                        </div>
+                        <div className="flex flex-wrap gap-1.5 pt-1.5 border-t border-border">
+                          {p.status !== "approved" && <button onClick={() => setPayStatus(p.id, "approved")} className="px-2 py-0.5 rounded bg-success/15 text-success text-[11px] font-semibold">{t(lang, "অনুমোদন", "Approve")}</button>}
+                          {p.status !== "rejected" && <button onClick={() => { const r = prompt(t(lang, "কারণ", "Reason")) || ""; setPayStatus(p.id, "rejected", r); }} className="px-2 py-0.5 rounded bg-destructive/15 text-destructive text-[11px] font-semibold">{t(lang, "প্রত্যাখ্যান", "Reject")}</button>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
+                  {o.status !== "approved" && <button onClick={() => setStatus(o.id, "approved")} className="px-3 py-1 rounded-md bg-success/15 text-success text-xs font-semibold">{t(lang, "অনুমোদন", "Approve")}</button>}
+                  {o.status !== "delivered" && <button onClick={() => setStatus(o.id, "delivered")} className="px-3 py-1 rounded-md bg-primary/15 text-primary text-xs font-semibold">{t(lang, "ডেলিভার্ড", "Mark Delivered")}</button>}
+                  {o.status !== "rejected" && <button onClick={() => { const r = prompt(t(lang, "কারণ", "Reason")) || ""; setStatus(o.id, "rejected", r); }} className="px-3 py-1 rounded-md bg-destructive/15 text-destructive text-xs font-semibold">{t(lang, "প্রত্যাখ্যান", "Reject")}</button>}
+                  <button onClick={() => remove(o.id)} className="ml-auto p-1.5 text-destructive hover:bg-destructive/10 rounded-md"><Trash2 className="h-4 w-4" /></button>
+                </div>
               </div>
-              <div className="grid sm:grid-cols-2 gap-2 text-xs text-muted-foreground">
-                <p>👤 {o.customer_name} · 📞 {o.customer_phone}</p>
-                <p>💰 ৳ {o.total_amount}</p>
-                <p className="sm:col-span-2">📍 {o.delivery_address}</p>
-                {o.notes && <p className="sm:col-span-2">📝 {o.notes}</p>}
-                {o.rejection_reason && <p className="sm:col-span-2 text-destructive">✗ {o.rejection_reason}</p>}
-              </div>
-              <div className="flex flex-wrap gap-2 pt-2 border-t border-border">
-                {o.status !== "approved" && <button onClick={() => setStatus(o.id, "approved")} className="px-3 py-1 rounded-md bg-success/15 text-success text-xs font-semibold">{t(lang, "অনুমোদন", "Approve")}</button>}
-                {o.status !== "delivered" && <button onClick={() => setStatus(o.id, "delivered")} className="px-3 py-1 rounded-md bg-primary/15 text-primary text-xs font-semibold">{t(lang, "ডেলিভার্ড", "Mark Delivered")}</button>}
-                {o.status !== "rejected" && <button onClick={() => { const r = prompt(t(lang, "কারণ", "Reason")) || ""; setStatus(o.id, "rejected", r); }} className="px-3 py-1 rounded-md bg-destructive/15 text-destructive text-xs font-semibold">{t(lang, "প্রত্যাখ্যান", "Reject")}</button>}
-                <button onClick={() => remove(o.id)} className="ml-auto p-1.5 text-destructive hover:bg-destructive/10 rounded-md"><Trash2 className="h-4 w-4" /></button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </Section>
