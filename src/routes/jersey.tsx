@@ -468,14 +468,35 @@ function JerseyPage() {
           </motion.div>
         )}
 
-        {/* Step 2: payment */}
+        {/* Step 2: payment or COD confirmation */}
         {step === 2 && orderId && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-            <PaymentFlow
-              submissionType="jersey"
-              amount={orderAmount}
-              jerseyOrderId={orderId}
-            />
+            {codSuccess ? (
+              <div className="rounded-2xl bg-card border border-border p-8 text-center shadow-card">
+                <div className="h-16 w-16 rounded-full bg-success/15 text-success flex items-center justify-center mx-auto mb-4">
+                  <Check className="h-8 w-8" />
+                </div>
+                <h2 className="font-display text-2xl font-bold mb-2">
+                  {T("অর্ডার সফল হয়েছে!", "Order Placed Successfully!")}
+                </h2>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {T(
+                    "আপনার ক্যাশ অন ডেলিভারি অর্ডার নেওয়া হয়েছে। আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।",
+                    "Your Cash on Delivery order has been received. We'll contact you shortly to confirm.",
+                  )}
+                </p>
+                <div className="rounded-xl bg-muted p-4 inline-block text-left text-sm space-y-1">
+                  <p><span className="text-muted-foreground">{T("অর্ডার আইডি", "Order ID")}:</span> <span className="font-mono font-bold">{orderId.slice(0, 8)}</span></p>
+                  <p><span className="text-muted-foreground">{T("পরিশোধযোগ্য", "Pay on delivery")}:</span> <span className="font-bold text-primary">৳ {orderAmount}</span></p>
+                </div>
+              </div>
+            ) : (
+              <PaymentFlow
+                submissionType="jersey"
+                amount={orderAmount}
+                jerseyOrderId={orderId}
+              />
+            )}
           </motion.div>
         )}
       </section>
