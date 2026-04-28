@@ -62,9 +62,11 @@ function JerseyPage() {
   const [customer, setCustomer] = useState({ name: "", phone: "", address: "" });
   const [notes, setNotes] = useState("");
   const [showSizeChart, setShowSizeChart] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<"online" | "cod">("online");
   const [creating, setCreating] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [orderAmount, setOrderAmount] = useState<number>(0);
+  const [codSuccess, setCodSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // reset selection if product list changes
