@@ -798,6 +798,45 @@ type JerseyPayment = {
   created_at: string;
 };
 
+function AdminNoteEditor({ initial, onSave, lang }: { initial: string; onSave: (v: string) => void | Promise<void>; lang: Lang }) {
+  const [val, setVal] = useState(initial);
+  const [open, setOpen] = useState(false);
+  useEffect(() => { setVal(initial); }, [initial]);
+  return (
+    <div className="rounded-lg border border-border bg-muted/20 p-3">
+      <button onClick={() => setOpen((v) => !v)} className="w-full text-left text-xs font-bold text-primary inline-flex items-center justify-between">
+        <span>📌 {t(lang, "এডমিন নোট (কাস্টমার দেখতে পাবে)", "Admin Note (visible to customer)")} {initial && <span className="text-success">✓</span>}</span>
+        <span>{open ? "▼" : "▶"}</span>
+      </button>
+      {open && (
+        <div className="mt-2 space-y-2">
+          <textarea
+            value={val}
+            onChange={(e) => setVal(e.target.value)}
+            rows={3}
+            placeholder={t(lang, "অর্ডার সম্পর্কে কাস্টমারকে বার্তা...", "Message to customer about the order...")}
+            className="w-full px-2 py-1.5 rounded border border-border bg-background text-xs"
+          />
+          <div className="flex gap-2">
+            <button
+              onClick={() => onSave(val)}
+              disabled={val === initial}
+              className="px-3 py-1 rounded bg-primary text-primary-foreground text-xs font-bold disabled:opacity-50"
+            >
+              {t(lang, "সংরক্ষণ", "Save Note")}
+            </button>
+            {initial && (
+              <button onClick={() => { setVal(""); onSave(""); }} className="px-3 py-1 rounded border border-border text-xs">
+                {t(lang, "মুছুন", "Clear")}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function JerseyOrdersManager({ lang }: { lang: Lang }) {
   const [rows, setRows] = useState<JerseyOrder[]>([]);
   const [payments, setPayments] = useState<Record<string, JerseyPayment[]>>({});
