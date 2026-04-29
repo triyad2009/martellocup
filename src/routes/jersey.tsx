@@ -498,9 +498,30 @@ function JerseyPage() {
                     "Your Cash on Delivery order has been received. We'll contact you shortly to confirm.",
                   )}
                 </p>
-                <div className="rounded-xl bg-muted p-4 inline-block text-left text-sm space-y-1">
-                  <p><span className="text-muted-foreground">{T("অর্ডার আইডি", "Order ID")}:</span> <span className="font-mono font-bold">{orderId.slice(0, 8)}</span></p>
+                <div className="rounded-xl bg-muted p-4 inline-block text-left text-sm space-y-1.5">
+                  <p>
+                    <span className="text-muted-foreground">{T("অর্ডার আইডি", "Order ID")}:</span>{" "}
+                    <button
+                      onClick={() => navigator.clipboard?.writeText(orderId)}
+                      className="font-mono font-bold text-xs break-all hover:text-primary"
+                      title={T("কপি করুন", "Click to copy")}
+                    >
+                      {orderId}
+                    </button>
+                  </p>
                   <p><span className="text-muted-foreground">{T("পরিশোধযোগ্য", "Pay on delivery")}:</span> <span className="font-bold text-primary">৳ {orderAmount}</span></p>
+                  <p className="text-xs text-muted-foreground pt-1 border-t border-border mt-2">
+                    {T("এই আইডি সংরক্ষণ করুন। স্ট্যাটাস দেখতে পারবেন:", "Save this ID. Check status anytime at:")}
+                  </p>
+                </div>
+                <div className="mt-4">
+                  <a
+                    href={`/track-order?id=${orderId}`}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-bold hover:bg-primary-glow"
+                  >
+                    <Search className="h-4 w-4" />
+                    {T("অর্ডার ট্র্যাক করুন", "Track this order")}
+                  </a>
                 </div>
               </div>
             ) : (
