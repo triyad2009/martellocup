@@ -129,17 +129,27 @@ function JerseyPage() {
 
   return (
     <div className="bg-background">
-      <div className="container max-w-4xl mx-auto px-4 pt-4">
-        <Link
-          to="/track-order"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
-        >
-          <Search className="h-3.5 w-3.5" />
-          {T("অর্ডার ট্র্যাক করুন", "Track your order")}
-        </Link>
-      </div>
-
-      <section className="relative bg-gradient-primary text-white py-12 sm:py-16 mt-4 rounded-2xl mx-4">
+      <section className="relative bg-gradient-primary text-white py-12 sm:py-16">
+        <div className="container max-w-4xl mx-auto px-4 text-center">
+          <Shirt className="h-12 w-12 mx-auto mb-3 opacity-90" />
+          <h1 className="font-display text-3xl sm:text-5xl font-extrabold mb-3">
+            {T("জার্সি রেজিস্ট্রেশন", "Jersey Registration")}
+          </h1>
+          <p className="opacity-90 max-w-xl mx-auto">
+            {T(
+              "আপনার অফিসিয়াল Martello Cup জার্সি অর্ডার করুন — সাইজ, নাম ও নম্বর কাস্টমাইজ সহ।",
+              "Order your official Martello Cup jersey with custom name, number & size.",
+            )}
+          </p>
+          <a
+            href="/track-order"
+            className="inline-flex items-center gap-1.5 mt-4 text-xs font-semibold bg-white/15 hover:bg-white/25 px-3 py-1.5 rounded-full backdrop-blur"
+          >
+            <Search className="h-3.5 w-3.5" />
+            {T("অর্ডার ট্র্যাক করুন", "Track your order")}
+          </a>
+        </div>
+      </section>
         <div className="container max-w-4xl mx-auto px-4 text-center">
           <Shirt className="h-12 w-12 mx-auto mb-3 opacity-90" />
           <h1 className="font-display text-3xl sm:text-5xl font-extrabold mb-3">
@@ -508,8 +518,6 @@ function JerseyPage() {
           </motion.div>
         )}
       </section>
-
-      <Footer />
     </div>
   );
 }
