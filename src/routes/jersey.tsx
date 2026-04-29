@@ -394,6 +394,8 @@ function JerseyPage() {
                 type="email"
                 className="w-full px-3 py-2.5 rounded-lg border border-border bg-background"
               />
+              <textarea
+                value={customer.address}
                 onChange={(e) => setCustomer({ ...customer, address: e.target.value })}
                 placeholder={T("সম্পূর্ণ ঠিকানা *", "Full delivery address *")}
                 rows={2}
