@@ -150,19 +150,6 @@ function JerseyPage() {
           </a>
         </div>
       </section>
-        <div className="container max-w-4xl mx-auto px-4 text-center">
-          <Shirt className="h-12 w-12 mx-auto mb-3 opacity-90" />
-          <h1 className="font-display text-3xl sm:text-5xl font-extrabold mb-3">
-            {T("জার্সি রেজিস্ট্রেশন", "Jersey Registration")}
-          </h1>
-          <p className="opacity-90 max-w-xl mx-auto">
-            {T(
-              "আপনার অফিসিয়াল Martello Cup জার্সি অর্ডার করুন — সাইজ, নাম ও নম্বর কাস্টমাইজ সহ।",
-              "Order your official Martello Cup jersey with custom name, number & size.",
-            )}
-          </p>
-        </div>
-      </section>
 
       <section className="container max-w-4xl mx-auto px-4 py-10">
         {/* Stepper */}
