@@ -765,6 +765,7 @@ type JerseyOrder = {
   product_name: string;
   customer_name: string;
   customer_phone: string;
+  customer_email: string | null;
   delivery_address: string;
   jersey_print_name: string;
   jersey_number: number | null;
@@ -774,6 +775,7 @@ type JerseyOrder = {
   delivery_charge: number;
   total_amount: number;
   notes: string | null;
+  admin_notes: string | null;
   status: string;
   payment_method: string;
   rejection_reason: string | null;
