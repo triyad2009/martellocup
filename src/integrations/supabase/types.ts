@@ -235,11 +235,14 @@ export type Database = {
       }
       jersey_orders: {
         Row: {
+          admin_notes: string | null
           created_at: string
+          customer_email: string | null
           customer_name: string
           customer_phone: string
           delivery_address: string
           delivery_charge: number
+          email_sent_at: string | null
           id: string
           jersey_number: number | null
           jersey_print_name: string
@@ -256,11 +259,14 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          admin_notes?: string | null
           created_at?: string
+          customer_email?: string | null
           customer_name: string
           customer_phone: string
           delivery_address: string
           delivery_charge?: number
+          email_sent_at?: string | null
           id?: string
           jersey_number?: number | null
           jersey_print_name: string
@@ -277,11 +283,14 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          admin_notes?: string | null
           created_at?: string
+          customer_email?: string | null
           customer_name?: string
           customer_phone?: string
           delivery_address?: string
           delivery_charge?: number
+          email_sent_at?: string | null
           id?: string
           jersey_number?: number | null
           jersey_print_name?: string

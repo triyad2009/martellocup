@@ -765,6 +765,7 @@ type JerseyOrder = {
   product_name: string;
   customer_name: string;
   customer_phone: string;
+  customer_email: string | null;
   delivery_address: string;
   jersey_print_name: string;
   jersey_number: number | null;
@@ -774,6 +775,7 @@ type JerseyOrder = {
   delivery_charge: number;
   total_amount: number;
   notes: string | null;
+  admin_notes: string | null;
   status: string;
   payment_method: string;
   rejection_reason: string | null;
@@ -795,6 +797,45 @@ type JerseyPayment = {
   notes: string | null;
   created_at: string;
 };
+
+function AdminNoteEditor({ initial, onSave, lang }: { initial: string; onSave: (v: string) => void | Promise<void>; lang: Lang }) {
+  const [val, setVal] = useState(initial);
+  const [open, setOpen] = useState(false);
+  useEffect(() => { setVal(initial); }, [initial]);
+  return (
+    <div className="rounded-lg border border-border bg-muted/20 p-3">
+      <button onClick={() => setOpen((v) => !v)} className="w-full text-left text-xs font-bold text-primary inline-flex items-center justify-between">
+        <span>📌 {t(lang, "এডমিন নোট (কাস্টমার দেখতে পাবে)", "Admin Note (visible to customer)")} {initial && <span className="text-success">✓</span>}</span>
+        <span>{open ? "▼" : "▶"}</span>
+      </button>
+      {open && (
+        <div className="mt-2 space-y-2">
+          <textarea
+            value={val}
+            onChange={(e) => setVal(e.target.value)}
+            rows={3}
+            placeholder={t(lang, "অর্ডার সম্পর্কে কাস্টমারকে বার্তা...", "Message to customer about the order...")}
+            className="w-full px-2 py-1.5 rounded border border-border bg-background text-xs"
+          />
+          <div className="flex gap-2">
+            <button
+              onClick={() => onSave(val)}
+              disabled={val === initial}
+              className="px-3 py-1 rounded bg-primary text-primary-foreground text-xs font-bold disabled:opacity-50"
+            >
+              {t(lang, "সংরক্ষণ", "Save Note")}
+            </button>
+            {initial && (
+              <button onClick={() => { setVal(""); onSave(""); }} className="px-3 py-1 rounded border border-border text-xs">
+                {t(lang, "মুছুন", "Clear")}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function JerseyOrdersManager({ lang }: { lang: Lang }) {
   const [rows, setRows] = useState<JerseyOrder[]>([]);
@@ -832,6 +873,10 @@ export function JerseyOrdersManager({ lang }: { lang: Lang }) {
     if (reason !== undefined) patch.rejection_reason = reason;
     const { error } = await (supabase as any).from("payment_submissions").update(patch).eq("id", id);
     if (error) toast.error(error.message); else { toast.success(t(lang, "আপডেট হয়েছে", "Updated")); load(); }
+  };
+  const setAdminNotes = async (id: string, admin_notes: string) => {
+    const { error } = await (supabase as any).from("jersey_orders").update({ admin_notes }).eq("id", id);
+    if (error) toast.error(error.message); else { toast.success(t(lang, "নোট সংরক্ষিত", "Note saved")); load(); }
   };
   const remove = async (id: string) => {
     if (!confirm(t(lang, "মুছবেন?", "Delete?"))) return;
@@ -872,7 +917,15 @@ export function JerseyOrdersManager({ lang }: { lang: Lang }) {
                       {t(lang, "প্রিন্ট", "Print")}: <span className="font-mono font-bold uppercase">{o.jersey_print_name}</span>
                       {o.jersey_number != null && <> · #{o.jersey_number}</>}
                     </p>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">{t(lang, "অর্ডার আইডি", "Order ID")}: <span className="font-mono">{o.id.slice(0, 8)}</span> · {fmtDate(o.created_at)}</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      {t(lang, "অর্ডার আইডি", "Order ID")}:{" "}
+                      <button
+                        onClick={() => { navigator.clipboard?.writeText(o.id); toast.success(t(lang, "কপি হয়েছে", "Copied")); }}
+                        className="font-mono hover:text-primary"
+                        title={t(lang, "কপি করতে ক্লিক করুন", "Click to copy")}
+                      >{o.id}</button>
+                      {" · "}{fmtDate(o.created_at)}
+                    </p>
                   </div>
                   <div className="flex flex-col items-end gap-1 shrink-0">
                     <span className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase ${
@@ -890,13 +943,22 @@ export function JerseyOrdersManager({ lang }: { lang: Lang }) {
                 <div className="grid sm:grid-cols-2 gap-x-4 gap-y-1 text-xs">
                   <p><span className="text-muted-foreground">👤 {t(lang, "নাম", "Name")}:</span> <span className="font-semibold">{o.customer_name}</span></p>
                   <p><span className="text-muted-foreground">📞 {t(lang, "ফোন", "Phone")}:</span> <a href={`tel:${o.customer_phone}`} className="font-semibold text-primary">{o.customer_phone}</a></p>
+                  {o.customer_email && (
+                    <p className="sm:col-span-2"><span className="text-muted-foreground">✉️ {t(lang, "ইমেইল", "Email")}:</span> <a href={`mailto:${o.customer_email}`} className="font-semibold text-primary">{o.customer_email}</a></p>
+                  )}
                   <p className="sm:col-span-2"><span className="text-muted-foreground">📍 {t(lang, "ঠিকানা", "Address")}:</span> {o.delivery_address}</p>
                   <p><span className="text-muted-foreground">{t(lang, "একক দাম", "Unit Price")}:</span> ৳ {o.unit_price}</p>
                   <p><span className="text-muted-foreground">{t(lang, "ডেলিভারি", "Delivery")}:</span> ৳ {o.delivery_charge}</p>
                   <p className="sm:col-span-2 text-sm"><span className="text-muted-foreground">💰 {t(lang, "সর্বমোট", "Total")}:</span> <span className="font-bold text-base">৳ {o.total_amount}</span></p>
-                  {o.notes && <p className="sm:col-span-2"><span className="text-muted-foreground">📝 {t(lang, "নোট", "Note")}:</span> {o.notes}</p>}
+                  {o.notes && <p className="sm:col-span-2"><span className="text-muted-foreground">📝 {t(lang, "কাস্টমার নোট", "Customer Note")}:</span> {o.notes}</p>}
                   {o.rejection_reason && <p className="sm:col-span-2 text-destructive">✗ {o.rejection_reason}</p>}
                 </div>
+
+                <AdminNoteEditor
+                  initial={o.admin_notes || ""}
+                  onSave={(v) => setAdminNotes(o.id, v)}
+                  lang={lang}
+                />
 
                 <button
                   onClick={() => setExpanded((e) => ({ ...e, [o.id]: !e[o.id] }))}

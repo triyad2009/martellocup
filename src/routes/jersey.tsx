@@ -1,12 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Shirt, ChevronRight, ChevronLeft, Loader2, Ruler, Check } from "lucide-react";
+import { Shirt, ChevronRight, ChevronLeft, Loader2, Ruler, Check, Search } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useTable } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { PaymentFlow } from "@/components/PaymentFlow";
 
 export const Route = createFileRoute("/jersey")({
@@ -59,7 +58,7 @@ function JerseyPage() {
   const [printName, setPrintName] = useState("");
   const [jerseyNumber, setJerseyNumber] = useState("");
   const [qty, setQty] = useState(1);
-  const [customer, setCustomer] = useState({ name: "", phone: "", address: "" });
+  const [customer, setCustomer] = useState({ name: "", phone: "", email: "", address: "" });
   const [notes, setNotes] = useState("");
   const [showSizeChart, setShowSizeChart] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"online" | "cod">("online");
@@ -101,6 +100,7 @@ function JerseyPage() {
         product_name: product.name,
         customer_name: customer.name.trim(),
         customer_phone: customer.phone.trim(),
+        customer_email: customer.email.trim() || null,
         delivery_address: customer.address.trim(),
         jersey_print_name: printName.trim(),
         jersey_number: jerseyNumber ? parseInt(jerseyNumber, 10) : null,
@@ -128,9 +128,7 @@ function JerseyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
+    <div className="bg-background">
       <section className="relative bg-gradient-primary text-white py-12 sm:py-16">
         <div className="container max-w-4xl mx-auto px-4 text-center">
           <Shirt className="h-12 w-12 mx-auto mb-3 opacity-90" />
@@ -143,6 +141,13 @@ function JerseyPage() {
               "Order your official Martello Cup jersey with custom name, number & size.",
             )}
           </p>
+          <a
+            href="/track-order"
+            className="inline-flex items-center gap-1.5 mt-4 text-xs font-semibold bg-white/15 hover:bg-white/25 px-3 py-1.5 rounded-full backdrop-blur"
+          >
+            <Search className="h-3.5 w-3.5" />
+            {T("অর্ডার ট্র্যাক করুন", "Track your order")}
+          </a>
         </div>
       </section>
 
@@ -381,6 +386,14 @@ function JerseyPage() {
                 inputMode="tel"
                 className="w-full px-3 py-2.5 rounded-lg border border-border bg-background"
               />
+              <input
+                value={customer.email}
+                onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
+                placeholder={T("ইমেইল (ঐচ্ছিক — অর্ডার আপডেট পেতে)", "Email (optional — for order updates)")}
+                inputMode="email"
+                type="email"
+                className="w-full px-3 py-2.5 rounded-lg border border-border bg-background"
+              />
               <textarea
                 value={customer.address}
                 onChange={(e) => setCustomer({ ...customer, address: e.target.value })}
@@ -485,9 +498,30 @@ function JerseyPage() {
                     "Your Cash on Delivery order has been received. We'll contact you shortly to confirm.",
                   )}
                 </p>
-                <div className="rounded-xl bg-muted p-4 inline-block text-left text-sm space-y-1">
-                  <p><span className="text-muted-foreground">{T("অর্ডার আইডি", "Order ID")}:</span> <span className="font-mono font-bold">{orderId.slice(0, 8)}</span></p>
+                <div className="rounded-xl bg-muted p-4 inline-block text-left text-sm space-y-1.5">
+                  <p>
+                    <span className="text-muted-foreground">{T("অর্ডার আইডি", "Order ID")}:</span>{" "}
+                    <button
+                      onClick={() => navigator.clipboard?.writeText(orderId)}
+                      className="font-mono font-bold text-xs break-all hover:text-primary"
+                      title={T("কপি করুন", "Click to copy")}
+                    >
+                      {orderId}
+                    </button>
+                  </p>
                   <p><span className="text-muted-foreground">{T("পরিশোধযোগ্য", "Pay on delivery")}:</span> <span className="font-bold text-primary">৳ {orderAmount}</span></p>
+                  <p className="text-xs text-muted-foreground pt-1 border-t border-border mt-2">
+                    {T("এই আইডি সংরক্ষণ করুন। স্ট্যাটাস দেখতে পারবেন:", "Save this ID. Check status anytime at:")}
+                  </p>
+                </div>
+                <div className="mt-4">
+                  <a
+                    href={`/track-order?id=${orderId}`}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-bold hover:bg-primary-glow"
+                  >
+                    <Search className="h-4 w-4" />
+                    {T("অর্ডার ট্র্যাক করুন", "Track this order")}
+                  </a>
                 </div>
               </div>
             ) : (
@@ -500,8 +534,6 @@ function JerseyPage() {
           </motion.div>
         )}
       </section>
-
-      <Footer />
     </div>
   );
 }

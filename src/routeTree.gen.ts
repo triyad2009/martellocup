@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TrackOrderRouteImport } from './routes/track-order'
 import { Route as TicketsRouteImport } from './routes/tickets'
 import { Route as TeamsRouteImport } from './routes/teams'
 import { Route as SponsorsRouteImport } from './routes/sponsors'
@@ -26,6 +27,11 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TrackOrderRoute = TrackOrderRouteImport.update({
+  id: '/track-order',
+  path: '/track-order',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TicketsRoute = TicketsRouteImport.update({
   id: '/tickets',
   path: '/tickets',
@@ -124,6 +130,7 @@ export interface FileRoutesByFullPath {
   '/sponsors': typeof SponsorsRoute
   '/teams': typeof TeamsRoute
   '/tickets': typeof TicketsRoute
+  '/track-order': typeof TrackOrderRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/sponsors': typeof SponsorsRoute
   '/teams': typeof TeamsRoute
   '/tickets': typeof TicketsRoute
+  '/track-order': typeof TrackOrderRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/sponsors': typeof SponsorsRoute
   '/teams': typeof TeamsRoute
   '/tickets': typeof TicketsRoute
+  '/track-order': typeof TrackOrderRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/sponsors'
     | '/teams'
     | '/tickets'
+    | '/track-order'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/sponsors'
     | '/teams'
     | '/tickets'
+    | '/track-order'
   id:
     | '__root__'
     | '/'
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
     | '/sponsors'
     | '/teams'
     | '/tickets'
+    | '/track-order'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -236,10 +248,18 @@ export interface RootRouteChildren {
   SponsorsRoute: typeof SponsorsRoute
   TeamsRoute: typeof TeamsRoute
   TicketsRoute: typeof TicketsRoute
+  TrackOrderRoute: typeof TrackOrderRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/track-order': {
+      id: '/track-order'
+      path: '/track-order'
+      fullPath: '/track-order'
+      preLoaderRoute: typeof TrackOrderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tickets': {
       id: '/tickets'
       path: '/tickets'
@@ -372,6 +392,7 @@ const rootRouteChildren: RootRouteChildren = {
   SponsorsRoute: SponsorsRoute,
   TeamsRoute: TeamsRoute,
   TicketsRoute: TicketsRoute,
+  TrackOrderRoute: TrackOrderRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
