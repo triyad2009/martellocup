@@ -1,12 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Shirt, ChevronRight, ChevronLeft, Loader2, Ruler, Check } from "lucide-react";
+import { Shirt, ChevronRight, ChevronLeft, Loader2, Ruler, Check, Search } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useTable } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { PaymentFlow } from "@/components/PaymentFlow";
 
 export const Route = createFileRoute("/jersey")({
@@ -59,7 +58,7 @@ function JerseyPage() {
   const [printName, setPrintName] = useState("");
   const [jerseyNumber, setJerseyNumber] = useState("");
   const [qty, setQty] = useState(1);
-  const [customer, setCustomer] = useState({ name: "", phone: "", address: "" });
+  const [customer, setCustomer] = useState({ name: "", phone: "", email: "", address: "" });
   const [notes, setNotes] = useState("");
   const [showSizeChart, setShowSizeChart] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"online" | "cod">("online");
@@ -101,6 +100,7 @@ function JerseyPage() {
         product_name: product.name,
         customer_name: customer.name.trim(),
         customer_phone: customer.phone.trim(),
+        customer_email: customer.email.trim() || null,
         delivery_address: customer.address.trim(),
         jersey_print_name: printName.trim(),
         jersey_number: jerseyNumber ? parseInt(jerseyNumber, 10) : null,
@@ -128,10 +128,18 @@ function JerseyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+    <div className="bg-background">
+      <div className="container max-w-4xl mx-auto px-4 pt-4">
+        <Link
+          to="/track-order"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+        >
+          <Search className="h-3.5 w-3.5" />
+          {T("অর্ডার ট্র্যাক করুন", "Track your order")}
+        </Link>
+      </div>
 
-      <section className="relative bg-gradient-primary text-white py-12 sm:py-16">
+      <section className="relative bg-gradient-primary text-white py-12 sm:py-16 mt-4 rounded-2xl mx-4">
         <div className="container max-w-4xl mx-auto px-4 text-center">
           <Shirt className="h-12 w-12 mx-auto mb-3 opacity-90" />
           <h1 className="font-display text-3xl sm:text-5xl font-extrabold mb-3">
