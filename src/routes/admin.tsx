@@ -96,6 +96,7 @@ function AdminPage() {
     { id: "sponsors", label: lang === "bn" ? "স্পন্সর" : "Sponsors", icon: Heart },
     { id: "about", label: lang === "bn" ? "আমাদের সম্পর্কে" : "About", icon: Info },
     { id: "contact", label: lang === "bn" ? "যোগাযোগ" : "Contact", icon: Phone },
+    { id: "members", label: lang === "bn" ? "সদস্য" : "Members", icon: Users },
     { id: "registrations", label: lang === "bn" ? "নিবন্ধন" : "Registrations", icon: ClipboardList },
     { id: "tiers", label: lang === "bn" ? "টিকিট" : "Tickets", icon: Ticket },
     { id: "methods", label: lang === "bn" ? "পেমেন্ট মেথড" : "Payment Methods", icon: Wallet },
