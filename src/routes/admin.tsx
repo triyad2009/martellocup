@@ -44,6 +44,7 @@ function AdminPage() {
   const { user, loading: authLoading } = useAuth();
   const { isAdmin, isSuperAdmin, loading: roleLoading } = useUserRoles();
   const { lang } = useI18n();
+  const uiLang: "bn" | "en" = lang === "en" ? "en" : "bn";
   const [tab, setTab] = useState<TabId>("settings");
 
   if (authLoading || roleLoading) {
@@ -137,25 +138,25 @@ function AdminPage() {
         })}
       </div>
 
-      {tab === "settings" && <SettingsManager lang={lang} />}
-      {tab === "hero" && <HeroStatsManager lang={lang} />}
-      {tab === "teams" && <TeamsManager lang={lang} />}
-      {tab === "players" && <PlayersManager lang={lang} />}
-      {tab === "fixtures" && <FixturesManager lang={lang} />}
-      {tab === "results" && <ResultsManager lang={lang} />}
-      {tab === "points" && <PointsManager lang={lang} />}
-      {tab === "news" && <NewsManager lang={lang} />}
-      {tab === "gallery" && <GalleryManager lang={lang} />}
-      {tab === "sponsors" && <SponsorsManager lang={lang} />}
-      {tab === "about" && <AboutManager lang={lang} />}
-      {tab === "contact" && <ContactManager lang={lang} />}
-      {tab === "registrations" && <RegistrationsManager lang={lang} />}
-      {tab === "tiers" && <TicketTiersManager lang={lang} />}
-      {tab === "methods" && <PaymentMethodsManager lang={lang} />}
-      {tab === "payments" && <PaymentsManager lang={lang} />}
-      {tab === "jerseys" && <JerseyProductsManager lang={lang} />}
-      {tab === "jersey_orders" && <JerseyOrdersManager lang={lang} />}
-      {tab === "roles" && isSuperAdmin && <RolesManager lang={lang} currentUserId={user.id} />}
+      {tab === "settings" && <SettingsManager lang={uiLang} />}
+      {tab === "hero" && <HeroStatsManager lang={uiLang} />}
+      {tab === "teams" && <TeamsManager lang={uiLang} />}
+      {tab === "players" && <PlayersManager lang={uiLang} />}
+      {tab === "fixtures" && <FixturesManager lang={uiLang} />}
+      {tab === "results" && <ResultsManager lang={uiLang} />}
+      {tab === "points" && <PointsManager lang={uiLang} />}
+      {tab === "news" && <NewsManager lang={uiLang} />}
+      {tab === "gallery" && <GalleryManager lang={uiLang} />}
+      {tab === "sponsors" && <SponsorsManager lang={uiLang} />}
+      {tab === "about" && <AboutManager lang={uiLang} />}
+      {tab === "contact" && <ContactManager lang={uiLang} />}
+      {tab === "registrations" && <RegistrationsManager lang={uiLang} />}
+      {tab === "tiers" && <TicketTiersManager lang={uiLang} />}
+      {tab === "methods" && <PaymentMethodsManager lang={uiLang} />}
+      {tab === "payments" && <PaymentsManager lang={uiLang} />}
+      {tab === "jerseys" && <JerseyProductsManager lang={uiLang} />}
+      {tab === "jersey_orders" && <JerseyOrdersManager lang={uiLang} />}
+      {tab === "roles" && isSuperAdmin && <RolesManager lang={uiLang} currentUserId={user.id} />}
     </div>
   );
 }

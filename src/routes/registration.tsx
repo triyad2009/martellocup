@@ -66,7 +66,7 @@ const emptyPlayer = (): Player => ({ name: "", jersey: "", position: "MF", dob: 
 
 function RegistrationPage() {
   const { lang } = useI18n();
-  const t = (k: keyof typeof tx) => tx[k][lang];
+  const t = (k: keyof typeof tx) => tx[k][lang === "en" ? "en" : "bn"];
 
   const [form, setForm] = useState({
     team_name: "",
