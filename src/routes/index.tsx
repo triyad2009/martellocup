@@ -250,11 +250,13 @@ function HighlightsSection() {
     );
   }
 
+  const uiLang: "bn" | "en" = lang === "en" ? "en" : "bn";
+
   return (
     <section className="mx-auto max-w-7xl px-4 sm:px-6 py-14 grid lg:grid-cols-2 gap-8">
       {upcoming.length > 0 && (
         <div>
-          <SectionHeader icon={<Calendar className="h-5 w-5" />} title={lang === "bn" ? "আসন্ন ম্যাচ" : "Upcoming Matches"} to="/fixtures" lang={lang} />
+          <SectionHeader icon={<Calendar className="h-5 w-5" />} title={lang === "bn" ? "আসন্ন ম্যাচ" : "Upcoming Matches"} to="/fixtures" lang={uiLang} />
           <div className="space-y-3">
             {upcoming.map((f, i) => (
               <motion.div key={f.id} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className="rounded-xl bg-card border border-border shadow-card p-4">
@@ -273,7 +275,7 @@ function HighlightsSection() {
       )}
       {latestNews.length > 0 && (
         <div>
-          <SectionHeader icon={<Newspaper className="h-5 w-5" />} title={lang === "bn" ? "সর্বশেষ সংবাদ" : "Latest News"} to="/news" lang={lang} />
+          <SectionHeader icon={<Newspaper className="h-5 w-5" />} title={lang === "bn" ? "সর্বশেষ সংবাদ" : "Latest News"} to="/news" lang={uiLang} />
           <div className="space-y-3">
             {latestNews.map((n, i) => (
               <motion.div key={n.id} initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className="rounded-xl bg-card border border-border shadow-card p-4 flex gap-3">
