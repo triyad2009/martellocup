@@ -44,6 +44,7 @@ function AdminPage() {
   const { user, loading: authLoading } = useAuth();
   const { isAdmin, isSuperAdmin, loading: roleLoading } = useUserRoles();
   const { lang } = useI18n();
+  const uiLang: "bn" | "en" = lang === "en" ? "en" : "bn";
   const [tab, setTab] = useState<TabId>("settings");
 
   if (authLoading || roleLoading) {
