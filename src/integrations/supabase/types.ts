@@ -128,6 +128,103 @@ export type Database = {
         }
         Relationships: []
       }
+      feed_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          post_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          post_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feed_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "feed_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feed_likes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feed_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "feed_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feed_posts: {
+        Row: {
+          caption: string | null
+          content: string | null
+          created_at: string
+          id: string
+          media_type: string
+          media_url: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          caption?: string | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          media_type?: string
+          media_url?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          caption?: string | null
+          content?: string | null
+          created_at?: string
+          id?: string
+          media_type?: string
+          media_url?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       fixtures: {
         Row: {
           away_team: string
@@ -361,6 +458,72 @@ export type Database = {
           size_chart?: Json | null
           sort_order?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      members: {
+        Row: {
+          bio_bn: string | null
+          bio_en: string | null
+          bio_sat: string | null
+          created_at: string
+          email: string | null
+          facebook_url: string | null
+          id: string
+          instagram_url: string | null
+          name: string
+          phone: string | null
+          photo_url: string | null
+          role_bn: string
+          role_en: string
+          role_sat: string
+          sort_order: number
+          tiktok_url: string | null
+          updated_at: string
+          whatsapp_url: string | null
+          youtube_url: string | null
+        }
+        Insert: {
+          bio_bn?: string | null
+          bio_en?: string | null
+          bio_sat?: string | null
+          created_at?: string
+          email?: string | null
+          facebook_url?: string | null
+          id?: string
+          instagram_url?: string | null
+          name: string
+          phone?: string | null
+          photo_url?: string | null
+          role_bn?: string
+          role_en?: string
+          role_sat?: string
+          sort_order?: number
+          tiktok_url?: string | null
+          updated_at?: string
+          whatsapp_url?: string | null
+          youtube_url?: string | null
+        }
+        Update: {
+          bio_bn?: string | null
+          bio_en?: string | null
+          bio_sat?: string | null
+          created_at?: string
+          email?: string | null
+          facebook_url?: string | null
+          id?: string
+          instagram_url?: string | null
+          name?: string
+          phone?: string | null
+          photo_url?: string | null
+          role_bn?: string
+          role_en?: string
+          role_sat?: string
+          sort_order?: number
+          tiktok_url?: string | null
+          updated_at?: string
+          whatsapp_url?: string | null
+          youtube_url?: string | null
         }
         Relationships: []
       }
