@@ -111,7 +111,7 @@ export function Navbar() {
             {/* Right cluster */}
             <div className="flex items-center gap-2">
               <button
-                onClick={() => setLang(lang === "bn" ? "en" : "bn")}
+                onClick={() => setLang(lang === "bn" ? "en" : lang === "en" ? "sat" : "bn")}
                 className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border bg-card hover:border-primary hover:text-primary transition-colors text-xs sm:text-sm font-semibold"
                 aria-label="Toggle language"
               >
@@ -119,6 +119,8 @@ export function Navbar() {
                 <span className={lang === "bn" ? "text-primary" : ""}>BN</span>
                 <span className="text-muted-foreground">|</span>
                 <span className={lang === "en" ? "text-primary" : ""}>EN</span>
+                <span className="text-muted-foreground">|</span>
+                <span className={lang === "sat" ? "text-primary" : ""}>সাত</span>
               </button>
 
               {user ? (
