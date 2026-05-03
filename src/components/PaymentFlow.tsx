@@ -286,7 +286,7 @@ export function PaymentFlow({ submissionType, amount, registrationId, jerseyOrde
                 {T("সেন্ড মানির নিয়ম", "Send Money Instructions")}
               </p>
               <p className="text-sm whitespace-pre-wrap leading-relaxed">
-                {selected.instructions || defaultInstructions(selected.name, selected.account_number, lang)}
+                {selected.instructions || defaultInstructions(selected.name, selected.account_number, lang === "en" ? "en" : "bn")}
               </p>
             </div>
 
