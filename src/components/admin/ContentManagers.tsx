@@ -1013,3 +1013,72 @@ export function JerseyOrdersManager({ lang }: { lang: Lang }) {
     </Section>
   );
 }
+
+/* ===================== MEMBERS (Martello Cup members directory) ===================== */
+export function MembersManager({ lang }: { lang: Lang }) {
+  const { rows, loading, reload } = useRows("members");
+  const empty = {
+    name: "", role_bn: "", role_en: "", role_sat: "",
+    bio_bn: "", bio_en: "", bio_sat: "",
+    photo_url: "", phone: "", email: "",
+    facebook_url: "", instagram_url: "", youtube_url: "", tiktok_url: "", whatsapp_url: "",
+  };
+  const [draft, setDraft] = useState<any>(empty);
+
+  const add = async () => {
+    if (!draft.name.trim()) { toast.error(t(lang, "নাম আবশ্যক", "Name required")); return; }
+    const payload: any = { ...draft, sort_order: rows.length };
+    Object.keys(payload).forEach(k => { if (payload[k] === "") payload[k] = null; });
+    payload.name = draft.name.trim();
+    payload.role_bn = draft.role_bn || "";
+    payload.role_en = draft.role_en || "";
+    payload.role_sat = draft.role_sat || "";
+    const { error } = await supabase.from("members").insert(payload);
+    if (error) toast.error(error.message);
+    else { setDraft(empty); toast.success(t(lang, "যোগ হয়েছে", "Added")); reload(); }
+  };
+
+  return (
+    <Section title={t(lang, "সদস্য তালিকা", "Members")}>
+      <div className="rounded-xl border border-border p-4 space-y-3 bg-muted/20">
+        <h3 className="font-semibold">{t(lang, "নতুন সদস্য", "New Member")}</h3>
+        <div className="grid sm:grid-cols-2 gap-3">
+          <Input placeholder={t(lang, "নাম", "Name")} value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
+          <MediaUpload value={draft.photo_url} onChange={(u) => setDraft({ ...draft, photo_url: u || "" })} folder="members" label={t(lang, "ছবি আপলোড", "Upload Photo")} />
+          <Input placeholder={t(lang, "পদবী (বাংলা)", "Role (BN)")} value={draft.role_bn} onChange={(e) => setDraft({ ...draft, role_bn: e.target.value })} />
+          <Input placeholder={t(lang, "পদবী (English)", "Role (EN)")} value={draft.role_en} onChange={(e) => setDraft({ ...draft, role_en: e.target.value })} />
+          <Input placeholder={t(lang, "পদবী (সাতক্ষীরা)", "Role (SAT)")} value={draft.role_sat} onChange={(e) => setDraft({ ...draft, role_sat: e.target.value })} />
+          <Input placeholder={t(lang, "ফোন", "Phone")} value={draft.phone} onChange={(e) => setDraft({ ...draft, phone: e.target.value })} />
+          <Input placeholder={t(lang, "ইমেইল", "Email")} value={draft.email} onChange={(e) => setDraft({ ...draft, email: e.target.value })} />
+          <Input placeholder="Facebook URL" value={draft.facebook_url} onChange={(e) => setDraft({ ...draft, facebook_url: e.target.value })} />
+          <Input placeholder="Instagram URL" value={draft.instagram_url} onChange={(e) => setDraft({ ...draft, instagram_url: e.target.value })} />
+          <Input placeholder="YouTube URL" value={draft.youtube_url} onChange={(e) => setDraft({ ...draft, youtube_url: e.target.value })} />
+          <Input placeholder="TikTok URL" value={draft.tiktok_url} onChange={(e) => setDraft({ ...draft, tiktok_url: e.target.value })} />
+          <Input placeholder="WhatsApp URL" value={draft.whatsapp_url} onChange={(e) => setDraft({ ...draft, whatsapp_url: e.target.value })} />
+        </div>
+        <TArea rows={2} placeholder={t(lang, "পরিচিতি (বাংলা)", "Bio (BN)")} value={draft.bio_bn} onChange={(e) => setDraft({ ...draft, bio_bn: e.target.value })} />
+        <TArea rows={2} placeholder={t(lang, "পরিচিতি (English)", "Bio (EN)")} value={draft.bio_en} onChange={(e) => setDraft({ ...draft, bio_en: e.target.value })} />
+        <TArea rows={2} placeholder={t(lang, "পরিচিতি (সাতক্ষীরা)", "Bio (SAT)")} value={draft.bio_sat} onChange={(e) => setDraft({ ...draft, bio_sat: e.target.value })} />
+        <button onClick={add} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-semibold">
+          <Plus className="h-4 w-4" /> {t(lang, "যোগ করুন", "Add")}
+        </button>
+      </div>
+
+      {loading ? <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto my-6" /> : (
+        <div className="space-y-2">
+          {rows.map((m) => (
+            <div key={m.id} className="flex items-center gap-3 p-3 rounded-lg border border-border">
+              {m.photo_url ? <img src={m.photo_url} alt="" className="h-12 w-12 rounded-full object-cover" /> : <div className="h-12 w-12 rounded-full bg-muted" />}
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold truncate">{m.name}</p>
+                <p className="text-xs text-muted-foreground truncate">{m.role_bn} · {m.role_en}</p>
+              </div>
+              <Input type="number" className="!w-20" value={m.sort_order ?? 0} onChange={(e) => patch("members", m.id, { sort_order: Number(e.target.value) || 0 }, reload)} />
+              <button onClick={() => del("members", m.id, reload, lang)} className="p-2 text-destructive hover:bg-destructive/10 rounded"><Trash2 className="h-4 w-4" /></button>
+            </div>
+          ))}
+        </div>
+      )}
+    </Section>
+  );
+}
