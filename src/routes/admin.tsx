@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import {
   HeroStatsManager, TeamsManager, PlayersManager, FixturesManager, ResultsManager,
   PointsManager, NewsManager, GalleryManager, SponsorsManager, AboutManager, ContactManager,
-  JerseyProductsManager, JerseyOrdersManager,
+  JerseyProductsManager, JerseyOrdersManager, MembersManager,
 } from "@/components/admin/ContentManagers";
 
 export const Route = createFileRoute("/admin")({
@@ -36,7 +36,7 @@ type RoleRow = { user_id: string; role: AppRole };
 
 type TabId =
   | "settings" | "hero" | "teams" | "players" | "fixtures" | "results" | "points"
-  | "news" | "gallery" | "sponsors" | "about" | "contact"
+  | "news" | "gallery" | "sponsors" | "about" | "contact" | "members"
   | "registrations" | "tiers" | "methods" | "payments"
   | "jerseys" | "jersey_orders" | "roles";
 
@@ -96,6 +96,7 @@ function AdminPage() {
     { id: "sponsors", label: lang === "bn" ? "স্পন্সর" : "Sponsors", icon: Heart },
     { id: "about", label: lang === "bn" ? "আমাদের সম্পর্কে" : "About", icon: Info },
     { id: "contact", label: lang === "bn" ? "যোগাযোগ" : "Contact", icon: Phone },
+    { id: "members", label: lang === "bn" ? "সদস্য" : "Members", icon: Users },
     { id: "registrations", label: lang === "bn" ? "নিবন্ধন" : "Registrations", icon: ClipboardList },
     { id: "tiers", label: lang === "bn" ? "টিকিট" : "Tickets", icon: Ticket },
     { id: "methods", label: lang === "bn" ? "পেমেন্ট মেথড" : "Payment Methods", icon: Wallet },
@@ -150,6 +151,7 @@ function AdminPage() {
       {tab === "sponsors" && <SponsorsManager lang={uiLang} />}
       {tab === "about" && <AboutManager lang={uiLang} />}
       {tab === "contact" && <ContactManager lang={uiLang} />}
+      {tab === "members" && <MembersManager lang={uiLang} />}
       {tab === "registrations" && <RegistrationsManager lang={uiLang} />}
       {tab === "tiers" && <TicketTiersManager lang={uiLang} />}
       {tab === "methods" && <PaymentMethodsManager lang={uiLang} />}
