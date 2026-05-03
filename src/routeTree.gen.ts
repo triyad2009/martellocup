@@ -22,6 +22,7 @@ import { Route as MembersRouteImport } from './routes/members'
 import { Route as JerseyRouteImport } from './routes/jersey'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as FixturesRouteImport } from './routes/fixtures'
+import { Route as FeedRouteImport } from './routes/feed'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -93,6 +94,11 @@ const FixturesRoute = FixturesRouteImport.update({
   path: '/fixtures',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FeedRoute = FeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -125,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/feed': typeof FeedRoute
   '/fixtures': typeof FixturesRoute
   '/gallery': typeof GalleryRoute
   '/jersey': typeof JerseyRoute
@@ -145,6 +152,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/feed': typeof FeedRoute
   '/fixtures': typeof FixturesRoute
   '/gallery': typeof GalleryRoute
   '/jersey': typeof JerseyRoute
@@ -166,6 +174,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
+  '/feed': typeof FeedRoute
   '/fixtures': typeof FixturesRoute
   '/gallery': typeof GalleryRoute
   '/jersey': typeof JerseyRoute
@@ -188,6 +197,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/contact'
+    | '/feed'
     | '/fixtures'
     | '/gallery'
     | '/jersey'
@@ -208,6 +218,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/contact'
+    | '/feed'
     | '/fixtures'
     | '/gallery'
     | '/jersey'
@@ -228,6 +239,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/contact'
+    | '/feed'
     | '/fixtures'
     | '/gallery'
     | '/jersey'
@@ -249,6 +261,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
+  FeedRoute: typeof FeedRoute
   FixturesRoute: typeof FixturesRoute
   GalleryRoute: typeof GalleryRoute
   JerseyRoute: typeof JerseyRoute
@@ -357,6 +370,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FixturesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/feed': {
+      id: '/feed'
+      path: '/feed'
+      fullPath: '/feed'
+      preLoaderRoute: typeof FeedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
@@ -401,6 +421,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
+  FeedRoute: FeedRoute,
   FixturesRoute: FixturesRoute,
   GalleryRoute: GalleryRoute,
   JerseyRoute: JerseyRoute,

@@ -24,6 +24,8 @@ const NAV = [
   { to: "/sponsors", key: "nav.sponsors" },
   { to: "/about", key: "nav.about" },
   { to: "/contact", key: "nav.contact" },
+  { to: "/members", key: "nav.members" },
+  { to: "/feed", key: "nav.feed" },
 ] as const;
 
 export function Navbar() {
