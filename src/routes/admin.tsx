@@ -151,6 +151,7 @@ function AdminPage() {
       {tab === "sponsors" && <SponsorsManager lang={uiLang} />}
       {tab === "about" && <AboutManager lang={uiLang} />}
       {tab === "contact" && <ContactManager lang={uiLang} />}
+      {tab === "members" && <MembersManager lang={uiLang} />}
       {tab === "registrations" && <RegistrationsManager lang={uiLang} />}
       {tab === "tiers" && <TicketTiersManager lang={uiLang} />}
       {tab === "methods" && <PaymentMethodsManager lang={uiLang} />}
