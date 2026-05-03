@@ -32,7 +32,7 @@ const tx = {
 
 function AuthPage() {
   const { lang } = useI18n();
-  const t = (k: keyof typeof tx) => tx[k][lang];
+  const t = (k: keyof typeof tx) => tx[k][lang === "en" ? "en" : "bn"];
   const navigate = useNavigate();
   const { user } = useAuth();
 
