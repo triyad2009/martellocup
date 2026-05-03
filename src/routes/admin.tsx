@@ -36,7 +36,7 @@ type RoleRow = { user_id: string; role: AppRole };
 
 type TabId =
   | "settings" | "hero" | "teams" | "players" | "fixtures" | "results" | "points"
-  | "news" | "gallery" | "sponsors" | "about" | "contact"
+  | "news" | "gallery" | "sponsors" | "about" | "contact" | "members"
   | "registrations" | "tiers" | "methods" | "payments"
   | "jerseys" | "jersey_orders" | "roles";
 
