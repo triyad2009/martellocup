@@ -20,14 +20,16 @@ type Tier = {
 };
 
 type Props = {
-  submissionType: "ticket" | "registration" | "jersey";
+  submissionType: "ticket" | "registration" | "jersey" | "sponsor";
   amount?: number;
   registrationId?: string;
   jerseyOrderId?: string;
+  sponsorId?: string;
+  allowPromo?: boolean;
   onSuccess?: () => void;
 };
 
-export function PaymentFlow({ submissionType, amount, registrationId, jerseyOrderId, onSuccess }: Props) {
+export function PaymentFlow({ submissionType, amount, registrationId, jerseyOrderId, sponsorId, allowPromo = true, onSuccess }: Props) {
   const { lang } = useI18n();
   const [methods, setMethods] = useState<Method[]>([]);
   const [tiers, setTiers] = useState<Tier[]>([]);
@@ -42,6 +44,9 @@ export function PaymentFlow({ submissionType, amount, registrationId, jerseyOrde
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [promoInput, setPromoInput] = useState("");
+  const [promo, setPromo] = useState<{ code: string; discount: number } | null>(null);
+  const [promoErr, setPromoErr] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([
