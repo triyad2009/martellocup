@@ -412,6 +412,29 @@ export function PaymentFlow({ submissionType, amount, registrationId, jerseyOrde
               </Field>
             </div>
 
+            {allowPromo && baseAmount != null && (
+              <div className="mt-4 rounded-xl border border-border p-3">
+                <p className="text-xs font-semibold mb-2">{T("প্রোমো কোড (ঐচ্ছিক)", "Promo Code (optional)")}</p>
+                <div className="flex gap-2">
+                  <input
+                    value={promoInput}
+                    onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                    placeholder="CODE"
+                    className="flex-1 px-3 py-2 rounded-lg border border-border bg-background font-mono uppercase text-sm"
+                  />
+                  <button onClick={applyPromo} type="button" className="px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-bold">
+                    {T("প্রয়োগ", "Apply")}
+                  </button>
+                </div>
+                {promo && (
+                  <p className="text-xs text-success mt-2">
+                    ✓ {promo.code} — {T("ছাড়", "Discount")}: ৳{promo.discount} · {T("নতুন মোট", "New total")}: ৳{effectiveAmount}
+                  </p>
+                )}
+                {promoErr && <p className="text-xs text-destructive mt-2">{promoErr}</p>}
+              </div>
+            )}
+
             {error && (
               <p className="mt-3 text-sm text-destructive font-medium">{error}</p>
             )}
