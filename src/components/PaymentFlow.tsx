@@ -69,9 +69,41 @@ export function PaymentFlow({ submissionType, amount, registrationId, jerseyOrde
     });
   }, [submissionType]);
 
-  const effectiveAmount = tier?.price ?? amount;
+  const baseAmount = tier?.price ?? amount;
+  const effectiveAmount = baseAmount != null ? Math.max(0, baseAmount - (promo?.discount ?? 0)) : undefined;
 
   const T = (bn: string, en: string) => (lang === "bn" ? bn : en);
+
+  const applyPromo = async () => {
+    setPromoErr(null);
+    const code = promoInput.trim().toUpperCase();
+    if (!code) return;
+    const { data } = await (supabase as any)
+      .from("promo_codes")
+      .select("*")
+      .eq("code", code)
+      .eq("is_active", true)
+      .maybeSingle();
+    if (!data) {
+      setPromoErr(T("কোডটি সঠিক নয়", "Invalid code"));
+      setPromo(null);
+      return;
+    }
+    if (data.expires_at && new Date(data.expires_at).getTime() < Date.now()) {
+      setPromoErr(T("কোডের মেয়াদ শেষ", "Code expired")); setPromo(null); return;
+    }
+    if (data.max_uses != null && data.used_count >= data.max_uses) {
+      setPromoErr(T("কোডের সীমা শেষ", "Code limit reached")); setPromo(null); return;
+    }
+    if (data.applies_to !== "all" && data.applies_to !== submissionType) {
+      setPromoErr(T("এই কোড এখানে প্রযোজ্য নয়", "Code not applicable here")); setPromo(null); return;
+    }
+    if (baseAmount == null) { setPromoErr(T("পরিমাণ পাওয়া যায়নি", "Amount unavailable")); return; }
+    const discount = data.discount_type === "percentage"
+      ? Math.round((baseAmount * Number(data.discount_value)) / 100)
+      : Number(data.discount_value);
+    setPromo({ code, discount: Math.min(discount, baseAmount) });
+  };
 
   const copy = async (text: string) => {
     try {
@@ -107,6 +139,9 @@ export function PaymentFlow({ submissionType, amount, registrationId, jerseyOrde
       sender_last4: last4,
       registration_id: registrationId ?? null,
       jersey_order_id: jerseyOrderId ?? null,
+      sponsor_id: sponsorId ?? null,
+      promo_code: promo?.code ?? null,
+      discount_amount: promo?.discount ?? 0,
     } as any);
     setSubmitting(false);
     if (insErr) {
