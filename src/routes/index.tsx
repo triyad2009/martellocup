@@ -6,6 +6,7 @@ import { useI18n } from "@/lib/i18n";
 import { Countdown } from "@/components/Countdown";
 import { useTournamentSettings } from "@/lib/settings";
 import { useSingletonRow, useTable } from "@/lib/content";
+import { SponsorShowcase } from "@/components/SponsorShowcase";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -19,6 +20,7 @@ function Index() {
       <Hero />
       <StatsBar />
       <HighlightsSection />
+      <SponsorShowcase />
     </>
   );
 }

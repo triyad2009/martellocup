@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import {
   HeroStatsManager, TeamsManager, PlayersManager, FixturesManager, ResultsManager,
   PointsManager, NewsManager, GalleryManager, SponsorsManager, AboutManager, ContactManager,
-  JerseyProductsManager, JerseyOrdersManager, MembersManager,
+  JerseyProductsManager, JerseyOrdersManager, MembersManager, SponsorPackagesManager, PromoCodesManager,
 } from "@/components/admin/ContentManagers";
 
 export const Route = createFileRoute("/admin")({

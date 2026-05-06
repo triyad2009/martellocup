@@ -20,14 +20,16 @@ type Tier = {
 };
 
 type Props = {
-  submissionType: "ticket" | "registration" | "jersey";
+  submissionType: "ticket" | "registration" | "jersey" | "sponsor";
   amount?: number;
   registrationId?: string;
   jerseyOrderId?: string;
+  sponsorId?: string;
+  allowPromo?: boolean;
   onSuccess?: () => void;
 };
 
-export function PaymentFlow({ submissionType, amount, registrationId, jerseyOrderId, onSuccess }: Props) {
+export function PaymentFlow({ submissionType, amount, registrationId, jerseyOrderId, sponsorId, allowPromo = true, onSuccess }: Props) {
   const { lang } = useI18n();
   const [methods, setMethods] = useState<Method[]>([]);
   const [tiers, setTiers] = useState<Tier[]>([]);
@@ -42,6 +44,9 @@ export function PaymentFlow({ submissionType, amount, registrationId, jerseyOrde
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [promoInput, setPromoInput] = useState("");
+  const [promo, setPromo] = useState<{ code: string; discount: number } | null>(null);
+  const [promoErr, setPromoErr] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -64,9 +69,41 @@ export function PaymentFlow({ submissionType, amount, registrationId, jerseyOrde
     });
   }, [submissionType]);
 
-  const effectiveAmount = tier?.price ?? amount;
+  const baseAmount = tier?.price ?? amount;
+  const effectiveAmount = baseAmount != null ? Math.max(0, baseAmount - (promo?.discount ?? 0)) : undefined;
 
   const T = (bn: string, en: string) => (lang === "bn" ? bn : en);
+
+  const applyPromo = async () => {
+    setPromoErr(null);
+    const code = promoInput.trim().toUpperCase();
+    if (!code) return;
+    const { data } = await (supabase as any)
+      .from("promo_codes")
+      .select("*")
+      .eq("code", code)
+      .eq("is_active", true)
+      .maybeSingle();
+    if (!data) {
+      setPromoErr(T("কোডটি সঠিক নয়", "Invalid code"));
+      setPromo(null);
+      return;
+    }
+    if (data.expires_at && new Date(data.expires_at).getTime() < Date.now()) {
+      setPromoErr(T("কোডের মেয়াদ শেষ", "Code expired")); setPromo(null); return;
+    }
+    if (data.max_uses != null && data.used_count >= data.max_uses) {
+      setPromoErr(T("কোডের সীমা শেষ", "Code limit reached")); setPromo(null); return;
+    }
+    if (data.applies_to !== "all" && data.applies_to !== submissionType) {
+      setPromoErr(T("এই কোড এখানে প্রযোজ্য নয়", "Code not applicable here")); setPromo(null); return;
+    }
+    if (baseAmount == null) { setPromoErr(T("পরিমাণ পাওয়া যায়নি", "Amount unavailable")); return; }
+    const discount = data.discount_type === "percentage"
+      ? Math.round((baseAmount * Number(data.discount_value)) / 100)
+      : Number(data.discount_value);
+    setPromo({ code, discount: Math.min(discount, baseAmount) });
+  };
 
   const copy = async (text: string) => {
     try {
@@ -102,6 +139,9 @@ export function PaymentFlow({ submissionType, amount, registrationId, jerseyOrde
       sender_last4: last4,
       registration_id: registrationId ?? null,
       jersey_order_id: jerseyOrderId ?? null,
+      sponsor_id: sponsorId ?? null,
+      promo_code: promo?.code ?? null,
+      discount_amount: promo?.discount ?? 0,
     } as any);
     setSubmitting(false);
     if (insErr) {
@@ -371,6 +411,29 @@ export function PaymentFlow({ submissionType, amount, registrationId, jerseyOrde
                 />
               </Field>
             </div>
+
+            {allowPromo && baseAmount != null && (
+              <div className="mt-4 rounded-xl border border-border p-3">
+                <p className="text-xs font-semibold mb-2">{T("প্রোমো কোড (ঐচ্ছিক)", "Promo Code (optional)")}</p>
+                <div className="flex gap-2">
+                  <input
+                    value={promoInput}
+                    onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                    placeholder="CODE"
+                    className="flex-1 px-3 py-2 rounded-lg border border-border bg-background font-mono uppercase text-sm"
+                  />
+                  <button onClick={applyPromo} type="button" className="px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-bold">
+                    {T("প্রয়োগ", "Apply")}
+                  </button>
+                </div>
+                {promo && (
+                  <p className="text-xs text-success mt-2">
+                    ✓ {promo.code} — {T("ছাড়", "Discount")}: ৳{promo.discount} · {T("নতুন মোট", "New total")}: ৳{effectiveAmount}
+                  </p>
+                )}
+                {promoErr && <p className="text-xs text-destructive mt-2">{promoErr}</p>}
+              </div>
+            )}
 
             {error && (
               <p className="mt-3 text-sm text-destructive font-medium">{error}</p>

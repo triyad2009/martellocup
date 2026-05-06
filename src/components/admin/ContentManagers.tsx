@@ -465,16 +465,26 @@ export function GalleryManager({ lang }: { lang: Lang }) {
 /* ===================== SPONSORS ===================== */
 export function SponsorsManager({ lang }: { lang: Lang }) {
   const { rows, loading, reload } = useRows("sponsors");
-  const [d, setD] = useState({ name: "", tier: "gold", logo_url: "", website_url: "" });
+  const [filter, setFilter] = useState<"all" | "pending" | "approved">("all");
+  const [d, setD] = useState<any>({ name: "", tier: "gold", logo_url: "", banner_url: "", website_url: "", description_bn: "", description_en: "" });
 
   const add = async () => {
     if (!d.name) return toast.error(t(lang, "নাম আবশ্যক", "Name required"));
-    const { error } = await supabase.from("sponsors").insert({
-      name: d.name, tier: d.tier, logo_url: d.logo_url || null, website_url: d.website_url || null, sort_order: rows.length,
+    const { error } = await (supabase as any).from("sponsors").insert({
+      name: d.name, tier: d.tier, logo_url: d.logo_url || null, banner_url: d.banner_url || null,
+      website_url: d.website_url || null, description_bn: d.description_bn, description_en: d.description_en,
+      status: "approved", sort_order: rows.length,
     });
     if (error) toast.error(error.message);
-    else { setD({ name: "", tier: "gold", logo_url: "", website_url: "" }); reload(); }
+    else { setD({ name: "", tier: "gold", logo_url: "", banner_url: "", website_url: "", description_bn: "", description_en: "" }); reload(); }
   };
+
+  const setStatus = async (id: string, status: string) => {
+    await (supabase as any).from("sponsors").update({ status }).eq("id", id);
+    reload();
+  };
+
+  const filtered = filter === "all" ? rows : rows.filter((r) => r.status === filter);
 
   return (
     <div className="space-y-5">
@@ -482,26 +492,132 @@ export function SponsorsManager({ lang }: { lang: Lang }) {
         <div className="grid sm:grid-cols-2 gap-3">
           <Input placeholder={t(lang, "নাম", "Name")} value={d.name} onChange={(e) => setD({ ...d, name: e.target.value })} />
           <select value={d.tier} onChange={(e) => setD({ ...d, tier: e.target.value })} className="px-3 py-2.5 rounded-lg border border-border bg-background">
-            <option value="platinum">Platinum</option><option value="gold">Gold</option>
-            <option value="silver">Silver</option><option value="bronze">Bronze</option>
+            <option value="gold">Gold</option><option value="silver">Silver</option><option value="bronze">Bronze</option>
           </select>
           <Input placeholder="Website URL" value={d.website_url} onChange={(e) => setD({ ...d, website_url: e.target.value })} />
         </div>
+        <TArea rows={2} placeholder={t(lang, "বিবরণ (বাংলা)", "Description (Bangla)")} value={d.description_bn} onChange={(e) => setD({ ...d, description_bn: e.target.value })} />
+        <TArea rows={2} placeholder={t(lang, "বিবরণ (English)", "Description (English)")} value={d.description_en} onChange={(e) => setD({ ...d, description_en: e.target.value })} />
         <MediaUpload value={d.logo_url} onChange={(u) => setD({ ...d, logo_url: u ?? "" })} folder="sponsors" label="Logo" />
+        <MediaUpload value={d.banner_url} onChange={(u) => setD({ ...d, banner_url: u ?? "" })} folder="sponsors" label="Banner (Gold)" />
         <button onClick={add} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold">
           <Plus className="h-4 w-4" /> {t(lang, "যোগ", "Add")}
         </button>
       </Section>
       <Section title={`${t(lang, "সব স্পন্সর", "All Sponsors")} (${rows.length})`}>
+        <div className="flex gap-1.5 mb-3">
+          {(["all", "pending", "approved"] as const).map((f) => (
+            <button key={f} onClick={() => setFilter(f)} className={`text-xs px-2.5 py-1 rounded-md font-semibold ${filter === f ? "bg-primary text-primary-foreground" : "border border-border"}`}>{f}</button>
+          ))}
+        </div>
+        {loading ? <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" /> : (
+          <div className="space-y-2">
+            {filtered.map((r) => (
+              <div key={r.id} className="flex items-center gap-3 border border-border rounded-xl p-3">
+                {r.logo_url ? <img src={r.logo_url} className="h-10 w-10 object-contain bg-white rounded p-1" /> : <div className="h-10 w-10 bg-muted rounded" />}
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold truncate">{r.name}</p>
+                  <p className="text-xs text-muted-foreground capitalize">{r.tier} · <span className={r.status === "approved" ? "text-success" : "text-warning"}>{r.status}</span></p>
+                </div>
+                {r.status !== "approved" && (
+                  <button onClick={() => setStatus(r.id, "approved")} className="px-3 py-1 rounded bg-success text-success-foreground text-xs font-bold">Approve</button>
+                )}
+                <button onClick={() => del("sponsors", r.id, reload, lang)} className="p-2 text-destructive hover:bg-destructive/10 rounded"><Trash2 className="h-4 w-4" /></button>
+              </div>
+            ))}
+          </div>
+        )}
+      </Section>
+    </div>
+  );
+}
+
+/* ===================== SPONSOR PACKAGES ===================== */
+export function SponsorPackagesManager({ lang }: { lang: Lang }) {
+  const { rows, loading, reload } = useRows("sponsor_packages", "price", false);
+  return (
+    <Section title={t(lang, "স্পন্সর প্যাকেজ মূল্য", "Sponsor Package Pricing")}>
+      {loading ? <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" /> : (
+        <div className="space-y-3">
+          {rows.map((p) => (
+            <div key={p.id} className="rounded-xl border border-border p-4 space-y-2">
+              <div className="flex items-center gap-3">
+                <span className="font-display font-bold uppercase">{p.tier}</span>
+                <input type="number" defaultValue={p.price} onBlur={(e) => patch("sponsor_packages", p.id, { price: Number(e.target.value) }, reload)}
+                  className="px-3 py-1.5 rounded-lg border border-border bg-background w-32" />
+                <label className="text-xs inline-flex items-center gap-1">
+                  <input type="checkbox" defaultChecked={p.is_active} onChange={(e) => patch("sponsor_packages", p.id, { is_active: e.target.checked }, reload)} />
+                  {t(lang, "সক্রিয়", "Active")}
+                </label>
+              </div>
+              <TArea rows={2} placeholder={t(lang, "সুবিধা (বাংলা)", "Benefits (Bangla)")} defaultValue={p.benefits_bn}
+                onBlur={(e) => patch("sponsor_packages", p.id, { benefits_bn: e.target.value }, reload)} />
+              <TArea rows={2} placeholder={t(lang, "সুবিধা (English)", "Benefits (English)")} defaultValue={p.benefits_en}
+                onBlur={(e) => patch("sponsor_packages", p.id, { benefits_en: e.target.value }, reload)} />
+            </div>
+          ))}
+        </div>
+      )}
+    </Section>
+  );
+}
+
+/* ===================== PROMO CODES ===================== */
+export function PromoCodesManager({ lang }: { lang: Lang }) {
+  const { rows, loading, reload } = useRows("promo_codes", "created_at", false);
+  const [d, setD] = useState({ code: "", discount_type: "percentage", discount_value: "", applies_to: "all", max_uses: "", expires_at: "" });
+
+  const add = async () => {
+    if (!d.code.trim()) return toast.error(t(lang, "কোড আবশ্যক", "Code required"));
+    const { error } = await (supabase as any).from("promo_codes").insert({
+      code: d.code.trim().toUpperCase(),
+      discount_type: d.discount_type,
+      discount_value: Number(d.discount_value) || 0,
+      applies_to: d.applies_to,
+      max_uses: d.max_uses ? Number(d.max_uses) : null,
+      expires_at: d.expires_at ? new Date(d.expires_at).toISOString() : null,
+    });
+    if (error) toast.error(error.message);
+    else { setD({ code: "", discount_type: "percentage", discount_value: "", applies_to: "all", max_uses: "", expires_at: "" }); reload(); toast.success("Added"); }
+  };
+
+  return (
+    <div className="space-y-5">
+      <Section title={t(lang, "নতুন প্রোমো কোড", "New Promo Code")}>
+        <div className="grid sm:grid-cols-2 gap-3">
+          <Input placeholder="CODE" value={d.code} onChange={(e) => setD({ ...d, code: e.target.value.toUpperCase() })} />
+          <select value={d.discount_type} onChange={(e) => setD({ ...d, discount_type: e.target.value })} className="px-3 py-2.5 rounded-lg border border-border bg-background">
+            <option value="percentage">Percentage (%)</option>
+            <option value="fixed">Fixed (৳)</option>
+          </select>
+          <Input type="number" placeholder={t(lang, "ছাড়ের মান", "Discount value")} value={d.discount_value} onChange={(e) => setD({ ...d, discount_value: e.target.value })} />
+          <select value={d.applies_to} onChange={(e) => setD({ ...d, applies_to: e.target.value })} className="px-3 py-2.5 rounded-lg border border-border bg-background">
+            <option value="all">All</option><option value="jersey">Jersey</option><option value="ticket">Ticket</option><option value="sponsor">Sponsor</option>
+          </select>
+          <Input type="number" placeholder={t(lang, "সর্বোচ্চ ব্যবহার (ঐচ্ছিক)", "Max uses (optional)")} value={d.max_uses} onChange={(e) => setD({ ...d, max_uses: e.target.value })} />
+          <Input type="datetime-local" value={d.expires_at} onChange={(e) => setD({ ...d, expires_at: e.target.value })} />
+        </div>
+        <button onClick={add} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold">
+          <Plus className="h-4 w-4" /> {t(lang, "যোগ", "Add")}
+        </button>
+      </Section>
+      <Section title={`${t(lang, "সব কোড", "All Codes")} (${rows.length})`}>
         {loading ? <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" /> : (
           <div className="space-y-2">
             {rows.map((r) => (
               <div key={r.id} className="flex items-center gap-3 border border-border rounded-xl p-3">
-                {r.logo_url ? <img src={r.logo_url} className="h-10 w-10 object-contain bg-white rounded p-1" /> : <div className="h-10 w-10 bg-muted rounded" />}
-                <div className="flex-1 min-w-0"><p className="font-semibold truncate">{r.name}</p>
-                  <p className="text-xs text-muted-foreground capitalize">{r.tier}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="font-mono font-bold">{r.code}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {r.discount_type === "percentage" ? `${r.discount_value}%` : `৳${r.discount_value}`} · {r.applies_to} · used {r.used_count}{r.max_uses ? `/${r.max_uses}` : ""}
+                    {r.expires_at && ` · expires ${new Date(r.expires_at).toLocaleDateString()}`}
+                  </p>
                 </div>
-                <button onClick={() => del("sponsors", r.id, reload, lang)} className="p-2 text-destructive hover:bg-destructive/10 rounded"><Trash2 className="h-4 w-4" /></button>
+                <label className="text-xs inline-flex items-center gap-1">
+                  <input type="checkbox" defaultChecked={r.is_active} onChange={(e) => patch("promo_codes", r.id, { is_active: e.target.checked }, reload)} />
+                  {t(lang, "সক্রিয়", "Active")}
+                </label>
+                <button onClick={() => del("promo_codes", r.id, reload, lang)} className="p-2 text-destructive hover:bg-destructive/10 rounded"><Trash2 className="h-4 w-4" /></button>
               </div>
             ))}
           </div>
