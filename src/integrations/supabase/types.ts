@@ -339,6 +339,7 @@ export type Database = {
           customer_phone: string
           delivery_address: string
           delivery_charge: number
+          discount_amount: number
           email_sent_at: string | null
           id: string
           jersey_number: number | null
@@ -347,6 +348,7 @@ export type Database = {
           payment_method: string
           product_id: string | null
           product_name: string
+          promo_code: string | null
           quantity: number
           rejection_reason: string | null
           size: string
@@ -363,6 +365,7 @@ export type Database = {
           customer_phone: string
           delivery_address: string
           delivery_charge?: number
+          discount_amount?: number
           email_sent_at?: string | null
           id?: string
           jersey_number?: number | null
@@ -371,6 +374,7 @@ export type Database = {
           payment_method?: string
           product_id?: string | null
           product_name: string
+          promo_code?: string | null
           quantity?: number
           rejection_reason?: string | null
           size: string
@@ -387,6 +391,7 @@ export type Database = {
           customer_phone?: string
           delivery_address?: string
           delivery_charge?: number
+          discount_amount?: number
           email_sent_at?: string | null
           id?: string
           jersey_number?: number | null
@@ -395,6 +400,7 @@ export type Database = {
           payment_method?: string
           product_id?: string | null
           product_name?: string
+          promo_code?: string | null
           quantity?: number
           rejection_reason?: string | null
           size?: string
@@ -618,6 +624,7 @@ export type Database = {
         Row: {
           amount: number | null
           created_at: string
+          discount_amount: number
           id: string
           jersey_order_id: string | null
           notes: string | null
@@ -625,9 +632,11 @@ export type Database = {
           payer_phone: string
           payment_method_id: string | null
           payment_method_name: string | null
+          promo_code: string | null
           registration_id: string | null
           rejection_reason: string | null
           sender_last4: string
+          sponsor_id: string | null
           status: string
           submission_type: string
           ticket_tier_id: string | null
@@ -638,6 +647,7 @@ export type Database = {
         Insert: {
           amount?: number | null
           created_at?: string
+          discount_amount?: number
           id?: string
           jersey_order_id?: string | null
           notes?: string | null
@@ -645,9 +655,11 @@ export type Database = {
           payer_phone: string
           payment_method_id?: string | null
           payment_method_name?: string | null
+          promo_code?: string | null
           registration_id?: string | null
           rejection_reason?: string | null
           sender_last4: string
+          sponsor_id?: string | null
           status?: string
           submission_type?: string
           ticket_tier_id?: string | null
@@ -658,6 +670,7 @@ export type Database = {
         Update: {
           amount?: number | null
           created_at?: string
+          discount_amount?: number
           id?: string
           jersey_order_id?: string | null
           notes?: string | null
@@ -665,9 +678,11 @@ export type Database = {
           payer_phone?: string
           payment_method_id?: string | null
           payment_method_name?: string | null
+          promo_code?: string | null
           registration_id?: string | null
           rejection_reason?: string | null
           sender_last4?: string
+          sponsor_id?: string | null
           status?: string
           submission_type?: string
           ticket_tier_id?: string | null
@@ -816,6 +831,48 @@ export type Database = {
         }
         Relationships: []
       }
+      promo_codes: {
+        Row: {
+          applies_to: string
+          code: string
+          created_at: string
+          discount_type: string
+          discount_value: number
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          max_uses: number | null
+          updated_at: string
+          used_count: number
+        }
+        Insert: {
+          applies_to?: string
+          code: string
+          created_at?: string
+          discount_type?: string
+          discount_value?: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          updated_at?: string
+          used_count?: number
+        }
+        Update: {
+          applies_to?: string
+          code?: string
+          created_at?: string
+          discount_type?: string
+          discount_value?: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          updated_at?: string
+          used_count?: number
+        }
+        Relationships: []
+      }
       registrations: {
         Row: {
           address: string | null
@@ -915,36 +972,102 @@ export type Database = {
         }
         Relationships: []
       }
-      sponsors: {
+      sponsor_packages: {
         Row: {
+          benefits_bn: string
+          benefits_en: string
           created_at: string
           id: string
+          is_active: boolean
+          price: number
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          benefits_bn?: string
+          benefits_en?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          price?: number
+          tier: string
+          updated_at?: string
+        }
+        Update: {
+          benefits_bn?: string
+          benefits_en?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          price?: number
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sponsors: {
+        Row: {
+          amount_paid: number | null
+          banner_url: string | null
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          created_at: string
+          description_bn: string
+          description_en: string
+          facebook_url: string | null
+          id: string
+          instagram_url: string | null
           logo_url: string | null
           name: string
           sort_order: number
+          status: string
           tier: string
           updated_at: string
           website_url: string | null
+          youtube_url: string | null
         }
         Insert: {
+          amount_paid?: number | null
+          banner_url?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
           created_at?: string
+          description_bn?: string
+          description_en?: string
+          facebook_url?: string | null
           id?: string
+          instagram_url?: string | null
           logo_url?: string | null
           name: string
           sort_order?: number
+          status?: string
           tier?: string
           updated_at?: string
           website_url?: string | null
+          youtube_url?: string | null
         }
         Update: {
+          amount_paid?: number | null
+          banner_url?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
           created_at?: string
+          description_bn?: string
+          description_en?: string
+          facebook_url?: string | null
           id?: string
+          instagram_url?: string | null
           logo_url?: string | null
           name?: string
           sort_order?: number
+          status?: string
           tier?: string
           updated_at?: string
           website_url?: string | null
+          youtube_url?: string | null
         }
         Relationships: []
       }
