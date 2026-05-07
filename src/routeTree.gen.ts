@@ -15,6 +15,7 @@ import { Route as TeamsRouteImport } from './routes/teams'
 import { Route as SponsorsRouteImport } from './routes/sponsors'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as RegistrationRouteImport } from './routes/registration'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PointsTableRouteImport } from './routes/points-table'
 import { Route as PlayersRouteImport } from './routes/players'
 import { Route as NewsRouteImport } from './routes/news'
@@ -57,6 +58,11 @@ const ResultsRoute = ResultsRouteImport.update({
 const RegistrationRoute = RegistrationRouteImport.update({
   id: '/registration',
   path: '/registration',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PointsTableRoute = PointsTableRouteImport.update({
@@ -139,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/news': typeof NewsRoute
   '/players': typeof PlayersRoute
   '/points-table': typeof PointsTableRoute
+  '/profile': typeof ProfileRoute
   '/registration': typeof RegistrationRoute
   '/results': typeof ResultsRoute
   '/sponsors': typeof SponsorsRoute
@@ -160,6 +167,7 @@ export interface FileRoutesByTo {
   '/news': typeof NewsRoute
   '/players': typeof PlayersRoute
   '/points-table': typeof PointsTableRoute
+  '/profile': typeof ProfileRoute
   '/registration': typeof RegistrationRoute
   '/results': typeof ResultsRoute
   '/sponsors': typeof SponsorsRoute
@@ -182,6 +190,7 @@ export interface FileRoutesById {
   '/news': typeof NewsRoute
   '/players': typeof PlayersRoute
   '/points-table': typeof PointsTableRoute
+  '/profile': typeof ProfileRoute
   '/registration': typeof RegistrationRoute
   '/results': typeof ResultsRoute
   '/sponsors': typeof SponsorsRoute
@@ -205,6 +214,7 @@ export interface FileRouteTypes {
     | '/news'
     | '/players'
     | '/points-table'
+    | '/profile'
     | '/registration'
     | '/results'
     | '/sponsors'
@@ -226,6 +236,7 @@ export interface FileRouteTypes {
     | '/news'
     | '/players'
     | '/points-table'
+    | '/profile'
     | '/registration'
     | '/results'
     | '/sponsors'
@@ -247,6 +258,7 @@ export interface FileRouteTypes {
     | '/news'
     | '/players'
     | '/points-table'
+    | '/profile'
     | '/registration'
     | '/results'
     | '/sponsors'
@@ -269,6 +281,7 @@ export interface RootRouteChildren {
   NewsRoute: typeof NewsRoute
   PlayersRoute: typeof PlayersRoute
   PointsTableRoute: typeof PointsTableRoute
+  ProfileRoute: typeof ProfileRoute
   RegistrationRoute: typeof RegistrationRoute
   ResultsRoute: typeof ResultsRoute
   SponsorsRoute: typeof SponsorsRoute
@@ -319,6 +332,13 @@ declare module '@tanstack/react-router' {
       path: '/registration'
       fullPath: '/registration'
       preLoaderRoute: typeof RegistrationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/points-table': {
@@ -429,6 +449,7 @@ const rootRouteChildren: RootRouteChildren = {
   NewsRoute: NewsRoute,
   PlayersRoute: PlayersRoute,
   PointsTableRoute: PointsTableRoute,
+  ProfileRoute: ProfileRoute,
   RegistrationRoute: RegistrationRoute,
   ResultsRoute: ResultsRoute,
   SponsorsRoute: SponsorsRoute,

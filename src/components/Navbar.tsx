@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Globe, LogIn, LogOut, Shield } from "lucide-react";
+import { Menu, X, Globe, LogIn, LogOut, Shield, User as UserIcon } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { useUserRoles } from "@/lib/roles";
@@ -150,6 +150,14 @@ export function Navbar() {
                               {user.user_metadata?.display_name || user.email}
                             </p>
                           </div>
+                          <Link
+                            to="/profile"
+                            onClick={() => setUserMenu(false)}
+                            className="w-full flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-muted text-left"
+                          >
+                            <UserIcon className="h-4 w-4" />
+                            {lang === "bn" ? "প্রোফাইল" : "Profile"}
+                          </Link>
                           {isAdmin && (
                             <Link
                               to="/admin"
