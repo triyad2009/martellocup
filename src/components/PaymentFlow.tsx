@@ -126,7 +126,9 @@ export function PaymentFlow({ submissionType, amount, registrationId, jerseyOrde
       return;
     }
     setSubmitting(true);
+    const { data: { user: authUser } } = await supabase.auth.getUser();
     const { error: insErr } = await supabase.from("payment_submissions").insert({
+      user_id: authUser?.id ?? null,
       submission_type: submissionType,
       payment_method_id: selected.id,
       payment_method_name: selected.name,

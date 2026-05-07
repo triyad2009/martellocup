@@ -93,9 +93,11 @@ function JerseyPage() {
       return;
     }
     setCreating(true);
+    const { data: { user: authUser } } = await supabase.auth.getUser();
     const { data, error: insErr } = await (supabase as any)
       .from("jersey_orders")
       .insert({
+        user_id: authUser?.id ?? null,
         product_id: product.id,
         product_name: product.name,
         customer_name: customer.name.trim(),
