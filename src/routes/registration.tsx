@@ -116,13 +116,15 @@ function RegistrationPage() {
     }
 
     setSubmitting(true);
+    const { data: { user: authUser } } = await supabase.auth.getUser();
     const { data, error: dbError } = await supabase
       .from("registrations")
       .insert({
         ...form,
         players_data: validPlayers,
         status: "pending",
-      })
+        user_id: authUser?.id ?? null,
+      } as any)
       .select("id")
       .single();
     setSubmitting(false);

@@ -336,9 +336,11 @@ function ApplyDialog({ pkg, onClose }: { pkg: Pkg; onClose: () => void }) {
       return;
     }
     setSubmitting(true);
+    const { data: { user: authUser } } = await supabase.auth.getUser();
     const { data, error } = await supabase
       .from("sponsors")
       .insert({
+        user_id: authUser?.id ?? null,
         name: d.name.trim(),
         tier: pkg.tier,
         status: "pending",
