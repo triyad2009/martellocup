@@ -36,7 +36,7 @@ type RoleRow = { user_id: string; role: AppRole };
 
 type TabId =
   | "settings" | "hero" | "teams" | "players" | "fixtures" | "results" | "points"
-  | "news" | "gallery" | "sponsors" | "about" | "contact" | "members"
+  | "news" | "gallery" | "sponsors" | "sponsor_packages" | "promo_codes" | "about" | "contact" | "members"
   | "registrations" | "tiers" | "methods" | "payments"
   | "jerseys" | "jersey_orders" | "roles";
 
@@ -94,6 +94,8 @@ function AdminPage() {
     { id: "news", label: lang === "bn" ? "সংবাদ" : "News", icon: Newspaper },
     { id: "gallery", label: lang === "bn" ? "গ্যালারি" : "Gallery", icon: ImageIcon },
     { id: "sponsors", label: lang === "bn" ? "স্পন্সর" : "Sponsors", icon: Heart },
+    { id: "sponsor_packages", label: lang === "bn" ? "স্পন্সর প্যাকেজ" : "Sponsor Packages", icon: Package },
+    { id: "promo_codes", label: lang === "bn" ? "প্রোমো কোড" : "Promo Codes", icon: Ticket },
     { id: "about", label: lang === "bn" ? "আমাদের সম্পর্কে" : "About", icon: Info },
     { id: "contact", label: lang === "bn" ? "যোগাযোগ" : "Contact", icon: Phone },
     { id: "members", label: lang === "bn" ? "সদস্য" : "Members", icon: Users },
@@ -118,22 +120,22 @@ function AdminPage() {
         </h1>
       </motion.div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-2 mb-6 -mx-1 px-1">
+      {/* Tabs — mobile: 2-col grid; desktop: horizontal scroll */}
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 mb-6">
         {tabs.map((tb) => {
           const active = tab === tb.id;
           return (
             <button
               key={tb.id}
               onClick={() => setTab(tb.id)}
-              className={`shrink-0 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all ${
+              className={`inline-flex items-center justify-center sm:justify-start gap-2 px-3 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold border transition-all ${
                 active
                   ? "bg-primary text-primary-foreground border-primary shadow-glow-red"
                   : "bg-card border-border hover:border-primary"
               }`}
             >
-              <tb.icon className="h-4 w-4" />
-              {tb.label}
+              <tb.icon className="h-4 w-4 shrink-0" />
+              <span className="truncate">{tb.label}</span>
             </button>
           );
         })}
@@ -149,6 +151,8 @@ function AdminPage() {
       {tab === "news" && <NewsManager lang={uiLang} />}
       {tab === "gallery" && <GalleryManager lang={uiLang} />}
       {tab === "sponsors" && <SponsorsManager lang={uiLang} />}
+      {tab === "sponsor_packages" && <SponsorPackagesManager lang={uiLang} />}
+      {tab === "promo_codes" && <PromoCodesManager lang={uiLang} />}
       {tab === "about" && <AboutManager lang={uiLang} />}
       {tab === "contact" && <ContactManager lang={uiLang} />}
       {tab === "members" && <MembersManager lang={uiLang} />}
