@@ -298,6 +298,13 @@ export function Navbar() {
                         </p>
                       </div>
                     </div>
+                    <Link
+                      to="/profile"
+                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground font-semibold"
+                    >
+                      <UserIcon className="h-4 w-4" />
+                      {lang === "bn" ? "প্রোফাইল" : "Profile"}
+                    </Link>
                     <button
                       onClick={async () => { await signOut(); }}
                       className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-destructive/30 text-destructive hover:bg-destructive/10 font-semibold"
