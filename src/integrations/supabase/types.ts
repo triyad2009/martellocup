@@ -356,6 +356,7 @@ export type Database = {
           total_amount: number
           unit_price: number
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           admin_notes?: string | null
@@ -382,6 +383,7 @@ export type Database = {
           total_amount?: number
           unit_price?: number
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           admin_notes?: string | null
@@ -408,6 +410,7 @@ export type Database = {
           total_amount?: number
           unit_price?: number
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -639,10 +642,12 @@ export type Database = {
           sponsor_id: string | null
           status: string
           submission_type: string
+          ticket_code: string | null
           ticket_tier_id: string | null
           ticket_tier_name: string | null
           transaction_id: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           amount?: number | null
@@ -662,10 +667,12 @@ export type Database = {
           sponsor_id?: string | null
           status?: string
           submission_type?: string
+          ticket_code?: string | null
           ticket_tier_id?: string | null
           ticket_tier_name?: string | null
           transaction_id?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           amount?: number | null
@@ -685,10 +692,12 @@ export type Database = {
           sponsor_id?: string | null
           status?: string
           submission_type?: string
+          ticket_code?: string | null
           ticket_tier_id?: string | null
           ticket_tier_name?: string | null
           transaction_id?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -807,7 +816,9 @@ export type Database = {
           created_at: string
           display_name: string | null
           email: string | null
+          full_name: string | null
           id: string
+          phone: string | null
           updated_at: string
           user_id: string
         }
@@ -816,7 +827,9 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           email?: string | null
+          full_name?: string | null
           id?: string
+          phone?: string | null
           updated_at?: string
           user_id: string
         }
@@ -825,7 +838,9 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           email?: string | null
+          full_name?: string | null
           id?: string
+          phone?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -891,6 +906,7 @@ export type Database = {
           status: string
           team_name: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           address?: string | null
@@ -909,6 +925,7 @@ export type Database = {
           status?: string
           team_name: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           address?: string | null
@@ -927,6 +944,7 @@ export type Database = {
           status?: string
           team_name?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -1024,6 +1042,7 @@ export type Database = {
           status: string
           tier: string
           updated_at: string
+          user_id: string | null
           website_url: string | null
           youtube_url: string | null
         }
@@ -1045,6 +1064,7 @@ export type Database = {
           status?: string
           tier?: string
           updated_at?: string
+          user_id?: string | null
           website_url?: string | null
           youtube_url?: string | null
         }
@@ -1066,6 +1086,7 @@ export type Database = {
           status?: string
           tier?: string
           updated_at?: string
+          user_id?: string | null
           website_url?: string | null
           youtube_url?: string | null
         }
