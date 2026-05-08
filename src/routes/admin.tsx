@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   Shield, ClipboardList, Loader2, Search, UserPlus, UserMinus,
   Settings as SettingsIcon, Wallet, Receipt, Plus, Trash2, Save, Check, X, Ticket,
-  BarChart3, Users, User as UserIcon, CalendarDays, Trophy, ListOrdered, Newspaper, Image as ImageIcon, Heart, Info, Phone, Shirt, Package,
+  BarChart3, Users, User as UserIcon, CalendarDays, Trophy, ListOrdered, Newspaper, Image as ImageIcon, Heart, Info, Phone, Shirt, Package, Sparkles,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useUserRoles, type AppRole } from "@/lib/roles";
@@ -15,6 +15,7 @@ import {
   HeroStatsManager, TeamsManager, PlayersManager, FixturesManager, ResultsManager,
   PointsManager, NewsManager, GalleryManager, SponsorsManager, AboutManager, ContactManager,
   JerseyProductsManager, JerseyOrdersManager, MembersManager, SponsorPackagesManager, PromoCodesManager,
+  AIKnowledgeManager,
 } from "@/components/admin/ContentManagers";
 
 export const Route = createFileRoute("/admin")({
@@ -38,7 +39,7 @@ type TabId =
   | "settings" | "hero" | "teams" | "players" | "fixtures" | "results" | "points"
   | "news" | "gallery" | "sponsors" | "sponsor_packages" | "promo_codes" | "about" | "contact" | "members"
   | "registrations" | "tiers" | "methods" | "payments"
-  | "jerseys" | "jersey_orders" | "roles";
+  | "jerseys" | "jersey_orders" | "ai" | "roles";
 
 function AdminPage() {
   const { user, loading: authLoading } = useAuth();
@@ -105,6 +106,7 @@ function AdminPage() {
     { id: "payments", label: lang === "bn" ? "পেমেন্ট জমা" : "Payments", icon: Receipt },
     { id: "jerseys", label: lang === "bn" ? "জার্সি" : "Jerseys", icon: Shirt },
     { id: "jersey_orders", label: lang === "bn" ? "জার্সি অর্ডার" : "Jersey Orders", icon: Package },
+    { id: "ai", label: lang === "bn" ? "AI সহকারী" : "AI Assistant", icon: Sparkles },
     ...(isSuperAdmin ? [{ id: "roles" as TabId, label: lang === "bn" ? "ভূমিকা" : "Roles", icon: Shield }] : []),
   ];
 
@@ -162,6 +164,7 @@ function AdminPage() {
       {tab === "payments" && <PaymentsManager lang={uiLang} />}
       {tab === "jerseys" && <JerseyProductsManager lang={uiLang} />}
       {tab === "jersey_orders" && <JerseyOrdersManager lang={uiLang} />}
+      {tab === "ai" && <AIKnowledgeManager lang={uiLang} />}
       {tab === "roles" && isSuperAdmin && <RolesManager lang={uiLang} currentUserId={user.id} />}
     </div>
   );
