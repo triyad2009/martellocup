@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowDown, MapPin, Trophy, Users, Goal, Calendar, Sparkles, Newspaper, ArrowRight } from "lucide-react";
+import { ArrowDown, MapPin, Trophy, Users, Goal, Calendar, Sparkles, Newspaper, ArrowRight, MessageCircle, Ticket, Shirt, Heart, UserPlus, Image as ImageIcon } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { Countdown } from "@/components/Countdown";
 import { useTournamentSettings } from "@/lib/settings";
@@ -186,6 +186,15 @@ function Hero() {
             >
               <Users className="h-4 w-4" />
               {t("hero.cta.register")}
+            </motion.a>
+            <motion.a
+              href="/feed"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-bold px-7 py-3.5 rounded-xl shadow-lg inline-flex items-center gap-2"
+            >
+              <MessageCircle className="h-4 w-4" />
+              {lang === "bn" ? "সোশ্যাল ফিড" : "Social Feed"}
             </motion.a>
           </motion.div>
         </div>
