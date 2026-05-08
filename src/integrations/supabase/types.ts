@@ -53,6 +53,45 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_knowledge: {
+        Row: {
+          answer_bn: string
+          answer_en: string
+          category: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          question: string
+          route: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          answer_bn: string
+          answer_en: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          question: string
+          route?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          answer_bn?: string
+          answer_en?: string
+          category?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          question?: string
+          route?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       committee_members: {
         Row: {
           created_at: string
