@@ -246,17 +246,51 @@ function HighlightsSection() {
   const latestNews = news.slice(0, 3);
 
   if (latestNews.length === 0 && upcoming.length === 0) {
+    const features = [
+      { icon: UserPlus, to: "/registration", title: lang === "bn" ? "দল রেজিস্ট্রেশন" : "Team Registration", desc: lang === "bn" ? "অনলাইনে দল নিবন্ধন ও পেমেন্ট" : "Register your team online with payment" },
+      { icon: Ticket, to: "/tickets", title: lang === "bn" ? "টিকিট কিনুন" : "Buy Tickets", desc: lang === "bn" ? "টিয়ার বেছে নিন, স্লিপ ডাউনলোড করুন" : "Pick a tier, download your slip" },
+      { icon: Shirt, to: "/jersey", title: lang === "bn" ? "জার্সি শপ" : "Jersey Shop", desc: lang === "bn" ? "অফিসিয়াল জার্সি অর্ডার" : "Order official jerseys" },
+      { icon: MessageCircle, to: "/feed", title: lang === "bn" ? "সোশ্যাল ফিড" : "Social Feed", desc: lang === "bn" ? "পোস্ট, লাইক, কমেন্ট" : "Post, like, comment" },
+      { icon: Heart, to: "/sponsors", title: lang === "bn" ? "স্পন্সর হোন" : "Become a Sponsor", desc: lang === "bn" ? "Gold / Silver / Bronze প্যাকেজ" : "Gold / Silver / Bronze packages" },
+      { icon: Users, to: "/members", title: lang === "bn" ? "সদস্যবৃন্দ" : "Members", desc: lang === "bn" ? "Martello Cup টিম পরিচিতি" : "Meet the Martello Cup team" },
+      { icon: ImageIcon, to: "/gallery", title: lang === "bn" ? "গ্যালারি" : "Gallery", desc: lang === "bn" ? "ছবি ও ভিডিও সংগ্রহ" : "Photos and videos" },
+      { icon: Trophy, to: "/points-table", title: lang === "bn" ? "পয়েন্ট টেবিল" : "Points Table", desc: lang === "bn" ? "লাইভ স্ট্যান্ডিং" : "Live standings" },
+    ];
     return (
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 py-16 text-center">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="rounded-2xl border-2 border-dashed border-border bg-muted/30 p-10 max-w-2xl mx-auto">
-          <Trophy className="h-12 w-12 text-primary mx-auto mb-4" />
-          <h2 className="font-display text-2xl font-bold mb-2">
-            {lang === "bn" ? "শীঘ্রই আসছে" : "Coming Soon"}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 py-14">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-3">
+            <Sparkles className="h-3.5 w-3.5 text-primary" />
+            <span className="text-xs font-bold tracking-widest uppercase text-primary">
+              {lang === "bn" ? "সাইটে যা যা করতে পারবেন" : "What you can do here"}
+            </span>
+          </div>
+          <h2 className="font-display text-3xl sm:text-4xl font-bold">
+            {lang === "bn" ? "Martello Cup এর সবকিছু এক জায়গায়" : "Everything Martello Cup, in one place"}
           </h2>
-          <p className="text-muted-foreground">
-            {lang === "bn" ? "এডমিন প্যানেল থেকে সংবাদ ও ফিক্সচার যোগ করলে এখানে দেখা যাবে।" : "Add news and fixtures from the admin panel — they'll appear here."}
-          </p>
-        </motion.div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+          {features.map((f, i) => (
+            <motion.div
+              key={f.to}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.05 }}
+            >
+              <Link
+                to={f.to}
+                className="group block h-full rounded-2xl bg-card border border-border hover:border-primary p-4 sm:p-5 shadow-card hover:shadow-glow-red transition-all"
+              >
+                <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-gradient-primary text-white flex items-center justify-center mb-3 shadow-glow-red group-hover:scale-110 transition-transform">
+                  <f.icon className="h-5 w-5" />
+                </div>
+                <p className="font-display font-bold text-sm sm:text-base leading-tight">{f.title}</p>
+                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{f.desc}</p>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
       </section>
     );
   }
