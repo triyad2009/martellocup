@@ -1198,3 +1198,83 @@ export function MembersManager({ lang }: { lang: Lang }) {
     </Section>
   );
 }
+
+/* ===================== AI KNOWLEDGE (Train the assistant) ===================== */
+export function AIKnowledgeManager({ lang }: { lang: Lang }) {
+  const { rows, loading, reload } = useRows("ai_knowledge", "sort_order", true);
+  const [draft, setDraft] = useState({ question: "", answer_bn: "", answer_en: "", category: "", route: "" });
+
+  const add = async () => {
+    if (!draft.question.trim() || !draft.answer_bn.trim() || !draft.answer_en.trim()) {
+      toast.error(t(lang, "প্রশ্ন ও উভয় ভাষায় উত্তর লাগবে", "Question and both answers required"));
+      return;
+    }
+    const { error } = await (supabase as any).from("ai_knowledge").insert({
+      question: draft.question.trim(),
+      answer_bn: draft.answer_bn.trim(),
+      answer_en: draft.answer_en.trim(),
+      category: draft.category.trim() || null,
+      route: draft.route.trim() || null,
+      sort_order: rows.length,
+    });
+    if (error) toast.error(error.message);
+    else {
+      setDraft({ question: "", answer_bn: "", answer_en: "", category: "", route: "" });
+      toast.success(t(lang, "শেখানো হয়েছে", "Trained"));
+      reload();
+    }
+  };
+
+  return (
+    <Section title={t(lang, "AI কে শেখান", "Train the AI Assistant")}>
+      <p className="text-sm text-muted-foreground">
+        {t(lang,
+          "প্রশ্ন ও দুই ভাষায় উত্তর দিন। ঐচ্ছিকভাবে route দিলে AI 'এই পেজে যান' বাটন দেখাবে।",
+          "Add a question and bilingual answers. Optional route shows a 'Go to page' button.")}
+      </p>
+
+      <div className="rounded-xl border border-dashed border-border p-4 space-y-2">
+        <Input placeholder={t(lang, "প্রশ্ন (ইংরেজিতে রাখলে ভাল)", "Question (English preferred)")}
+          value={draft.question} onChange={(e) => setDraft({ ...draft, question: e.target.value })} />
+        <TArea rows={2} placeholder="Answer (বাংলা)" value={draft.answer_bn} onChange={(e) => setDraft({ ...draft, answer_bn: e.target.value })} />
+        <TArea rows={2} placeholder="Answer (English)" value={draft.answer_en} onChange={(e) => setDraft({ ...draft, answer_en: e.target.value })} />
+        <div className="grid grid-cols-2 gap-2">
+          <Input placeholder={t(lang, "ক্যাটাগরি (ঐচ্ছিক)", "Category (optional)")}
+            value={draft.category} onChange={(e) => setDraft({ ...draft, category: e.target.value })} />
+          <Input placeholder="/route (optional, e.g. /tickets)"
+            value={draft.route} onChange={(e) => setDraft({ ...draft, route: e.target.value })} />
+        </div>
+        <button onClick={add} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold">
+          <Plus className="h-4 w-4" /> {t(lang, "যোগ করুন", "Add")}
+        </button>
+      </div>
+
+      {loading ? <Loader2 className="h-5 w-5 animate-spin text-primary mx-auto" /> : (
+        <div className="space-y-2">
+          {rows.map((r: any) => (
+            <div key={r.id} className="rounded-xl border border-border p-3 space-y-2">
+              <Input value={r.question} onChange={(e) => patch("ai_knowledge", r.id, { question: e.target.value }, reload)} />
+              <TArea rows={2} value={r.answer_bn} onChange={(e) => patch("ai_knowledge", r.id, { answer_bn: e.target.value }, reload)} />
+              <TArea rows={2} value={r.answer_en} onChange={(e) => patch("ai_knowledge", r.id, { answer_en: e.target.value }, reload)} />
+              <div className="grid grid-cols-2 gap-2">
+                <Input placeholder="category" value={r.category ?? ""} onChange={(e) => patch("ai_knowledge", r.id, { category: e.target.value || null }, reload)} />
+                <Input placeholder="/route" value={r.route ?? ""} onChange={(e) => patch("ai_knowledge", r.id, { route: e.target.value || null }, reload)} />
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="text-xs inline-flex items-center gap-1.5">
+                  <input type="checkbox" checked={!!r.is_active} onChange={(e) => patch("ai_knowledge", r.id, { is_active: e.target.checked }, reload)} />
+                  {t(lang, "সক্রিয়", "Active")}
+                </label>
+                <Input type="number" className="!w-24" value={r.sort_order ?? 0} onChange={(e) => patch("ai_knowledge", r.id, { sort_order: Number(e.target.value) || 0 }, reload)} />
+                <button onClick={() => del("ai_knowledge", r.id, reload, lang)} className="ml-auto p-2 text-destructive hover:bg-destructive/10 rounded">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          ))}
+          {rows.length === 0 && <p className="text-sm text-muted-foreground text-center py-4">{t(lang, "কিছু নেই", "Nothing yet")}</p>}
+        </div>
+      )}
+    </Section>
+  );
+}
