@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
-import { Sparkles, X, Send, Loader2, Bot, Paperclip, Image as ImageIcon } from "lucide-react";
+import { Sparkles, X, Send, Loader2, Bot, Paperclip } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { uploadMedia } from "@/lib/content";
