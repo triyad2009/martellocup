@@ -102,7 +102,20 @@ function FeedPage() {
         </div>
       </div>
 
-      <Composer onPosted={loadPosts} lang={lang} userId={user.id} />
+      <Link
+        to="/feed/new"
+        className="flex items-center gap-3 rounded-2xl bg-card border border-border shadow-card p-4 hover:border-primary hover:shadow-glow-red transition-all group"
+      >
+        <div className="h-11 w-11 rounded-full bg-gradient-primary text-white flex items-center justify-center font-bold shadow-glow-red shrink-0">
+          {(user.user_metadata?.display_name || user.email || "U")[0].toUpperCase()}
+        </div>
+        <div className="flex-1 px-4 py-2.5 rounded-full bg-muted text-muted-foreground text-sm group-hover:bg-background group-hover:text-foreground transition-colors">
+          {tt(lang, "মনের কথা শেয়ার করুন...", "Share what's on your mind...")}
+        </div>
+        <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-glow-red">
+          <Plus className="h-5 w-5" />
+        </div>
+      </Link>
 
       {loading ? (
         <Loader2 className="h-7 w-7 animate-spin text-primary mx-auto" />
