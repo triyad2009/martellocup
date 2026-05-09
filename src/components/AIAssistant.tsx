@@ -161,7 +161,31 @@ export function AIAssistant() {
                           : "bg-card border border-border rounded-bl-md"
                       }`}
                     >
-                      <p className="whitespace-pre-wrap">{m.content}</p>
+                      {m.attachments && m.attachments.length > 0 && (
+                        <div className="grid grid-cols-2 gap-1.5 mb-2">
+                          {m.attachments.map((a, idx) => (
+                            <a key={idx} href={a.url} target="_blank" rel="noopener noreferrer" className="block rounded-lg overflow-hidden bg-black/20">
+                              {a.type === "image" ? (
+                                <img src={a.url} alt="" className="h-24 w-full object-cover" />
+                              ) : a.type === "video" ? (
+                                <video src={a.url} className="h-24 w-full object-cover" />
+                              ) : (
+                                <div className="h-24 w-full flex items-center justify-center text-xs p-2 bg-muted text-foreground">{a.name || "file"}</div>
+                              )}
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                      {m.content && <p className="whitespace-pre-wrap">{m.content}</p>}
+                      {m.images && m.images.length > 0 && (
+                        <div className="mt-2 grid grid-cols-1 gap-2">
+                          {m.images.map((src, idx) => (
+                            <a key={idx} href={src} target="_blank" rel="noopener noreferrer" className="block rounded-lg overflow-hidden border border-border">
+                              <img src={src} alt="" className="w-full max-h-64 object-cover" />
+                            </a>
+                          ))}
+                        </div>
+                      )}
                       {m.navigate && (
                         <button
                           onClick={() => {
