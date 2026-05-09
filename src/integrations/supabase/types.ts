@@ -61,6 +61,7 @@ export type Database = {
           created_at: string
           id: string
           is_active: boolean
+          media_urls: string[]
           question: string
           route: string | null
           sort_order: number
@@ -73,6 +74,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean
+          media_urls?: string[]
           question: string
           route?: string | null
           sort_order?: number
@@ -85,6 +87,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean
+          media_urls?: string[]
           question?: string
           route?: string | null
           sort_order?: number

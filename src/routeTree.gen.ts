@@ -29,6 +29,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FeedNewRouteImport } from './routes/feed.new'
 
 const TrackOrderRoute = TrackOrderRouteImport.update({
   id: '/track-order',
@@ -130,6 +131,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FeedNewRoute = FeedNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => FeedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -137,7 +143,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
-  '/feed': typeof FeedRoute
+  '/feed': typeof FeedRouteWithChildren
   '/fixtures': typeof FixturesRoute
   '/gallery': typeof GalleryRoute
   '/jersey': typeof JerseyRoute
@@ -152,6 +158,7 @@ export interface FileRoutesByFullPath {
   '/teams': typeof TeamsRoute
   '/tickets': typeof TicketsRoute
   '/track-order': typeof TrackOrderRoute
+  '/feed/new': typeof FeedNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -159,7 +166,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
-  '/feed': typeof FeedRoute
+  '/feed': typeof FeedRouteWithChildren
   '/fixtures': typeof FixturesRoute
   '/gallery': typeof GalleryRoute
   '/jersey': typeof JerseyRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/teams': typeof TeamsRoute
   '/tickets': typeof TicketsRoute
   '/track-order': typeof TrackOrderRoute
+  '/feed/new': typeof FeedNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -182,7 +190,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
-  '/feed': typeof FeedRoute
+  '/feed': typeof FeedRouteWithChildren
   '/fixtures': typeof FixturesRoute
   '/gallery': typeof GalleryRoute
   '/jersey': typeof JerseyRoute
@@ -197,6 +205,7 @@ export interface FileRoutesById {
   '/teams': typeof TeamsRoute
   '/tickets': typeof TicketsRoute
   '/track-order': typeof TrackOrderRoute
+  '/feed/new': typeof FeedNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -221,6 +230,7 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tickets'
     | '/track-order'
+    | '/feed/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -243,6 +253,7 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tickets'
     | '/track-order'
+    | '/feed/new'
   id:
     | '__root__'
     | '/'
@@ -265,6 +276,7 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tickets'
     | '/track-order'
+    | '/feed/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -273,7 +285,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
-  FeedRoute: typeof FeedRoute
+  FeedRoute: typeof FeedRouteWithChildren
   FixturesRoute: typeof FixturesRoute
   GalleryRoute: typeof GalleryRoute
   JerseyRoute: typeof JerseyRoute
@@ -432,8 +444,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/feed/new': {
+      id: '/feed/new'
+      path: '/new'
+      fullPath: '/feed/new'
+      preLoaderRoute: typeof FeedNewRouteImport
+      parentRoute: typeof FeedRoute
+    }
   }
 }
+
+interface FeedRouteChildren {
+  FeedNewRoute: typeof FeedNewRoute
+}
+
+const FeedRouteChildren: FeedRouteChildren = {
+  FeedNewRoute: FeedNewRoute,
+}
+
+const FeedRouteWithChildren = FeedRoute._addFileChildren(FeedRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -441,7 +470,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
-  FeedRoute: FeedRoute,
+  FeedRoute: FeedRouteWithChildren,
   FixturesRoute: FixturesRoute,
   GalleryRoute: GalleryRoute,
   JerseyRoute: JerseyRoute,

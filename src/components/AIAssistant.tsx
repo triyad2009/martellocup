@@ -1,12 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
-import { Sparkles, X, Send, Loader2, Bot } from "lucide-react";
+import { Sparkles, X, Send, Loader2, Bot, Paperclip } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
+import { uploadMedia } from "@/lib/content";
 import { toast } from "sonner";
 
-type Msg = { role: "user" | "assistant"; content: string; navigate?: string | null };
+type Attachment = { url: string; type: "image" | "video" | "file"; name?: string };
+type Msg = {
+  role: "user" | "assistant";
+  content: string;
+  navigate?: string | null;
+  images?: string[];
+  attachments?: Attachment[];
+};
 
 export function AIAssistant() {
   const { lang } = useI18n();
@@ -24,6 +32,9 @@ export function AIAssistant() {
           : "Hi! I'm the Martello Cup AI helper. Ask me what you can do on this site or how to do it.",
     },
   ]);
+  const [pending, setPending] = useState<Attachment[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,9 +43,11 @@ export function AIAssistant() {
 
   const send = async () => {
     const text = input.trim();
-    if (!text || busy) return;
+    if ((!text && pending.length === 0) || busy) return;
     setInput("");
-    const next: Msg[] = [...messages, { role: "user", content: text }];
+    const attachments = pending;
+    setPending([]);
+    const next: Msg[] = [...messages, { role: "user", content: text || (uiLang === "bn" ? "(সংযুক্তি)" : "(attachment)"), attachments }];
     setMessages(next);
     setBusy(true);
     try {
@@ -42,18 +55,33 @@ export function AIAssistant() {
         body: {
           lang: uiLang,
           messages: next.map((m) => ({ role: m.role, content: m.content })),
+          attachments: attachments.map((a) => ({ url: a.url, type: a.type })),
         },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: data.text || "...", navigate: data.navigate ?? null },
+        { role: "assistant", content: data.text || "...", navigate: data.navigate ?? null, images: data.images ?? [] },
       ]);
     } catch (e: any) {
       toast.error(e?.message || (uiLang === "bn" ? "ত্রুটি" : "Error"));
     } finally {
       setBusy(false);
+    }
+  };
+
+  const onPickFile = async (file: File) => {
+    setUploading(true);
+    try {
+      const url = await uploadMedia(file, "ai-chat");
+      const type: Attachment["type"] = file.type.startsWith("image/") ? "image" : file.type.startsWith("video/") ? "video" : "file";
+      setPending((p) => [...p, { url, type, name: file.name }]);
+    } catch (e: any) {
+      toast.error(e?.message || "Upload failed");
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
     }
   };
 
@@ -133,7 +161,31 @@ export function AIAssistant() {
                           : "bg-card border border-border rounded-bl-md"
                       }`}
                     >
-                      <p className="whitespace-pre-wrap">{m.content}</p>
+                      {m.attachments && m.attachments.length > 0 && (
+                        <div className="grid grid-cols-2 gap-1.5 mb-2">
+                          {m.attachments.map((a, idx) => (
+                            <a key={idx} href={a.url} target="_blank" rel="noopener noreferrer" className="block rounded-lg overflow-hidden bg-black/20">
+                              {a.type === "image" ? (
+                                <img src={a.url} alt="" className="h-24 w-full object-cover" />
+                              ) : a.type === "video" ? (
+                                <video src={a.url} className="h-24 w-full object-cover" />
+                              ) : (
+                                <div className="h-24 w-full flex items-center justify-center text-xs p-2 bg-muted text-foreground">{a.name || "file"}</div>
+                              )}
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                      {m.content && <p className="whitespace-pre-wrap">{m.content}</p>}
+                      {m.images && m.images.length > 0 && (
+                        <div className="mt-2 grid grid-cols-1 gap-2">
+                          {m.images.map((src, idx) => (
+                            <a key={idx} href={src} target="_blank" rel="noopener noreferrer" className="block rounded-lg overflow-hidden border border-border">
+                              <img src={src} alt="" className="w-full max-h-64 object-cover" />
+                            </a>
+                          ))}
+                        </div>
+                      )}
                       {m.navigate && (
                         <button
                           onClick={() => {
@@ -174,7 +226,37 @@ export function AIAssistant() {
 
               {/* Input */}
               <div className="p-3 border-t border-border bg-card">
-                <div className="flex items-center gap-2 rounded-2xl border border-border bg-background pl-4 pr-1.5 py-1.5 focus-within:ring-2 focus-within:ring-primary/40">
+                {pending.length > 0 && (
+                  <div className="flex gap-2 mb-2 flex-wrap">
+                    {pending.map((a, i) => (
+                      <div key={i} className="relative h-14 w-14 rounded-lg overflow-hidden border border-border bg-muted">
+                        {a.type === "image" ? (
+                          <img src={a.url} alt="" className="h-full w-full object-cover" />
+                        ) : a.type === "video" ? (
+                          <video src={a.url} className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="h-full w-full flex items-center justify-center text-[9px] p-1 text-center">{a.name?.slice(0, 12) || "file"}</div>
+                        )}
+                        <button
+                          onClick={() => setPending((p) => p.filter((_, j) => j !== i))}
+                          className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-white flex items-center justify-center text-[10px]"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <input ref={fileRef} type="file" accept="image/*,video/*,application/pdf" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onPickFile(f); }} />
+                <div className="flex items-center gap-2 rounded-2xl border border-border bg-background pl-2 pr-1.5 py-1.5 focus-within:ring-2 focus-within:ring-primary/40">
+                  <button
+                    onClick={() => fileRef.current?.click()}
+                    disabled={uploading}
+                    className="h-8 w-8 rounded-full hover:bg-muted flex items-center justify-center text-muted-foreground disabled:opacity-50"
+                    aria-label="Attach"
+                  >
+                    {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
+                  </button>
                   <input
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
@@ -184,14 +266,14 @@ export function AIAssistant() {
                   />
                   <button
                     onClick={send}
-                    disabled={busy || !input.trim()}
+                    disabled={busy || (!input.trim() && pending.length === 0)}
                     className="h-9 w-9 rounded-full bg-gradient-to-tr from-primary to-amber-500 text-white flex items-center justify-center disabled:opacity-50 shadow-md"
                   >
                     {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                   </button>
                 </div>
                 <p className="text-[10px] text-muted-foreground text-center mt-1.5">
-                  {uiLang === "bn" ? "শুধু এই ওয়েবসাইটের জন্য সহায়তা" : "Helps only with this website"}
+                  {uiLang === "bn" ? "ছবি/ভিডিও/ফাইল সহ যেকোনো প্রশ্ন" : "Attach photos, videos or files with your question"}
                 </p>
               </div>
             </motion.div>

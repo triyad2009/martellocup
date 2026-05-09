@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2, Plus, Trash2, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -1200,9 +1200,15 @@ export function MembersManager({ lang }: { lang: Lang }) {
 }
 
 /* ===================== AI KNOWLEDGE (Train the assistant) ===================== */
+type ChatMsg = { role: "user" | "assistant"; content: string };
+
 export function AIKnowledgeManager({ lang }: { lang: Lang }) {
   const { rows, loading, reload } = useRows("ai_knowledge", "sort_order", true);
-  const [draft, setDraft] = useState({ question: "", answer_bn: "", answer_en: "", category: "", route: "" });
+  const [mode, setMode] = useState<"manual" | "chat">("chat");
+  const [draft, setDraft] = useState({
+    question: "", answer_bn: "", answer_en: "", category: "", route: "",
+    media_urls: [] as string[],
+  });
 
   const add = async () => {
     if (!draft.question.trim() || !draft.answer_bn.trim() || !draft.answer_en.trim()) {
@@ -1215,11 +1221,12 @@ export function AIKnowledgeManager({ lang }: { lang: Lang }) {
       answer_en: draft.answer_en.trim(),
       category: draft.category.trim() || null,
       route: draft.route.trim() || null,
+      media_urls: draft.media_urls,
       sort_order: rows.length,
     });
     if (error) toast.error(error.message);
     else {
-      setDraft({ question: "", answer_bn: "", answer_en: "", category: "", route: "" });
+      setDraft({ question: "", answer_bn: "", answer_en: "", category: "", route: "", media_urls: [] });
       toast.success(t(lang, "শেখানো হয়েছে", "Trained"));
       reload();
     }
@@ -1227,28 +1234,39 @@ export function AIKnowledgeManager({ lang }: { lang: Lang }) {
 
   return (
     <Section title={t(lang, "AI কে শেখান", "Train the AI Assistant")}>
-      <p className="text-sm text-muted-foreground">
-        {t(lang,
-          "প্রশ্ন ও দুই ভাষায় উত্তর দিন। ঐচ্ছিকভাবে route দিলে AI 'এই পেজে যান' বাটন দেখাবে।",
-          "Add a question and bilingual answers. Optional route shows a 'Go to page' button.")}
-      </p>
-
-      <div className="rounded-xl border border-dashed border-border p-4 space-y-2">
-        <Input placeholder={t(lang, "প্রশ্ন (ইংরেজিতে রাখলে ভাল)", "Question (English preferred)")}
-          value={draft.question} onChange={(e) => setDraft({ ...draft, question: e.target.value })} />
-        <TArea rows={2} placeholder="Answer (বাংলা)" value={draft.answer_bn} onChange={(e) => setDraft({ ...draft, answer_bn: e.target.value })} />
-        <TArea rows={2} placeholder="Answer (English)" value={draft.answer_en} onChange={(e) => setDraft({ ...draft, answer_en: e.target.value })} />
-        <div className="grid grid-cols-2 gap-2">
-          <Input placeholder={t(lang, "ক্যাটাগরি (ঐচ্ছিক)", "Category (optional)")}
-            value={draft.category} onChange={(e) => setDraft({ ...draft, category: e.target.value })} />
-          <Input placeholder="/route (optional, e.g. /tickets)"
-            value={draft.route} onChange={(e) => setDraft({ ...draft, route: e.target.value })} />
-        </div>
-        <button onClick={add} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold">
-          <Plus className="h-4 w-4" /> {t(lang, "যোগ করুন", "Add")}
-        </button>
+      <div className="flex gap-2">
+        <button
+          onClick={() => setMode("chat")}
+          className={`px-3 py-1.5 rounded-lg text-sm font-semibold border ${mode === "chat" ? "bg-primary text-primary-foreground border-primary" : "border-border"}`}
+        >{t(lang, "চ্যাটে শেখান", "Train via Chat")}</button>
+        <button
+          onClick={() => setMode("manual")}
+          className={`px-3 py-1.5 rounded-lg text-sm font-semibold border ${mode === "manual" ? "bg-primary text-primary-foreground border-primary" : "border-border"}`}
+        >{t(lang, "ম্যানুয়াল", "Manual Form")}</button>
       </div>
 
+      {mode === "chat" ? (
+        <AITrainChat lang={lang} onSaved={reload} />
+      ) : (
+        <div className="rounded-xl border border-dashed border-border p-4 space-y-2">
+          <Input placeholder={t(lang, "প্রশ্ন (ইংরেজিতে রাখলে ভাল)", "Question (English preferred)")}
+            value={draft.question} onChange={(e) => setDraft({ ...draft, question: e.target.value })} />
+          <TArea rows={2} placeholder="Answer (বাংলা)" value={draft.answer_bn} onChange={(e) => setDraft({ ...draft, answer_bn: e.target.value })} />
+          <TArea rows={2} placeholder="Answer (English)" value={draft.answer_en} onChange={(e) => setDraft({ ...draft, answer_en: e.target.value })} />
+          <div className="grid grid-cols-2 gap-2">
+            <Input placeholder={t(lang, "ক্যাটাগরি (ঐচ্ছিক)", "Category e.g. venue")}
+              value={draft.category} onChange={(e) => setDraft({ ...draft, category: e.target.value })} />
+            <Input placeholder="/route (optional)"
+              value={draft.route} onChange={(e) => setDraft({ ...draft, route: e.target.value })} />
+          </div>
+          <KbMediaList urls={draft.media_urls} onChange={(u) => setDraft({ ...draft, media_urls: u })} lang={lang} />
+          <button onClick={add} className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-bold">
+            <Plus className="h-4 w-4" /> {t(lang, "যোগ করুন", "Add")}
+          </button>
+        </div>
+      )}
+
+      <h3 className="font-semibold text-sm pt-2">{t(lang, "শেখানো জ্ঞান", "Trained Knowledge")} ({rows.length})</h3>
       {loading ? <Loader2 className="h-5 w-5 animate-spin text-primary mx-auto" /> : (
         <div className="space-y-2">
           {rows.map((r: any) => (
@@ -1260,6 +1278,11 @@ export function AIKnowledgeManager({ lang }: { lang: Lang }) {
                 <Input placeholder="category" value={r.category ?? ""} onChange={(e) => patch("ai_knowledge", r.id, { category: e.target.value || null }, reload)} />
                 <Input placeholder="/route" value={r.route ?? ""} onChange={(e) => patch("ai_knowledge", r.id, { route: e.target.value || null }, reload)} />
               </div>
+              <KbMediaList
+                urls={r.media_urls ?? []}
+                onChange={(u) => patch("ai_knowledge", r.id, { media_urls: u }, reload)}
+                lang={lang}
+              />
               <div className="flex items-center gap-3">
                 <label className="text-xs inline-flex items-center gap-1.5">
                   <input type="checkbox" checked={!!r.is_active} onChange={(e) => patch("ai_knowledge", r.id, { is_active: e.target.checked }, reload)} />
@@ -1276,5 +1299,134 @@ export function AIKnowledgeManager({ lang }: { lang: Lang }) {
         </div>
       )}
     </Section>
+  );
+}
+
+function KbMediaList({ urls, onChange, lang }: { urls: string[]; onChange: (u: string[]) => void; lang: Lang }) {
+  return (
+    <div className="space-y-2">
+      <p className="text-xs font-semibold text-muted-foreground">
+        {t(lang, "রেফারেন্স ছবি (ইউজার চাইলে AI দেখাবে)", "Reference media (AI will show on request)")}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {urls.map((u, i) => (
+          <div key={i} className="relative h-20 w-20 rounded-lg overflow-hidden border border-border">
+            <img src={u} alt="" className="h-full w-full object-cover" />
+            <button
+              type="button"
+              onClick={() => onChange(urls.filter((_, j) => j !== i))}
+              className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-white flex items-center justify-center"
+            ><Trash2 className="h-3 w-3" /></button>
+          </div>
+        ))}
+        <MediaUpload
+          value={null}
+          onChange={(u) => { if (u) onChange([...urls, u]); }}
+          folder="ai-kb"
+          label={t(lang, "ছবি যোগ", "Add Image")}
+        />
+      </div>
+    </div>
+  );
+}
+
+function AITrainChat({ lang, onSaved }: { lang: Lang; onSaved: () => void }) {
+  const [chat, setChat] = useState<ChatMsg[]>([
+    { role: "assistant", content: t(lang,
+      "হ্যালো! সাইট সম্পর্কে যা শেখাতে চান, সাধারণ ভাষায় লিখুন। আমি Q&A আকারে সাজিয়ে সংরক্ষণ করব। ছবি দিতে পারেন (যেমন ভ্যানুর ছবি) — সেগুলি reference media হিসেবে যুক্ত হবে।",
+      "Hi! Tell me anything you want the assistant to know — in plain language. I will format it as Q&A and save it. You can also attach images (e.g. venue photos) — they'll be saved as reference media.") },
+  ]);
+  const [input, setInput] = useState("");
+  const [pending, setPending] = useState<string[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const onPick = async (file: File) => {
+    setUploading(true);
+    try {
+      const { uploadMedia } = await import("@/lib/content");
+      const url = await uploadMedia(file, "ai-kb");
+      setPending((p) => [...p, url]);
+    } catch (e: any) { toast.error(e?.message || "Upload failed"); }
+    finally { setUploading(false); if (fileRef.current) fileRef.current.value = ""; }
+  };
+
+  const send = async () => {
+    if ((!input.trim() && pending.length === 0) || busy) return;
+    const userText = input.trim() || (lang === "bn" ? "(সংযুক্তি)" : "(attachments)");
+    const att = pending;
+    setInput(""); setPending([]);
+    const next: ChatMsg[] = [...chat, { role: "user", content: userText + (att.length ? `\n[attachments: ${att.join(", ")}]` : "") }];
+    setChat(next);
+    setBusy(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-assistant", {
+        body: { mode: "train", lang, messages: next.map((m) => ({ role: m.role, content: m.content })) },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      const entries: any[] = data.entries ?? [];
+      if (entries.length === 0) {
+        setChat((p) => [...p, { role: "assistant", content: t(lang, "ক্ষমা করবেন, কিছু আহরণ করতে পারিনি। আরও বিস্তারিত লিখুন।", "Sorry, couldn't extract entries. Try giving more detail.") }]);
+      } else {
+        const inserts = entries.map((e: any, i) => ({
+          question: String(e.question || "").slice(0, 500),
+          answer_bn: String(e.answer_bn || ""),
+          answer_en: String(e.answer_en || ""),
+          category: e.category || null,
+          route: e.route || null,
+          media_urls: att,
+          sort_order: 1000 + i,
+        }));
+        const { error: ie } = await (supabase as any).from("ai_knowledge").insert(inserts);
+        if (ie) throw ie;
+        setChat((p) => [...p, { role: "assistant", content: t(lang,
+          `${entries.length}টি জ্ঞান যোগ হয়েছে ✅\n` + entries.map((e: any) => `• ${e.question}`).join("\n"),
+          `Added ${entries.length} knowledge entries ✅\n` + entries.map((e: any) => `• ${e.question}`).join("\n")) }]);
+        onSaved();
+      }
+    } catch (e: any) {
+      toast.error(e?.message || "AI error");
+    } finally { setBusy(false); }
+  };
+
+  return (
+    <div className="rounded-xl border border-border bg-card overflow-hidden">
+      <div className="max-h-96 overflow-y-auto p-3 space-y-2 bg-muted/20">
+        {chat.map((m, i) => (
+          <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+            <div className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap ${m.role === "user" ? "bg-primary text-primary-foreground" : "bg-card border border-border"}`}>
+              {m.content}
+            </div>
+          </div>
+        ))}
+        {busy && <Loader2 className="h-4 w-4 animate-spin text-primary" />}
+      </div>
+      {pending.length > 0 && (
+        <div className="p-2 flex gap-2 flex-wrap border-t border-border">
+          {pending.map((u, i) => (
+            <div key={i} className="relative h-14 w-14 rounded-md overflow-hidden border border-border">
+              <img src={u} alt="" className="h-full w-full object-cover" />
+              <button onClick={() => setPending((p) => p.filter((_, j) => j !== i))} className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-white text-[10px]">×</button>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="p-2 border-t border-border flex items-center gap-2">
+        <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onPick(f); }} />
+        <button onClick={() => fileRef.current?.click()} disabled={uploading} className="h-9 w-9 rounded-full hover:bg-muted flex items-center justify-center" aria-label="Attach">
+          {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+        </button>
+        <input
+          value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && send()}
+          placeholder={t(lang, "AI কে কিছু শেখান...", "Teach the AI something...")}
+          className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm"
+        />
+        <button onClick={send} disabled={busy || (!input.trim() && pending.length === 0)} className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-bold disabled:opacity-50">
+          {t(lang, "পাঠান", "Send")}
+        </button>
+      </div>
+    </div>
   );
 }
