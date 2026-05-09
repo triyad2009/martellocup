@@ -223,14 +223,22 @@ export function Navbar() {
               transition={{ type: "spring", damping: 25 }}
               className="fixed top-0 right-0 bottom-0 z-50 w-[85%] max-w-sm bg-background shadow-elevated xl:hidden overflow-y-auto flex flex-col"
             >
-              <div className="flex items-center justify-between p-4 border-b">
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-md overflow-hidden ring-2 ring-primary/40">
+              <div className="flex items-center justify-between p-4 border-b gap-2">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <div className="h-8 w-8 rounded-md overflow-hidden ring-2 ring-primary/40 shrink-0">
                     <img src={LOGO_URL} alt="Martello Cup" className="h-full w-full object-cover" />
                   </div>
-                  <span className="font-display font-bold text-lg">MENU</span>
+                  <span className="font-display font-bold text-lg shrink-0">MENU</span>
+                  <motion.span
+                    aria-hidden
+                    animate={{ opacity: [0.4, 1, 0.4], x: [0, 2, 0] }}
+                    transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+                    className="ml-1 text-[9px] sm:text-[10px] font-bold tracking-wider bg-gradient-to-r from-primary via-amber-500 to-yellow-400 bg-clip-text text-transparent leading-tight truncate"
+                  >
+                    Website Developed By<br/>TAHSINULLAH RIYAD
+                  </motion.span>
                 </div>
-                <button onClick={() => setOpen(false)} className="p-2 rounded-md hover:bg-muted">
+                <button onClick={() => setOpen(false)} className="p-2 rounded-md hover:bg-muted shrink-0">
                   <X className="h-5 w-5" />
                 </button>
               </div>
