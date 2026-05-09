@@ -43,9 +43,11 @@ export function AIAssistant() {
 
   const send = async () => {
     const text = input.trim();
-    if (!text || busy) return;
+    if ((!text && pending.length === 0) || busy) return;
     setInput("");
-    const next: Msg[] = [...messages, { role: "user", content: text }];
+    const attachments = pending;
+    setPending([]);
+    const next: Msg[] = [...messages, { role: "user", content: text || (uiLang === "bn" ? "(সংযুক্তি)" : "(attachment)"), attachments }];
     setMessages(next);
     setBusy(true);
     try {
@@ -53,18 +55,33 @@ export function AIAssistant() {
         body: {
           lang: uiLang,
           messages: next.map((m) => ({ role: m.role, content: m.content })),
+          attachments: attachments.map((a) => ({ url: a.url, type: a.type })),
         },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: data.text || "...", navigate: data.navigate ?? null },
+        { role: "assistant", content: data.text || "...", navigate: data.navigate ?? null, images: data.images ?? [] },
       ]);
     } catch (e: any) {
       toast.error(e?.message || (uiLang === "bn" ? "ত্রুটি" : "Error"));
     } finally {
       setBusy(false);
+    }
+  };
+
+  const onPickFile = async (file: File) => {
+    setUploading(true);
+    try {
+      const url = await uploadMedia(file, "ai-chat");
+      const type: Attachment["type"] = file.type.startsWith("image/") ? "image" : file.type.startsWith("video/") ? "video" : "file";
+      setPending((p) => [...p, { url, type, name: file.name }]);
+    } catch (e: any) {
+      toast.error(e?.message || "Upload failed");
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
     }
   };
 
