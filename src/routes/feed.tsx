@@ -158,132 +158,55 @@ function Gate({
   );
 }
 
-function Composer({ onPosted, lang, userId }: { onPosted: () => void; lang: string; userId: string }) {
-  const [text, setText] = useState("");
-  const [caption, setCaption] = useState("");
-  const [mediaUrl, setMediaUrl] = useState<string | null>(null);
-  const [mediaType, setMediaType] = useState<"text" | "image" | "video">("text");
-  const [busy, setBusy] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
+// Detect URLs in text and render them as link previews / images.
+const URL_RE = /(https?:\/\/[^\s<>"]+)/g;
+function isImageUrl(u: string) {
+  return /\.(png|jpe?g|gif|webp|svg|avif)(\?|#|$)/i.test(u);
+}
+function hostnameOf(u: string) { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } }
 
-  const pickFile = async (file: File, type: "image" | "video") => {
-    setBusy(true);
-    try {
-      const url = await uploadMedia(file, "feed");
-      setMediaUrl(url);
-      setMediaType(type);
-    } catch (e: any) {
-      toast.error(e.message || "Upload failed");
-    } finally {
-      setBusy(false);
-      if (fileRef.current) fileRef.current.value = "";
-    }
-  };
-
-  const submit = async () => {
-    if (!text.trim() && !mediaUrl) {
-      toast.error(tt(lang, "কিছু লিখুন বা মিডিয়া যোগ করুন", "Write something or add media"));
-      return;
-    }
-    setBusy(true);
-    const { error } = await supabase.from("feed_posts").insert({
-      user_id: userId,
-      content: text.trim() || null,
-      media_url: mediaUrl,
-      media_type: mediaUrl ? mediaType : "text",
-      caption: mediaUrl ? (caption.trim() || null) : null,
-    });
-    setBusy(false);
-    if (error) toast.error(error.message);
-    else {
-      setText(""); setCaption(""); setMediaUrl(null); setMediaType("text");
-      toast.success(tt(lang, "পোস্ট হয়েছে", "Posted"));
-      onPosted();
-    }
-  };
-
+function RichContent({ text }: { text: string }) {
+  const parts = text.split(URL_RE);
+  const urls = text.match(URL_RE) || [];
   return (
-    <div className="rounded-2xl bg-card border border-border shadow-card p-4 space-y-3">
-      <textarea
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder={tt(lang, "কী চলছে আজ?", "What's happening?")}
-        rows={3}
-        className="w-full px-3 py-2.5 rounded-lg border border-border bg-background resize-none focus:outline-none focus:ring-2 focus:ring-primary"
-      />
-
-      {mediaUrl && (
-        <div className="relative rounded-xl overflow-hidden border border-border">
-          {mediaType === "image" ? (
-            <img src={mediaUrl} alt="" className="w-full max-h-80 object-contain bg-muted" />
+    <>
+      <p className="px-4 pb-2 whitespace-pre-wrap text-sm break-words">
+        {parts.map((p, i) =>
+          URL_RE.test(p) ? (
+            <a key={i} href={p} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">{p}</a>
           ) : (
-            <video src={mediaUrl} controls className="w-full max-h-80 bg-black" />
+            <span key={i}>{p}</span>
+          )
+        )}
+      </p>
+      {urls.length > 0 && (
+        <div className="px-4 pb-3 space-y-2">
+          {urls.slice(0, 3).map((u, i) =>
+            isImageUrl(u) ? (
+              <a key={i} href={u} target="_blank" rel="noopener noreferrer" className="block rounded-xl overflow-hidden border border-border bg-muted">
+                <img src={u} alt="" className="w-full max-h-80 object-contain" />
+              </a>
+            ) : (
+              <a
+                key={i}
+                href={u}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-xl border border-border bg-muted/40 hover:bg-muted hover:border-primary p-3 transition-colors"
+              >
+                <div className="h-10 w-10 rounded-lg bg-primary/15 text-primary flex items-center justify-center shrink-0">
+                  <ExternalLink className="h-5 w-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{hostnameOf(u)}</p>
+                  <p className="text-sm font-semibold truncate">{u}</p>
+                </div>
+              </a>
+            )
           )}
-          {caption && (
-            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-3 text-white text-sm">
-              {caption}
-            </div>
-          )}
-          <button
-            type="button"
-            onClick={() => { setMediaUrl(null); setCaption(""); setMediaType("text"); }}
-            className="absolute top-2 right-2 h-8 w-8 rounded-full bg-black/60 text-white inline-flex items-center justify-center"
-          >
-            <X className="h-4 w-4" />
-          </button>
         </div>
       )}
-
-      {mediaUrl && (
-        <input
-          value={caption}
-          onChange={(e) => setCaption(e.target.value)}
-          placeholder={tt(lang, "ছবি/ভিডিওর ক্যাপশন", "Caption for the media")}
-          className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm"
-        />
-      )}
-
-      <input
-        ref={fileRef}
-        type="file"
-        accept="image/*,video/*"
-        className="hidden"
-        onChange={(e) => {
-          const f = e.target.files?.[0];
-          if (!f) return;
-          const isVideo = f.type.startsWith("video/");
-          pickFile(f, isVideo ? "video" : "image");
-        }}
-      />
-
-      <div className="flex items-center gap-2 flex-wrap">
-        <button
-          type="button"
-          onClick={() => fileRef.current?.click()}
-          disabled={busy}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-background hover:border-primary text-sm font-semibold disabled:opacity-60"
-        >
-          <ImageIcon className="h-4 w-4" /> {tt(lang, "ছবি", "Photo")}
-        </button>
-        <button
-          type="button"
-          onClick={() => fileRef.current?.click()}
-          disabled={busy}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-background hover:border-primary text-sm font-semibold disabled:opacity-60"
-        >
-          <Video className="h-4 w-4" /> {tt(lang, "ভিডিও", "Video")}
-        </button>
-        <button
-          type="button"
-          onClick={submit}
-          disabled={busy}
-          className="ml-auto inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-primary text-primary-foreground font-bold shadow-glow-red disabled:opacity-60"
-        >
-          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-          {tt(lang, "পোস্ট", "Post")}
-        </button>
-      </div>
-    </div>
+    </>
   );
 }
 
