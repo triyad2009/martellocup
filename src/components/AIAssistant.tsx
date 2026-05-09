@@ -32,6 +32,9 @@ export function AIAssistant() {
           : "Hi! I'm the Martello Cup AI helper. Ask me what you can do on this site or how to do it.",
     },
   ]);
+  const [pending, setPending] = useState<Attachment[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
