@@ -298,7 +298,7 @@ function PostCard({
         )}
       </div>
 
-      {post.content && <p className="px-4 pb-3 whitespace-pre-wrap text-sm">{post.content}</p>}
+      {post.content && <RichContent text={post.content} />}
 
       {post.media_url && post.media_type === "image" && (
         <div className="relative bg-muted">
