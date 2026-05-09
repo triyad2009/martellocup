@@ -1,12 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
-import { Sparkles, X, Send, Loader2, Bot } from "lucide-react";
+import { Sparkles, X, Send, Loader2, Bot, Paperclip, Image as ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
+import { uploadMedia } from "@/lib/content";
 import { toast } from "sonner";
 
-type Msg = { role: "user" | "assistant"; content: string; navigate?: string | null };
+type Attachment = { url: string; type: "image" | "video" | "file"; name?: string };
+type Msg = {
+  role: "user" | "assistant";
+  content: string;
+  navigate?: string | null;
+  images?: string[];
+  attachments?: Attachment[];
+};
 
 export function AIAssistant() {
   const { lang } = useI18n();
