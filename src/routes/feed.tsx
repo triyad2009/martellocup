@@ -1,15 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  MessageSquare, Heart, Send, Image as ImageIcon, Video, X, Loader2,
-  Trash2, MailWarning, LogIn, Users,
+  MessageSquare, Heart, Send, Loader2, Trash2, MailWarning, LogIn, Plus, ExternalLink,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useUserRoles } from "@/lib/roles";
 import { useI18n } from "@/lib/i18n";
-import { uploadMedia } from "@/lib/content";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/feed")({
