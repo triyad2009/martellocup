@@ -103,7 +103,7 @@ function FeedPage() {
       </div>
 
       <Link
-        to="/feed/new"
+        to="/new-post"
         className="flex items-center gap-3 rounded-2xl bg-card border border-border shadow-card p-4 hover:border-primary hover:shadow-glow-red transition-all group"
       >
         <div className="h-11 w-11 rounded-full bg-gradient-primary text-white flex items-center justify-center font-bold shadow-glow-red shrink-0">
