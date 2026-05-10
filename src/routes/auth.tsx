@@ -199,11 +199,13 @@ function AuthPage() {
             type="button"
             onClick={async () => {
               setBusy(true); setErr(null);
-              const { error } = await supabase.auth.signInWithOAuth({
-                provider: "google",
-                options: { redirectTo: `${window.location.origin}/` },
+              const { lovable } = await import("@/integrations/lovable");
+              const result = await lovable.auth.signInWithOAuth("google", {
+                redirect_uri: `${window.location.origin}/`,
               });
-              if (error) { setErr(error.message); setBusy(false); }
+              if (result.error) { setErr((result.error as any).message ?? "Google sign-in failed"); setBusy(false); return; }
+              if (result.redirected) return;
+              navigate({ to: "/" });
             }}
             disabled={busy}
             className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-border bg-background hover:bg-muted font-semibold text-sm disabled:opacity-50"
