@@ -19,6 +19,7 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PointsTableRouteImport } from './routes/points-table'
 import { Route as PlayersRouteImport } from './routes/players'
 import { Route as NewsRouteImport } from './routes/news'
+import { Route as NewPostRouteImport } from './routes/new-post'
 import { Route as MembersRouteImport } from './routes/members'
 import { Route as JerseyRouteImport } from './routes/jersey'
 import { Route as GalleryRouteImport } from './routes/gallery'
@@ -29,7 +30,6 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as FeedNewRouteImport } from './routes/feed.new'
 
 const TrackOrderRoute = TrackOrderRouteImport.update({
   id: '/track-order',
@@ -79,6 +79,11 @@ const PlayersRoute = PlayersRouteImport.update({
 const NewsRoute = NewsRouteImport.update({
   id: '/news',
   path: '/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewPostRoute = NewPostRouteImport.update({
+  id: '/new-post',
+  path: '/new-post',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MembersRoute = MembersRouteImport.update({
@@ -131,11 +136,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FeedNewRoute = FeedNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => FeedRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -143,11 +143,12 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
-  '/feed': typeof FeedRouteWithChildren
+  '/feed': typeof FeedRoute
   '/fixtures': typeof FixturesRoute
   '/gallery': typeof GalleryRoute
   '/jersey': typeof JerseyRoute
   '/members': typeof MembersRoute
+  '/new-post': typeof NewPostRoute
   '/news': typeof NewsRoute
   '/players': typeof PlayersRoute
   '/points-table': typeof PointsTableRoute
@@ -158,7 +159,6 @@ export interface FileRoutesByFullPath {
   '/teams': typeof TeamsRoute
   '/tickets': typeof TicketsRoute
   '/track-order': typeof TrackOrderRoute
-  '/feed/new': typeof FeedNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -166,11 +166,12 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
-  '/feed': typeof FeedRouteWithChildren
+  '/feed': typeof FeedRoute
   '/fixtures': typeof FixturesRoute
   '/gallery': typeof GalleryRoute
   '/jersey': typeof JerseyRoute
   '/members': typeof MembersRoute
+  '/new-post': typeof NewPostRoute
   '/news': typeof NewsRoute
   '/players': typeof PlayersRoute
   '/points-table': typeof PointsTableRoute
@@ -181,7 +182,6 @@ export interface FileRoutesByTo {
   '/teams': typeof TeamsRoute
   '/tickets': typeof TicketsRoute
   '/track-order': typeof TrackOrderRoute
-  '/feed/new': typeof FeedNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -190,11 +190,12 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
-  '/feed': typeof FeedRouteWithChildren
+  '/feed': typeof FeedRoute
   '/fixtures': typeof FixturesRoute
   '/gallery': typeof GalleryRoute
   '/jersey': typeof JerseyRoute
   '/members': typeof MembersRoute
+  '/new-post': typeof NewPostRoute
   '/news': typeof NewsRoute
   '/players': typeof PlayersRoute
   '/points-table': typeof PointsTableRoute
@@ -205,7 +206,6 @@ export interface FileRoutesById {
   '/teams': typeof TeamsRoute
   '/tickets': typeof TicketsRoute
   '/track-order': typeof TrackOrderRoute
-  '/feed/new': typeof FeedNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -220,6 +220,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/jersey'
     | '/members'
+    | '/new-post'
     | '/news'
     | '/players'
     | '/points-table'
@@ -230,7 +231,6 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tickets'
     | '/track-order'
-    | '/feed/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -243,6 +243,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/jersey'
     | '/members'
+    | '/new-post'
     | '/news'
     | '/players'
     | '/points-table'
@@ -253,7 +254,6 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tickets'
     | '/track-order'
-    | '/feed/new'
   id:
     | '__root__'
     | '/'
@@ -266,6 +266,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/jersey'
     | '/members'
+    | '/new-post'
     | '/news'
     | '/players'
     | '/points-table'
@@ -276,7 +277,6 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tickets'
     | '/track-order'
-    | '/feed/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -285,11 +285,12 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
-  FeedRoute: typeof FeedRouteWithChildren
+  FeedRoute: typeof FeedRoute
   FixturesRoute: typeof FixturesRoute
   GalleryRoute: typeof GalleryRoute
   JerseyRoute: typeof JerseyRoute
   MembersRoute: typeof MembersRoute
+  NewPostRoute: typeof NewPostRoute
   NewsRoute: typeof NewsRoute
   PlayersRoute: typeof PlayersRoute
   PointsTableRoute: typeof PointsTableRoute
@@ -374,6 +375,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/new-post': {
+      id: '/new-post'
+      path: '/new-post'
+      fullPath: '/new-post'
+      preLoaderRoute: typeof NewPostRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/members': {
       id: '/members'
       path: '/members'
@@ -444,25 +452,8 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/feed/new': {
-      id: '/feed/new'
-      path: '/new'
-      fullPath: '/feed/new'
-      preLoaderRoute: typeof FeedNewRouteImport
-      parentRoute: typeof FeedRoute
-    }
   }
 }
-
-interface FeedRouteChildren {
-  FeedNewRoute: typeof FeedNewRoute
-}
-
-const FeedRouteChildren: FeedRouteChildren = {
-  FeedNewRoute: FeedNewRoute,
-}
-
-const FeedRouteWithChildren = FeedRoute._addFileChildren(FeedRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -470,11 +461,12 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
-  FeedRoute: FeedRouteWithChildren,
+  FeedRoute: FeedRoute,
   FixturesRoute: FixturesRoute,
   GalleryRoute: GalleryRoute,
   JerseyRoute: JerseyRoute,
   MembersRoute: MembersRoute,
+  NewPostRoute: NewPostRoute,
   NewsRoute: NewsRoute,
   PlayersRoute: PlayersRoute,
   PointsTableRoute: PointsTableRoute,
@@ -489,12 +481,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
