@@ -32,6 +32,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as MessagesConversationIdRouteImport } from './routes/messages.$conversationId'
 
 const TrackOrderRoute = TrackOrderRouteImport.update({
   id: '/track-order',
@@ -148,6 +149,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MessagesConversationIdRoute = MessagesConversationIdRouteImport.update({
+  id: '/$conversationId',
+  path: '/$conversationId',
+  getParentRoute: () => MessagesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -161,7 +167,7 @@ export interface FileRoutesByFullPath {
   '/gallery': typeof GalleryRoute
   '/jersey': typeof JerseyRoute
   '/members': typeof MembersRoute
-  '/messages': typeof MessagesRoute
+  '/messages': typeof MessagesRouteWithChildren
   '/new-post': typeof NewPostRoute
   '/news': typeof NewsRoute
   '/players': typeof PlayersRoute
@@ -173,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/teams': typeof TeamsRoute
   '/tickets': typeof TicketsRoute
   '/track-order': typeof TrackOrderRoute
+  '/messages/$conversationId': typeof MessagesConversationIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -186,7 +193,7 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/jersey': typeof JerseyRoute
   '/members': typeof MembersRoute
-  '/messages': typeof MessagesRoute
+  '/messages': typeof MessagesRouteWithChildren
   '/new-post': typeof NewPostRoute
   '/news': typeof NewsRoute
   '/players': typeof PlayersRoute
@@ -198,6 +205,7 @@ export interface FileRoutesByTo {
   '/teams': typeof TeamsRoute
   '/tickets': typeof TicketsRoute
   '/track-order': typeof TrackOrderRoute
+  '/messages/$conversationId': typeof MessagesConversationIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -212,7 +220,7 @@ export interface FileRoutesById {
   '/gallery': typeof GalleryRoute
   '/jersey': typeof JerseyRoute
   '/members': typeof MembersRoute
-  '/messages': typeof MessagesRoute
+  '/messages': typeof MessagesRouteWithChildren
   '/new-post': typeof NewPostRoute
   '/news': typeof NewsRoute
   '/players': typeof PlayersRoute
@@ -224,6 +232,7 @@ export interface FileRoutesById {
   '/teams': typeof TeamsRoute
   '/tickets': typeof TicketsRoute
   '/track-order': typeof TrackOrderRoute
+  '/messages/$conversationId': typeof MessagesConversationIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -251,6 +260,7 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tickets'
     | '/track-order'
+    | '/messages/$conversationId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -276,6 +286,7 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tickets'
     | '/track-order'
+    | '/messages/$conversationId'
   id:
     | '__root__'
     | '/'
@@ -301,6 +312,7 @@ export interface FileRouteTypes {
     | '/teams'
     | '/tickets'
     | '/track-order'
+    | '/messages/$conversationId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -315,7 +327,7 @@ export interface RootRouteChildren {
   GalleryRoute: typeof GalleryRoute
   JerseyRoute: typeof JerseyRoute
   MembersRoute: typeof MembersRoute
-  MessagesRoute: typeof MessagesRoute
+  MessagesRoute: typeof MessagesRouteWithChildren
   NewPostRoute: typeof NewPostRoute
   NewsRoute: typeof NewsRoute
   PlayersRoute: typeof PlayersRoute
@@ -492,8 +504,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/messages/$conversationId': {
+      id: '/messages/$conversationId'
+      path: '/$conversationId'
+      fullPath: '/messages/$conversationId'
+      preLoaderRoute: typeof MessagesConversationIdRouteImport
+      parentRoute: typeof MessagesRoute
+    }
   }
 }
+
+interface MessagesRouteChildren {
+  MessagesConversationIdRoute: typeof MessagesConversationIdRoute
+}
+
+const MessagesRouteChildren: MessagesRouteChildren = {
+  MessagesConversationIdRoute: MessagesConversationIdRoute,
+}
+
+const MessagesRouteWithChildren = MessagesRoute._addFileChildren(
+  MessagesRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -507,7 +538,7 @@ const rootRouteChildren: RootRouteChildren = {
   GalleryRoute: GalleryRoute,
   JerseyRoute: JerseyRoute,
   MembersRoute: MembersRoute,
-  MessagesRoute: MessagesRoute,
+  MessagesRoute: MessagesRouteWithChildren,
   NewPostRoute: NewPostRoute,
   NewsRoute: NewsRoute,
   PlayersRoute: PlayersRoute,
