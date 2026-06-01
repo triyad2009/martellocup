@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState, useCallback } from "react";
-import { ArrowLeft, Send, Paperclip, Mic, Image as ImageIcon, Video as VideoIcon, Square, Loader2, X, Play, Pause } from "lucide-react";
+import { ArrowLeft, Send, Paperclip, Mic, Image as ImageIcon, Video as VideoIcon, Loader2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 
