@@ -20,9 +20,11 @@ import { Route as PointsTableRouteImport } from './routes/points-table'
 import { Route as PlayersRouteImport } from './routes/players'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as NewPostRouteImport } from './routes/new-post'
+import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as MembersRouteImport } from './routes/members'
 import { Route as JerseyRouteImport } from './routes/jersey'
 import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as FriendsRouteImport } from './routes/friends'
 import { Route as FixturesRouteImport } from './routes/fixtures'
 import { Route as FeedRouteImport } from './routes/feed'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -86,6 +88,11 @@ const NewPostRoute = NewPostRouteImport.update({
   path: '/new-post',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MembersRoute = MembersRouteImport.update({
   id: '/members',
   path: '/members',
@@ -99,6 +106,11 @@ const JerseyRoute = JerseyRouteImport.update({
 const GalleryRoute = GalleryRouteImport.update({
   id: '/gallery',
   path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FriendsRoute = FriendsRouteImport.update({
+  id: '/friends',
+  path: '/friends',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FixturesRoute = FixturesRouteImport.update({
@@ -145,9 +157,11 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/feed': typeof FeedRoute
   '/fixtures': typeof FixturesRoute
+  '/friends': typeof FriendsRoute
   '/gallery': typeof GalleryRoute
   '/jersey': typeof JerseyRoute
   '/members': typeof MembersRoute
+  '/messages': typeof MessagesRoute
   '/new-post': typeof NewPostRoute
   '/news': typeof NewsRoute
   '/players': typeof PlayersRoute
@@ -168,9 +182,11 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/feed': typeof FeedRoute
   '/fixtures': typeof FixturesRoute
+  '/friends': typeof FriendsRoute
   '/gallery': typeof GalleryRoute
   '/jersey': typeof JerseyRoute
   '/members': typeof MembersRoute
+  '/messages': typeof MessagesRoute
   '/new-post': typeof NewPostRoute
   '/news': typeof NewsRoute
   '/players': typeof PlayersRoute
@@ -192,9 +208,11 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/feed': typeof FeedRoute
   '/fixtures': typeof FixturesRoute
+  '/friends': typeof FriendsRoute
   '/gallery': typeof GalleryRoute
   '/jersey': typeof JerseyRoute
   '/members': typeof MembersRoute
+  '/messages': typeof MessagesRoute
   '/new-post': typeof NewPostRoute
   '/news': typeof NewsRoute
   '/players': typeof PlayersRoute
@@ -217,9 +235,11 @@ export interface FileRouteTypes {
     | '/contact'
     | '/feed'
     | '/fixtures'
+    | '/friends'
     | '/gallery'
     | '/jersey'
     | '/members'
+    | '/messages'
     | '/new-post'
     | '/news'
     | '/players'
@@ -240,9 +260,11 @@ export interface FileRouteTypes {
     | '/contact'
     | '/feed'
     | '/fixtures'
+    | '/friends'
     | '/gallery'
     | '/jersey'
     | '/members'
+    | '/messages'
     | '/new-post'
     | '/news'
     | '/players'
@@ -263,9 +285,11 @@ export interface FileRouteTypes {
     | '/contact'
     | '/feed'
     | '/fixtures'
+    | '/friends'
     | '/gallery'
     | '/jersey'
     | '/members'
+    | '/messages'
     | '/new-post'
     | '/news'
     | '/players'
@@ -287,9 +311,11 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   FeedRoute: typeof FeedRoute
   FixturesRoute: typeof FixturesRoute
+  FriendsRoute: typeof FriendsRoute
   GalleryRoute: typeof GalleryRoute
   JerseyRoute: typeof JerseyRoute
   MembersRoute: typeof MembersRoute
+  MessagesRoute: typeof MessagesRoute
   NewPostRoute: typeof NewPostRoute
   NewsRoute: typeof NewsRoute
   PlayersRoute: typeof PlayersRoute
@@ -382,6 +408,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewPostRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/members': {
       id: '/members'
       path: '/members'
@@ -401,6 +434,13 @@ declare module '@tanstack/react-router' {
       path: '/gallery'
       fullPath: '/gallery'
       preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/friends': {
+      id: '/friends'
+      path: '/friends'
+      fullPath: '/friends'
+      preLoaderRoute: typeof FriendsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fixtures': {
@@ -463,9 +503,11 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   FeedRoute: FeedRoute,
   FixturesRoute: FixturesRoute,
+  FriendsRoute: FriendsRoute,
   GalleryRoute: GalleryRoute,
   JerseyRoute: JerseyRoute,
   MembersRoute: MembersRoute,
+  MessagesRoute: MessagesRoute,
   NewPostRoute: NewPostRoute,
   NewsRoute: NewsRoute,
   PlayersRoute: PlayersRoute,
@@ -481,3 +523,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
