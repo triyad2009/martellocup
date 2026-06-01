@@ -26,6 +26,8 @@ const NAV = [
   { to: "/contact", key: "nav.contact" },
   { to: "/members", key: "nav.members" },
   { to: "/feed", key: "nav.feed" },
+  { to: "/friends", key: "nav.friends" },
+  { to: "/messages", key: "nav.messages" },
 ] as const;
 
 export function Navbar() {

@@ -21,7 +21,9 @@ export const dict: Dict = {
   "nav.about": { bn: "আমাদের সম্পর্কে", en: "About", sat: "আমাগির কথা" },
   "nav.contact": { bn: "যোগাযোগ", en: "Contact", sat: "মিল-আঁলাপ" },
   "nav.members": { bn: "সদস্য", en: "Members", sat: "সাঙ্গাত" },
-  "nav.feed": { bn: "ফিড", en: "Feed", sat: "আঁলাপ-ঘর" },
+ "nav.feed": { bn: "ফিড", en: "Feed", sat: "আঁলাপ-ঘর" },
+ "nav.friends": { bn: "বন্ধু", en: "Friends", sat: "গাঁতি" },
+ "nav.messages": { bn: "মেসেজ", en: "Messages", sat: "খবর" },
 
   // Hero
   "hero.title": { bn: "মার্টেলো কাপ", en: "MARTELLO CUP", sat: "মার্টেলো কাপ" },
