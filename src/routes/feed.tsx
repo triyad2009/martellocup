@@ -91,7 +91,7 @@ function FeedPage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 sm:px-6 py-8 space-y-6">
+    <div className="mx-auto max-w-2xl px-4 sm:px-6 py-8 space-y-5">
       <div className="flex items-center gap-3 mb-2">
         <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-primary shadow-glow-red">
           <MessageSquare className="h-6 w-6 text-white" />
@@ -104,6 +104,8 @@ function FeedPage() {
         </div>
       </div>
 
+      <StoriesBar />
+
       <Link
         to="/new-post"
         className="flex items-center gap-3 rounded-2xl bg-card border border-border shadow-card p-4 hover:border-primary hover:shadow-glow-red transition-all group"
@@ -112,7 +114,7 @@ function FeedPage() {
           {(user.user_metadata?.display_name || user.email || "U")[0].toUpperCase()}
         </div>
         <div className="flex-1 px-4 py-2.5 rounded-full bg-muted text-muted-foreground text-sm group-hover:bg-background group-hover:text-foreground transition-colors">
-          {tt(lang, "মনের কথা শেয়ার করুন...", "Share what's on your mind...")}
+          {tt(lang, "মনের কথা শেয়ার করুন... @ দিয়ে কাউকে ট্যাগ করুন", "Share what's on your mind... type @ to tag someone")}
         </div>
         <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-glow-red">
           <Plus className="h-5 w-5" />
