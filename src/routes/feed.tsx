@@ -9,6 +9,8 @@ import { useAuth } from "@/lib/auth";
 import { useUserRoles } from "@/lib/roles";
 import { useI18n } from "@/lib/i18n";
 import { toast } from "sonner";
+import { StoriesBar } from "@/components/Stories";
+import { MentionInput, renderMentions } from "@/components/MentionInput";
 
 export const Route = createFileRoute("/feed")({
   component: FeedPage,
