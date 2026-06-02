@@ -200,6 +200,7 @@ export type Database = {
           created_at: string
           id: string
           post_id: string
+          tagged_user_ids: string[]
           updated_at: string
           user_id: string
         }
@@ -208,6 +209,7 @@ export type Database = {
           created_at?: string
           id?: string
           post_id: string
+          tagged_user_ids?: string[]
           updated_at?: string
           user_id: string
         }
@@ -216,6 +218,7 @@ export type Database = {
           created_at?: string
           id?: string
           post_id?: string
+          tagged_user_ids?: string[]
           updated_at?: string
           user_id?: string
         }
@@ -266,6 +269,7 @@ export type Database = {
           id: string
           media_type: string
           media_url: string | null
+          tagged_user_ids: string[]
           updated_at: string
           user_id: string
         }
@@ -276,6 +280,7 @@ export type Database = {
           id?: string
           media_type?: string
           media_url?: string | null
+          tagged_user_ids?: string[]
           updated_at?: string
           user_id: string
         }
@@ -286,6 +291,7 @@ export type Database = {
           id?: string
           media_type?: string
           media_url?: string | null
+          tagged_user_ids?: string[]
           updated_at?: string
           user_id?: string
         }
@@ -784,6 +790,8 @@ export type Database = {
           ticket_tier_name: string | null
           transaction_id: string | null
           updated_at: string
+          used_at: string | null
+          used_by: string | null
           user_id: string | null
         }
         Insert: {
@@ -809,6 +817,8 @@ export type Database = {
           ticket_tier_name?: string | null
           transaction_id?: string | null
           updated_at?: string
+          used_at?: string | null
+          used_by?: string | null
           user_id?: string | null
         }
         Update: {
@@ -834,6 +844,8 @@ export type Database = {
           ticket_tier_name?: string | null
           transaction_id?: string | null
           updated_at?: string
+          used_at?: string | null
+          used_by?: string | null
           user_id?: string | null
         }
         Relationships: [
@@ -1229,6 +1241,36 @@ export type Database = {
         }
         Relationships: []
       }
+      stories: {
+        Row: {
+          caption: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          media_type: string
+          media_url: string
+          user_id: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          media_type?: string
+          media_url: string
+          user_id: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          media_type?: string
+          media_url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       super_admin_emails: {
         Row: {
           created_at: string
@@ -1395,6 +1437,20 @@ export type Database = {
         }
         Returns: boolean
       }
+      lookup_ticket: {
+        Args: { _code: string }
+        Returns: {
+          amount: number
+          created_at: string
+          id: string
+          payer_name: string
+          status: string
+          ticket_code: string
+          ticket_tier_name: string
+          used_at: string
+        }[]
+      }
+      redeem_ticket: { Args: { _code: string }; Returns: Json }
     }
     Enums: {
       app_role:

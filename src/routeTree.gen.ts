@@ -13,6 +13,7 @@ import { Route as TrackOrderRouteImport } from './routes/track-order'
 import { Route as TicketsRouteImport } from './routes/tickets'
 import { Route as TeamsRouteImport } from './routes/teams'
 import { Route as SponsorsRouteImport } from './routes/sponsors'
+import { Route as ScanTicketsRouteImport } from './routes/scan-tickets'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as RegistrationRouteImport } from './routes/registration'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -32,6 +33,8 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VerifyTicketCodeRouteImport } from './routes/verify-ticket.$code'
+import { Route as UUserIdRouteImport } from './routes/u.$userId'
 import { Route as MessagesConversationIdRouteImport } from './routes/messages.$conversationId'
 
 const TrackOrderRoute = TrackOrderRouteImport.update({
@@ -52,6 +55,11 @@ const TeamsRoute = TeamsRouteImport.update({
 const SponsorsRoute = SponsorsRouteImport.update({
   id: '/sponsors',
   path: '/sponsors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScanTicketsRoute = ScanTicketsRouteImport.update({
+  id: '/scan-tickets',
+  path: '/scan-tickets',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResultsRoute = ResultsRouteImport.update({
@@ -149,6 +157,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VerifyTicketCodeRoute = VerifyTicketCodeRouteImport.update({
+  id: '/verify-ticket/$code',
+  path: '/verify-ticket/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UUserIdRoute = UUserIdRouteImport.update({
+  id: '/u/$userId',
+  path: '/u/$userId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MessagesConversationIdRoute = MessagesConversationIdRouteImport.update({
   id: '/$conversationId',
   path: '/$conversationId',
@@ -175,11 +193,14 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/registration': typeof RegistrationRoute
   '/results': typeof ResultsRoute
+  '/scan-tickets': typeof ScanTicketsRoute
   '/sponsors': typeof SponsorsRoute
   '/teams': typeof TeamsRoute
   '/tickets': typeof TicketsRoute
   '/track-order': typeof TrackOrderRoute
   '/messages/$conversationId': typeof MessagesConversationIdRoute
+  '/u/$userId': typeof UUserIdRoute
+  '/verify-ticket/$code': typeof VerifyTicketCodeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -201,11 +222,14 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/registration': typeof RegistrationRoute
   '/results': typeof ResultsRoute
+  '/scan-tickets': typeof ScanTicketsRoute
   '/sponsors': typeof SponsorsRoute
   '/teams': typeof TeamsRoute
   '/tickets': typeof TicketsRoute
   '/track-order': typeof TrackOrderRoute
   '/messages/$conversationId': typeof MessagesConversationIdRoute
+  '/u/$userId': typeof UUserIdRoute
+  '/verify-ticket/$code': typeof VerifyTicketCodeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -228,11 +252,14 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/registration': typeof RegistrationRoute
   '/results': typeof ResultsRoute
+  '/scan-tickets': typeof ScanTicketsRoute
   '/sponsors': typeof SponsorsRoute
   '/teams': typeof TeamsRoute
   '/tickets': typeof TicketsRoute
   '/track-order': typeof TrackOrderRoute
   '/messages/$conversationId': typeof MessagesConversationIdRoute
+  '/u/$userId': typeof UUserIdRoute
+  '/verify-ticket/$code': typeof VerifyTicketCodeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -256,11 +283,14 @@ export interface FileRouteTypes {
     | '/profile'
     | '/registration'
     | '/results'
+    | '/scan-tickets'
     | '/sponsors'
     | '/teams'
     | '/tickets'
     | '/track-order'
     | '/messages/$conversationId'
+    | '/u/$userId'
+    | '/verify-ticket/$code'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -282,11 +312,14 @@ export interface FileRouteTypes {
     | '/profile'
     | '/registration'
     | '/results'
+    | '/scan-tickets'
     | '/sponsors'
     | '/teams'
     | '/tickets'
     | '/track-order'
     | '/messages/$conversationId'
+    | '/u/$userId'
+    | '/verify-ticket/$code'
   id:
     | '__root__'
     | '/'
@@ -308,11 +341,14 @@ export interface FileRouteTypes {
     | '/profile'
     | '/registration'
     | '/results'
+    | '/scan-tickets'
     | '/sponsors'
     | '/teams'
     | '/tickets'
     | '/track-order'
     | '/messages/$conversationId'
+    | '/u/$userId'
+    | '/verify-ticket/$code'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -335,10 +371,13 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   RegistrationRoute: typeof RegistrationRoute
   ResultsRoute: typeof ResultsRoute
+  ScanTicketsRoute: typeof ScanTicketsRoute
   SponsorsRoute: typeof SponsorsRoute
   TeamsRoute: typeof TeamsRoute
   TicketsRoute: typeof TicketsRoute
   TrackOrderRoute: typeof TrackOrderRoute
+  UUserIdRoute: typeof UUserIdRoute
+  VerifyTicketCodeRoute: typeof VerifyTicketCodeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -369,6 +408,13 @@ declare module '@tanstack/react-router' {
       path: '/sponsors'
       fullPath: '/sponsors'
       preLoaderRoute: typeof SponsorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scan-tickets': {
+      id: '/scan-tickets'
+      path: '/scan-tickets'
+      fullPath: '/scan-tickets'
+      preLoaderRoute: typeof ScanTicketsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/results': {
@@ -504,6 +550,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/verify-ticket/$code': {
+      id: '/verify-ticket/$code'
+      path: '/verify-ticket/$code'
+      fullPath: '/verify-ticket/$code'
+      preLoaderRoute: typeof VerifyTicketCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/u/$userId': {
+      id: '/u/$userId'
+      path: '/u/$userId'
+      fullPath: '/u/$userId'
+      preLoaderRoute: typeof UUserIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/messages/$conversationId': {
       id: '/messages/$conversationId'
       path: '/$conversationId'
@@ -546,20 +606,14 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   RegistrationRoute: RegistrationRoute,
   ResultsRoute: ResultsRoute,
+  ScanTicketsRoute: ScanTicketsRoute,
   SponsorsRoute: SponsorsRoute,
   TeamsRoute: TeamsRoute,
   TicketsRoute: TicketsRoute,
   TrackOrderRoute: TrackOrderRoute,
+  UUserIdRoute: UUserIdRoute,
+  VerifyTicketCodeRoute: VerifyTicketCodeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

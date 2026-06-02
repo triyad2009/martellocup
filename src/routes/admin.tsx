@@ -112,14 +112,19 @@ function AdminPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-8 sm:py-12">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wide mb-3">
-          <Shield className="h-3.5 w-3.5" />
-          {isSuperAdmin ? (lang === "bn" ? "সুপার এডমিন" : "SUPER ADMIN") : (lang === "bn" ? "এডমিন" : "ADMIN")}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6 flex flex-wrap items-center gap-3">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-wide mb-3">
+            <Shield className="h-3.5 w-3.5" />
+            {isSuperAdmin ? (lang === "bn" ? "সুপার এডমিন" : "SUPER ADMIN") : (lang === "bn" ? "এডমিন" : "ADMIN")}
+          </div>
+          <h1 className="font-display text-3xl sm:text-4xl font-bold">
+            {lang === "bn" ? "এডমিন প্যানেল" : "Admin Panel"}
+          </h1>
         </div>
-        <h1 className="font-display text-3xl sm:text-4xl font-bold">
-          {lang === "bn" ? "এডমিন প্যানেল" : "Admin Panel"}
-        </h1>
+        <Link to="/scan-tickets" className="ml-auto inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-primary text-white font-bold shadow-glow-red text-sm">
+          <Ticket className="h-4 w-4" /> {lang === "bn" ? "টিকিট স্ক্যান" : "Scan Tickets"}
+        </Link>
       </motion.div>
 
       {/* Tabs — mobile: 2-col grid; desktop: horizontal scroll */}
