@@ -1,12 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Image as ImageIcon, Video, X, Loader2, Send, Sparkles } from "lucide-react";
+import { ArrowLeft, Image as ImageIcon, Video, X, Loader2, Send, Sparkles, AtSign } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { uploadMedia } from "@/lib/content";
 import { toast } from "sonner";
+import { MentionInput } from "@/components/MentionInput";
 
 export const Route = createFileRoute("/new-post")({
   component: NewPostPage,
@@ -25,6 +26,7 @@ function NewPostPage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [text, setText] = useState("");
+  const [tagged, setTagged] = useState<string[]>([]);
   const [caption, setCaption] = useState("");
   const [mediaUrl, setMediaUrl] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<"text" | "image" | "video">("text");
@@ -66,7 +68,8 @@ function NewPostPage() {
       media_url: mediaUrl,
       media_type: mediaUrl ? mediaType : "text",
       caption: mediaUrl ? (caption.trim() || null) : null,
-    });
+      tagged_user_ids: tagged,
+    } as any);
     setPosting(false);
     if (error) toast.error(error.message);
     else {
@@ -111,14 +114,16 @@ function NewPostPage() {
         </div>
 
         <div className="p-4 space-y-4">
-          <textarea
+          <MentionInput
             value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder={tt("কী চলছে আজ? লিংক দিলে সেটা সুন্দর প্রিভিউ হিসেবে দেখাবে...", "What's happening? Paste a link and it'll show as a preview...")}
+            onChange={(t, ids) => { setText(t); setTagged(ids); }}
+            placeholder={tt("কী চলছে আজ? @ দিয়ে বন্ধুকে ট্যাগ করুন, লিংক দিলে প্রিভিউ হবে...", "What's happening? Type @ to tag a friend; paste links for previews...")}
             rows={6}
             autoFocus
-            className="w-full px-3 py-2.5 rounded-lg border border-border bg-background resize-none focus:outline-none focus:ring-2 focus:ring-primary text-base"
           />
+          {tagged.length > 0 && (
+            <p className="text-xs text-primary inline-flex items-center gap-1"><AtSign className="h-3 w-3" /> {tagged.length} tagged</p>
+          )}
 
           {mediaUrl && (
             <div className="relative rounded-xl overflow-hidden border border-border">

@@ -179,7 +179,7 @@ function RichContent({ text }: { text: string }) {
           URL_RE.test(p) ? (
             <a key={i} href={p} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline break-all">{p}</a>
           ) : (
-            <span key={i}>{p}</span>
+            <span key={i}>{renderMentions(p)}</span>
           )
         )}
       </p>
@@ -286,15 +286,17 @@ function PostCard({
   return (
     <motion.article initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl bg-card border border-border shadow-card overflow-hidden">
       <div className="flex items-center gap-3 p-4">
-        {author?.avatar_url ? (
-          <img src={author.avatar_url} alt="" className="h-10 w-10 rounded-full object-cover" />
-        ) : (
-          <div className="h-10 w-10 rounded-full bg-gradient-primary text-white flex items-center justify-center font-bold">{authorInitial}</div>
-        )}
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-sm truncate">{authorName}</p>
-          <p className="text-[11px] text-muted-foreground">{new Date(post.created_at).toLocaleString()}</p>
-        </div>
+        <Link to="/u/$userId" params={{ userId: post.user_id }} className="flex items-center gap-3 min-w-0 flex-1 hover:opacity-80">
+          {author?.avatar_url ? (
+            <img src={author.avatar_url} alt="" className="h-10 w-10 rounded-full object-cover" />
+          ) : (
+            <div className="h-10 w-10 rounded-full bg-gradient-primary text-white flex items-center justify-center font-bold">{authorInitial}</div>
+          )}
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-sm truncate">{authorName}</p>
+            <p className="text-[11px] text-muted-foreground">{new Date(post.created_at).toLocaleString()}</p>
+          </div>
+        </Link>
         {canDelete && (
           <button onClick={deletePost} className="p-2 text-destructive hover:bg-destructive/10 rounded-md" aria-label="Delete post">
             <Trash2 className="h-4 w-4" />
@@ -365,8 +367,8 @@ function PostCard({
                       <div className="h-7 w-7 rounded-full bg-gradient-primary text-white text-xs flex items-center justify-center font-bold">{ci}</div>
                     )}
                     <div className="flex-1 min-w-0 rounded-lg bg-card border border-border px-3 py-2">
-                      <p className="text-xs font-semibold">{cn}</p>
-                      <p className="text-sm whitespace-pre-wrap">{c.content}</p>
+                      <Link to="/u/$userId" params={{ userId: c.user_id }} className="text-xs font-semibold hover:text-primary">{cn}</Link>
+                      <p className="text-sm whitespace-pre-wrap">{renderMentions(c.content)}</p>
                     </div>
                     {canDelC && (
                       <button onClick={() => deleteComment(c.id)} className="p-1 text-destructive hover:bg-destructive/10 rounded" aria-label="Delete comment">

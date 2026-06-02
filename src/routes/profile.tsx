@@ -7,7 +7,7 @@ import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { uploadMedia } from "@/lib/content";
 import { toast } from "sonner";
-import { TicketSlip } from "@/components/TicketSlip";
+import { QRTicket } from "@/components/QRTicket";
 
 export const Route = createFileRoute("/profile")({
   component: ProfilePage,
@@ -277,13 +277,14 @@ function MyTickets({ userId, lang }: { userId: string; lang: string }) {
         <button onClick={() => setOpenId(null)} className="inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-primary mb-4">
           <ArrowLeft className="h-4 w-4" /> {T(lang, "তালিকায় ফিরুন", "Back to list")}
         </button>
-        <TicketSlip
+        <QRTicket
           ticketCode={open.ticket_code}
           payerName={open.payer_name}
           payerPhone={open.payer_phone}
           tierName={open.ticket_tier_name}
           amount={open.amount}
           date={open.updated_at ?? open.created_at}
+          used={!!open.used_at}
         />
       </div>
     );
