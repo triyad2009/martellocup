@@ -5,6 +5,8 @@ import { Users, Plus, Trash2, CheckCircle2, Loader2, ShieldCheck } from "lucide-
 import { useI18n } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { PaymentFlow } from "@/components/PaymentFlow";
+import { LoginGate } from "@/components/LoginGate";
+import { OrderSlip } from "@/components/OrderSlip";
 
 export const Route = createFileRoute("/registration")({
   component: RegistrationPage,
@@ -86,6 +88,7 @@ function RegistrationPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<string | null>(null);
+  const [trackingCode, setTrackingCode] = useState<string | null>(null);
 
   const updateField = (k: keyof typeof form, v: string) =>
     setForm((f) => ({ ...f, [k]: v }));
@@ -125,7 +128,7 @@ function RegistrationPage() {
         status: "pending",
         user_id: authUser?.id ?? null,
       } as any)
-      .select("id")
+      .select("id, tracking_code")
       .single();
     setSubmitting(false);
 
@@ -134,41 +137,58 @@ function RegistrationPage() {
       return;
     }
     setDone(data.id);
+    setTrackingCode((data as any).tracking_code || null);
   };
 
   if (done) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center px-4 py-16">
+      <LoginGate>
+      <div className="min-h-[70vh] px-4 py-10 sm:py-14">
         <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: "spring", damping: 18 }}
-          className="max-w-md w-full text-center bg-card rounded-2xl shadow-elevated border border-border p-8"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-xl mx-auto text-center mb-6"
         >
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: "spring" }}
-            className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-success text-success-foreground mb-4"
-          >
-            <CheckCircle2 className="h-10 w-10" />
-          </motion.div>
-          <h2 className="font-display text-2xl font-bold mb-2">{t("successTitle")}</h2>
-          <p className="text-muted-foreground mb-4">{t("successDesc")}</p>
-          <code className="block bg-muted text-foreground font-mono text-sm rounded-lg px-3 py-2 break-all">
-            {done}
-          </code>
-
-          <div className="mt-6 text-left">
-            <h3 className="font-display font-bold text-lg mb-2">
-              {lang === "bn" ? "নিবন্ধন ফি পেমেন্ট" : "Registration Fee Payment"}
-            </h3>
-            <PaymentFlow submissionType="registration" registrationId={done} />
+          <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-success text-success-foreground mb-3">
+            <CheckCircle2 className="h-9 w-9" />
           </div>
+          <h2 className="font-display text-2xl font-bold">{t("successTitle")}</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            {lang === "bn"
+              ? "নিচের স্লিপ ডাউনলোড করে রাখুন — QR স্ক্যান করে স্ট্যাটাস দেখা যাবে।"
+              : "Download the slip below — scan the QR anytime to check status."}
+          </p>
+        </motion.div>
 
+        {trackingCode && (
+          <OrderSlip
+            kind="registration"
+            trackingCode={trackingCode}
+            title={form.team_name}
+            subtitle={form.category ? form.category.toUpperCase() : undefined}
+            rows={[
+              { bn: "অধিনায়ক", en: "Captain" }.bn && undefined as any,
+              { k: lang === "bn" ? "অধিনায়ক" : "Captain", v: form.captain_name },
+              { k: lang === "bn" ? "কোচ" : "Coach", v: form.coach_name },
+              { k: lang === "bn" ? "ফোন" : "Phone", v: form.coach_phone },
+              { k: lang === "bn" ? "খেলোয়াড়" : "Players", v: String(players.filter((p) => p.name.trim()).length) },
+            ].filter((r): r is { k: string; v: string } => !!r && typeof r === "object" && "k" in r)}
+            status="pending"
+          />
+        )}
+
+        <div className="max-w-xl mx-auto mt-6 rounded-2xl bg-card border border-border shadow-card p-5">
+          <h3 className="font-display font-bold text-lg mb-3">
+            {lang === "bn" ? "নিবন্ধন ফি পেমেন্ট" : "Registration Fee Payment"}
+          </h3>
+          <PaymentFlow submissionType="registration" registrationId={done} />
+        </div>
+
+        <div className="max-w-xl mx-auto mt-5 text-center">
           <button
             onClick={() => {
               setDone(null);
+              setTrackingCode(null);
               setForm({
                 team_name: "", short_name: "", category: "open", description: "",
                 coach_name: "", coach_phone: "", coach_email: "", address: "", captain_name: "",
@@ -176,16 +196,18 @@ function RegistrationPage() {
               setPlayers(Array.from({ length: 11 }, emptyPlayer));
               setAgree(false);
             }}
-            className="mt-6 px-5 py-2.5 rounded-lg border border-border font-semibold hover:bg-muted"
+            className="px-5 py-2.5 rounded-lg border border-border font-semibold hover:bg-muted"
           >
             {t("newReg")}
           </button>
-        </motion.div>
+        </div>
       </div>
+      </LoginGate>
     );
   }
 
   return (
+    <LoginGate>
     <div className="mx-auto max-w-3xl px-4 sm:px-6 py-10 sm:py-16">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
