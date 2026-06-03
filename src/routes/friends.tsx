@@ -28,9 +28,10 @@ type Friendship = {
 function FriendsPage() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<"friends" | "requests" | "search">("friends");
+  const [tab, setTab] = useState<"friends" | "admins" | "requests" | "search">("friends");
   const [friendships, setFriendships] = useState<Friendship[]>([]);
   const [profiles, setProfiles] = useState<Record<string, Profile>>({});
+  const [adminIds, setAdminIds] = useState<string[]>([]);
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Profile[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
@@ -63,7 +64,23 @@ function FriendsPage() {
     }
   }, [user]);
 
-  useEffect(() => { loadFriendships(); }, [loadFriendships]);
+  const loadAdmins = useCallback(async () => {
+    if (!user) return;
+    const { data } = await (supabase as any).rpc("list_admin_user_ids");
+    const ids = ((data ?? []) as { user_id: string }[]).map((r) => r.user_id).filter((id) => id !== user.id);
+    setAdminIds(ids);
+    if (ids.length > 0) {
+      const { data: profs } = await supabase
+        .from("profiles")
+        .select("user_id, display_name, full_name, avatar_url, email")
+        .in("user_id", ids);
+      const map: Record<string, Profile> = {};
+      (profs ?? []).forEach((p: any) => { map[p.user_id] = p; });
+      setProfiles((prev) => ({ ...prev, ...map }));
+    }
+  }, [user]);
+
+  useEffect(() => { loadFriendships(); loadAdmins(); }, [loadFriendships, loadAdmins]);
 
   useEffect(() => {
     if (!user) return;
@@ -137,9 +154,30 @@ function FriendsPage() {
 
       <div className="flex gap-1 p-1 rounded-xl bg-muted mb-4 overflow-x-auto">
         <TabBtn active={tab === "friends"} onClick={() => setTab("friends")} label={`Friends (${accepted.length})`} />
+        <TabBtn active={tab === "admins"} onClick={() => setTab("admins")} label={`Admins (${adminIds.length})`} />
         <TabBtn active={tab === "requests"} onClick={() => setTab("requests")} label={`Requests (${incoming.length})`} />
         <TabBtn active={tab === "search"} onClick={() => setTab("search")} label="Find People" />
       </div>
+
+      {tab === "admins" && (
+        <div className="space-y-2">
+          <p className="text-xs text-muted-foreground mb-2 px-1">
+            🛡 এডমিনদের সাথে রিকুয়েস্ট ছাড়াই সরাসরি চ্যাট করা যাবে।
+          </p>
+          {adminIds.length === 0 && <Empty text="কোনো এডমিন নেই।" />}
+          {adminIds.map((id) => {
+            const p = profiles[id];
+            return (
+              <UserRow key={id} profile={p} otherId={id} badge="ADMIN"
+                action={
+                  <button onClick={() => openChat(id)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary-glow">
+                    <MessageCircle className="h-4 w-4" /> Chat
+                  </button>
+                } />
+            );
+          })}
+        </div>
+      )}
 
       {tab === "friends" && (
         <div className="space-y-2">
@@ -246,7 +284,7 @@ function Empty({ text }: { text: string }) {
   return <div className="py-8 text-center text-sm text-muted-foreground">{text}</div>;
 }
 
-function UserRow({ profile, otherId, action }: { profile?: Profile; otherId: string; action: React.ReactNode }) {
+function UserRow({ profile, otherId, action, badge }: { profile?: Profile; otherId: string; action: React.ReactNode; badge?: string }) {
   const name = profile?.display_name || profile?.full_name || profile?.email || "User";
   const initial = name[0]?.toUpperCase() ?? "U";
   return (
@@ -257,10 +295,11 @@ function UserRow({ profile, otherId, action }: { profile?: Profile; otherId: str
         <div className="h-11 w-11 rounded-full bg-gradient-primary text-white flex items-center justify-center font-bold">{initial}</div>
       )}
       <div className="min-w-0 flex-1">
-        <Link to="/messages" className="block">
+        <div className="flex items-center gap-1.5">
           <p className="font-semibold text-sm truncate">{name}</p>
-          <p className="text-xs text-muted-foreground truncate">{profile?.email ?? otherId.slice(0, 8)}</p>
-        </Link>
+          {badge && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-primary/15 text-primary tracking-wider">{badge}</span>}
+        </div>
+        <p className="text-xs text-muted-foreground truncate">{profile?.email ?? otherId.slice(0, 8)}</p>
       </div>
       {action}
     </div>
