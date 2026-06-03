@@ -167,12 +167,11 @@ function RegistrationPage() {
             title={form.team_name}
             subtitle={form.category ? form.category.toUpperCase() : undefined}
             rows={[
-              { bn: "অধিনায়ক", en: "Captain" }.bn && undefined as any,
               { k: lang === "bn" ? "অধিনায়ক" : "Captain", v: form.captain_name },
               { k: lang === "bn" ? "কোচ" : "Coach", v: form.coach_name },
               { k: lang === "bn" ? "ফোন" : "Phone", v: form.coach_phone },
               { k: lang === "bn" ? "খেলোয়াড়" : "Players", v: String(players.filter((p) => p.name.trim()).length) },
-            ].filter((r): r is { k: string; v: string } => !!r && typeof r === "object" && "k" in r)}
+            ]}
             status="pending"
           />
         )}
@@ -383,6 +382,7 @@ function RegistrationPage() {
         </motion.button>
       </form>
     </div>
+    </LoginGate>
   );
 }
 
