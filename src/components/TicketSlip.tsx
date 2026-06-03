@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import { Download, Printer, CheckCircle2 } from "lucide-react";
-
-const LOGO_URL = "https://i.postimg.cc/sxgdMH6c/FB-IMG-1776993011009.jpg";
+import { useSiteLogo } from "@/lib/settings";
 
 type Props = {
   ticketCode: string;
@@ -14,6 +13,7 @@ type Props = {
 
 export function TicketSlip({ ticketCode, payerName, payerPhone, tierName, amount, date }: Props) {
   const slipRef = useRef<HTMLDivElement>(null);
+  const LOGO_URL = useSiteLogo();
 
   const handlePrint = () => {
     const html = slipRef.current?.outerHTML;
