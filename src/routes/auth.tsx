@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LogIn, UserPlus, Mail, Lock, User as UserIcon, Loader2, Trophy } from "lucide-react";
+import { LogIn, UserPlus, Mail, Lock, User as UserIcon, Loader2 } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
+import { useSiteLogo } from "@/lib/settings";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
@@ -35,6 +36,7 @@ function AuthPage() {
   const t = (k: keyof typeof tx) => tx[k][lang === "en" ? "en" : "bn"];
   const navigate = useNavigate();
   const { user } = useAuth();
+  const LOGO_URL = useSiteLogo();
 
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [name, setName] = useState("");
@@ -97,9 +99,9 @@ function AuthPage() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", damping: 15 }}
-            className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-primary shadow-glow-red mb-4"
+            className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-primary shadow-glow-red mb-4 overflow-hidden ring-2 ring-primary/40"
           >
-            <Trophy className="h-8 w-8 text-white" />
+            <img src={LOGO_URL} alt="Martello Cup" className="h-full w-full object-cover" />
           </motion.div>
           <AnimatePresence mode="wait">
             <motion.div

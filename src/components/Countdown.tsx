@@ -14,9 +14,14 @@ function diff(target: Date) {
 
 export function Countdown({ target }: { target: Date }) {
   const { t } = useI18n();
-  const [time, setTime] = useState(diff(target));
+  // Start with zeros so server-render and first client-render match.
+  // After mount, update to real countdown and tick every second.
+  const [time, setTime] = useState({ d: 0, h: 0, m: 0, s: 0 });
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+    setTime(diff(target));
     const id = setInterval(() => setTime(diff(target)), 1000);
     return () => clearInterval(id);
   }, [target]);
