@@ -1,23 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Search, Loader2, Package, Check, X, Truck, Clock, MessageSquare } from "lucide-react";
+import { Search, Loader2, Package, Check, X, Truck, Clock, MessageSquare, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
+import { OrderSlip } from "@/components/OrderSlip";
 
 export const Route = createFileRoute("/track-order")({
   component: TrackOrderPage,
-  validateSearch: (s: Record<string, unknown>) => ({ id: typeof s.id === "string" ? s.id : undefined }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    id: typeof s.id === "string" ? s.id : undefined,
+    code: typeof s.code === "string" ? s.code : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Track Order · Martello Cup" },
-      { name: "description", content: "Track your Martello Cup jersey order status using your order ID." },
+      { name: "description", content: "Track your Martello Cup jersey order or team registration status." },
     ],
   }),
 });
 
-type Order = {
+type JerseyOrder = {
+  kind: "jersey";
   id: string;
+  tracking_code: string | null;
   product_name: string;
   customer_name: string;
   customer_phone: string;
@@ -35,41 +41,85 @@ type Order = {
   updated_at: string;
 };
 
+type Registration = {
+  kind: "registration";
+  id: string;
+  tracking_code: string | null;
+  team_name: string;
+  short_name: string | null;
+  category: string | null;
+  captain_name: string;
+  coach_name: string;
+  coach_phone: string;
+  status: string;
+  rejection_reason: string | null;
+  created_at: string;
+};
+
+type Result = JerseyOrder | Registration | null;
+
 function TrackOrderPage() {
   const { lang } = useI18n();
   const T = (bn: string, en: string) => (lang === "bn" ? bn : en);
   const search = Route.useSearch();
-  const [orderId, setOrderId] = useState(search.id || "");
-  const [order, setOrder] = useState<Order | null>(null);
+  const [query, setQuery] = useState(search.code || search.id || "");
+  const [result, setResult] = useState<Result>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const lookup = async (id: string) => {
+  const lookup = async (input: string) => {
     setError(null);
-    setOrder(null);
-    const trimmed = id.trim();
+    setResult(null);
+    const trimmed = input.trim();
     if (!trimmed) {
-      setError(T("অর্ডার আইডি লিখুন", "Please enter an order ID"));
+      setError(T("কোড বা আইডি লিখুন", "Please enter a code or ID"));
       return;
     }
     setLoading(true);
-    const { data, error: e } = await (supabase as any)
-      .from("jersey_orders")
-      .select("id,product_name,customer_name,customer_phone,size,quantity,jersey_print_name,jersey_number,total_amount,status,payment_method,rejection_reason,admin_notes,delivery_address,created_at,updated_at")
-      .eq("id", trimmed)
-      .maybeSingle();
-    setLoading(false);
-    if (e || !data) {
-      setError(T("কোনো অর্ডার পাওয়া যায়নি। আইডি চেক করুন।", "No order found. Please check the ID."));
-      return;
+
+    try {
+      // 1) Tracking code lookups (JRS-... / REG-...)
+      if (trimmed.toUpperCase().startsWith("JRS-")) {
+        const { data } = await (supabase as any)
+          .from("jersey_orders")
+          .select("*")
+          .eq("tracking_code", trimmed.toUpperCase())
+          .maybeSingle();
+        if (data) { setResult({ kind: "jersey", ...(data as any) }); return; }
+      } else if (trimmed.toUpperCase().startsWith("REG-")) {
+        const { data } = await (supabase as any)
+          .from("registrations")
+          .select("*")
+          .eq("tracking_code", trimmed.toUpperCase())
+          .maybeSingle();
+        if (data) { setResult({ kind: "registration", ...(data as any) }); return; }
+      } else {
+        // 2) Fall back to UUID lookup on jersey_orders for legacy URLs
+        const { data } = await (supabase as any)
+          .from("jersey_orders")
+          .select("*")
+          .eq("id", trimmed)
+          .maybeSingle();
+        if (data) { setResult({ kind: "jersey", ...(data as any) }); return; }
+
+        const { data: reg } = await (supabase as any)
+          .from("registrations")
+          .select("*")
+          .eq("id", trimmed)
+          .maybeSingle();
+        if (reg) { setResult({ kind: "registration", ...(reg as any) }); return; }
+      }
+      setError(T("কিছু পাওয়া যায়নি। কোড চেক করুন।", "Nothing found. Please check the code."));
+    } finally {
+      setLoading(false);
     }
-    setOrder(data as Order);
   };
 
   useEffect(() => {
-    if (search.id) lookup(search.id);
+    const initial = search.code || search.id;
+    if (initial) lookup(initial);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [search.id]);
+  }, [search.code, search.id]);
 
   const statusInfo = (s: string) => {
     switch (s) {
@@ -90,27 +140,30 @@ function TrackOrderPage() {
         <div className="container max-w-2xl mx-auto px-4 text-center">
           <Package className="h-10 w-10 mx-auto mb-2 opacity-90" />
           <h1 className="font-display text-3xl sm:text-4xl font-extrabold">
-            {T("অর্ডার ট্র্যাক করুন", "Track Your Order")}
+            {T("অর্ডার / নিবন্ধন ট্র্যাক করুন", "Track Order / Registration")}
           </h1>
           <p className="opacity-90 mt-2 text-sm">
-            {T("অর্ডার আইডি দিয়ে স্ট্যাটাস ও আপডেট দেখুন", "Enter your order ID to see status & updates")}
+            {T("ট্র্যাকিং কোড দিয়ে স্ট্যাটাস দেখুন", "Enter tracking code to see status")}
           </p>
         </div>
       </section>
 
       <section className="container max-w-2xl mx-auto px-4 py-8">
         <div className="rounded-2xl bg-card border border-border p-5 shadow-card">
-          <label className="text-sm font-semibold mb-2 block">{T("অর্ডার আইডি", "Order ID")}</label>
+          <label className="text-sm font-semibold mb-2 block">
+            {T("ট্র্যাকিং কোড", "Tracking Code")}{" "}
+            <span className="text-xs text-muted-foreground font-normal">(JRS-… / REG-…)</span>
+          </label>
           <div className="flex gap-2">
             <input
-              value={orderId}
-              onChange={(e) => setOrderId(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && lookup(orderId)}
-              placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-              className="flex-1 px-3 py-2.5 rounded-lg border border-border bg-background font-mono text-xs"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && lookup(query)}
+              placeholder="JRS-12345-67890"
+              className="flex-1 px-3 py-2.5 rounded-lg border border-border bg-background font-mono text-sm"
             />
             <button
-              onClick={() => lookup(orderId)}
+              onClick={() => lookup(query)}
               disabled={loading}
               className="px-4 py-2.5 rounded-lg bg-primary text-primary-foreground font-bold text-sm inline-flex items-center gap-1.5 disabled:opacity-60"
             >
@@ -121,65 +174,73 @@ function TrackOrderPage() {
           {error && <p className="mt-3 text-sm text-destructive font-medium">{error}</p>}
         </div>
 
-        {order && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-5 rounded-2xl bg-card border border-border p-5 sm:p-6 shadow-card space-y-4"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h2 className="font-display font-bold text-xl">{order.product_name}</h2>
-                <p className="text-xs text-muted-foreground font-mono mt-0.5 break-all">#{order.id}</p>
-              </div>
-              {(() => {
-                const info = statusInfo(order.status);
-                const Icon = info.icon;
-                return (
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase shrink-0 ${info.color}`}>
-                    <Icon className="h-3.5 w-3.5" />
-                    {info.label}
-                  </span>
-                );
-              })()}
-            </div>
-
-            <div className="grid sm:grid-cols-2 gap-x-4 gap-y-2 text-sm border-t border-border pt-4">
-              <p><span className="text-muted-foreground">{T("নাম", "Name")}:</span> <span className="font-semibold">{order.customer_name}</span></p>
-              <p><span className="text-muted-foreground">{T("ফোন", "Phone")}:</span> <span className="font-semibold">{order.customer_phone}</span></p>
-              <p><span className="text-muted-foreground">{T("সাইজ", "Size")}:</span> <span className="font-semibold">{order.size} × {order.quantity}</span></p>
-              <p><span className="text-muted-foreground">{T("পেমেন্ট", "Payment")}:</span> <span className="font-semibold uppercase">{order.payment_method}</span></p>
-              <p>
-                <span className="text-muted-foreground">{T("জার্সি প্রিন্ট", "Jersey Print")}:</span>{" "}
-                <span className="font-mono font-bold uppercase">{order.jersey_print_name}</span>
-                {order.jersey_number != null && <> · #{order.jersey_number}</>}
-              </p>
-              <p><span className="text-muted-foreground">{T("সর্বমোট", "Total")}:</span> <span className="font-bold text-primary">৳ {order.total_amount}</span></p>
-              <p className="sm:col-span-2"><span className="text-muted-foreground">{T("ঠিকানা", "Address")}:</span> {order.delivery_address}</p>
-              <p className="sm:col-span-2 text-xs text-muted-foreground">
-                {T("অর্ডার করা হয়েছে", "Ordered")}: {fmtDate(order.created_at)}
-                {order.updated_at !== order.created_at && (
-                  <> · {T("আপডেট", "Updated")}: {fmtDate(order.updated_at)}</>
+        {result && result.kind === "jersey" && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-5">
+            {result.tracking_code && (
+              <OrderSlip
+                kind="jersey"
+                trackingCode={result.tracking_code}
+                title={result.product_name}
+                subtitle={`${result.jersey_print_name}${result.jersey_number != null ? ` · #${result.jersey_number}` : ""}`}
+                rows={[
+                  { k: T("নাম", "Name"), v: result.customer_name },
+                  { k: T("ফোন", "Phone"), v: result.customer_phone },
+                  { k: T("সাইজ", "Size"), v: `${result.size} × ${result.quantity}` },
+                  { k: T("সর্বমোট", "Total"), v: `৳ ${result.total_amount}` },
+                  { k: T("পেমেন্ট", "Payment"), v: result.payment_method.toUpperCase() },
+                ]}
+                status={result.status}
+              />
+            )}
+            {(result.admin_notes || result.rejection_reason) && (
+              <div className="rounded-2xl bg-card border border-border p-5 space-y-3">
+                {result.admin_notes && (
+                  <div className="rounded-xl border-2 border-primary/30 bg-primary/5 p-4">
+                    <p className="text-xs font-bold text-primary uppercase mb-1.5 inline-flex items-center gap-1.5">
+                      <MessageSquare className="h-3.5 w-3.5" />
+                      {T("এডমিন বার্তা", "Message from Admin")}
+                    </p>
+                    <p className="text-sm whitespace-pre-wrap">{result.admin_notes}</p>
+                  </div>
                 )}
-              </p>
-            </div>
-
-            {order.admin_notes && (
-              <div className="rounded-xl border-2 border-primary/30 bg-primary/5 p-4">
-                <p className="text-xs font-bold text-primary uppercase mb-1.5 inline-flex items-center gap-1.5">
-                  <MessageSquare className="h-3.5 w-3.5" />
-                  {T("এডমিন বার্তা", "Message from Admin")}
-                </p>
-                <p className="text-sm whitespace-pre-wrap">{order.admin_notes}</p>
+                {result.rejection_reason && (
+                  <div className="rounded-xl border-2 border-destructive/30 bg-destructive/5 p-4">
+                    <p className="text-xs font-bold text-destructive uppercase mb-1.5">
+                      {T("প্রত্যাখ্যানের কারণ", "Rejection Reason")}
+                    </p>
+                    <p className="text-sm">{result.rejection_reason}</p>
+                  </div>
+                )}
               </div>
             )}
+            <p className="text-xs text-center text-muted-foreground">
+              {T("আপডেট", "Last update")}: {fmtDate((result as any).updated_at || result.created_at)}
+            </p>
+          </motion.div>
+        )}
 
-            {order.rejection_reason && (
-              <div className="rounded-xl border-2 border-destructive/30 bg-destructive/5 p-4">
+        {result && result.kind === "registration" && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-5">
+            {result.tracking_code && (
+              <OrderSlip
+                kind="registration"
+                trackingCode={result.tracking_code}
+                title={result.team_name}
+                subtitle={result.category ? result.category.toUpperCase() : undefined}
+                rows={[
+                  { k: T("অধিনায়ক", "Captain"), v: result.captain_name },
+                  { k: T("কোচ", "Coach"), v: result.coach_name },
+                  { k: T("ফোন", "Phone"), v: result.coach_phone },
+                ]}
+                status={result.status}
+              />
+            )}
+            {result.rejection_reason && (
+              <div className="rounded-2xl border-2 border-destructive/30 bg-destructive/5 p-4">
                 <p className="text-xs font-bold text-destructive uppercase mb-1.5">
                   {T("প্রত্যাখ্যানের কারণ", "Rejection Reason")}
                 </p>
-                <p className="text-sm">{order.rejection_reason}</p>
+                <p className="text-sm">{result.rejection_reason}</p>
               </div>
             )}
           </motion.div>

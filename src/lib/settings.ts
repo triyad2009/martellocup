@@ -10,6 +10,10 @@ export type TournamentSettings = {
   hero_logo_url: string | null;
 };
 
+// Fallback logo for SSR / first render before settings load
+export const DEFAULT_LOGO_URL =
+  "https://i.postimg.cc/sxgdMH6c/FB-IMG-1776993011009.jpg";
+
 export function useTournamentSettings() {
   const [settings, setSettings] = useState<TournamentSettings | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,4 +46,11 @@ export function useTournamentSettings() {
   }, []);
 
   return { settings, loading };
+}
+
+// Site-wide logo — admin-controlled via tournament_settings.hero_logo_url.
+// Used in Navbar, Footer, Auth, Ticket/Order slips, etc.
+export function useSiteLogo(): string {
+  const { settings } = useTournamentSettings();
+  return settings?.hero_logo_url || DEFAULT_LOGO_URL;
 }

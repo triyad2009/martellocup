@@ -245,9 +245,10 @@ function SettingsManager({ lang }: { lang: "bn" | "en" }) {
           value={dtLocal(row.tournament_start)}
           onChange={(e) => setRow({ ...row, tournament_start: new Date(e.target.value).toISOString() })} />
       </Field>
-      <Field label={lang === "bn" ? "হিরো লোগো URL (ঐচ্ছিক)" : "Hero Logo URL (optional)"}>
+      <Field label={lang === "bn" ? "ওয়েবসাইট লোগো URL (Navbar, Footer, Tickets, Auth — সব জায়গায় ব্যবহৃত)" : "Website Logo URL (used in Navbar, Footer, Tickets, Auth — everywhere)"}>
         <input className="w-full px-3 py-2.5 rounded-lg border border-border bg-background"
-          value={row.hero_logo_url ?? ""} onChange={(e) => setRow({ ...row, hero_logo_url: e.target.value || null })} />
+          value={row.hero_logo_url ?? ""} onChange={(e) => setRow({ ...row, hero_logo_url: e.target.value || null })}
+          placeholder="https://..." />
       </Field>
 
       <button

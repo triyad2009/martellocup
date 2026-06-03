@@ -7,6 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useTable } from "@/lib/content";
 import { useI18n } from "@/lib/i18n";
 import { PaymentFlow } from "@/components/PaymentFlow";
+import { LoginGate } from "@/components/LoginGate";
+import { OrderSlip } from "@/components/OrderSlip";
 
 export const Route = createFileRoute("/jersey")({
   component: JerseyPage,
@@ -64,6 +66,7 @@ function JerseyPage() {
   const [paymentMethod, setPaymentMethod] = useState<"online" | "cod">("online");
   const [creating, setCreating] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [trackingCode, setTrackingCode] = useState<string | null>(null);
   const [orderAmount, setOrderAmount] = useState<number>(0);
   const [codSuccess, setCodSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -114,7 +117,7 @@ function JerseyPage() {
         notes: notes.trim() || null,
         payment_method: product.cod_enabled && paymentMethod === "cod" ? "cod" : "online",
       })
-      .select("id")
+      .select("id, tracking_code")
       .single();
     setCreating(false);
     if (insErr || !data) {
@@ -122,6 +125,7 @@ function JerseyPage() {
       return;
     }
     setOrderId(data.id);
+    setTrackingCode((data as any).tracking_code || null);
     setOrderAmount(total);
     if (product.cod_enabled && paymentMethod === "cod") {
       setCodSuccess(true);
@@ -130,6 +134,7 @@ function JerseyPage() {
   };
 
   return (
+    <LoginGate>
     <div className="bg-background">
       <section className="relative bg-gradient-primary text-white py-12 sm:py-16">
         <div className="container max-w-4xl mx-auto px-4 text-center">
@@ -483,48 +488,57 @@ function JerseyPage() {
           </motion.div>
         )}
 
-        {/* Step 2: payment or COD confirmation */}
+        {/* Step 2: ticket-style slip + payment / COD confirmation */}
         {step === 2 && orderId && (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+            <div className="text-center">
+              <div className="inline-flex h-14 w-14 rounded-full bg-success/15 text-success items-center justify-center mb-3">
+                <Check className="h-7 w-7" />
+              </div>
+              <h2 className="font-display text-2xl font-bold mb-1">
+                {T("অর্ডার সফল হয়েছে!", "Order Placed!")}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {T(
+                  "নিচের স্লিপ ডাউনলোড করে রাখুন — QR স্ক্যান করে স্ট্যাটাস দেখা যাবে।",
+                  "Download this slip — scan the QR anytime to check status.",
+                )}
+              </p>
+            </div>
+
+            {trackingCode && product && (
+              <OrderSlip
+                kind="jersey"
+                trackingCode={trackingCode}
+                title={product.name}
+                subtitle={`${printName}${jerseyNumber ? ` · #${jerseyNumber}` : ""}`}
+                rows={[
+                  { k: T("নাম", "Name"), v: customer.name },
+                  { k: T("ফোন", "Phone"), v: customer.phone },
+                  { k: T("সাইজ", "Size"), v: `${size} × ${qty}` },
+                  { k: T("সর্বমোট", "Total"), v: `৳ ${orderAmount}` },
+                  { k: T("পেমেন্ট", "Payment"), v: codSuccess ? "COD" : "Online" },
+                ]}
+                status={codSuccess ? "pending" : "pending"}
+              />
+            )}
+
             {codSuccess ? (
-              <div className="rounded-2xl bg-card border border-border p-8 text-center shadow-card">
-                <div className="h-16 w-16 rounded-full bg-success/15 text-success flex items-center justify-center mx-auto mb-4">
-                  <Check className="h-8 w-8" />
-                </div>
-                <h2 className="font-display text-2xl font-bold mb-2">
-                  {T("অর্ডার সফল হয়েছে!", "Order Placed Successfully!")}
-                </h2>
-                <p className="text-sm text-muted-foreground mb-4">
+              <div className="rounded-2xl bg-card border border-border p-5 text-center shadow-card">
+                <p className="text-sm text-muted-foreground mb-3">
                   {T(
-                    "আপনার ক্যাশ অন ডেলিভারি অর্ডার নেওয়া হয়েছে। আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।",
-                    "Your Cash on Delivery order has been received. We'll contact you shortly to confirm.",
+                    "আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।",
+                    "We'll contact you shortly to confirm.",
                   )}
                 </p>
-                <div className="rounded-xl bg-muted p-4 inline-block text-left text-sm space-y-1.5">
-                  <p>
-                    <span className="text-muted-foreground">{T("অর্ডার আইডি", "Order ID")}:</span>{" "}
-                    <button
-                      onClick={() => navigator.clipboard?.writeText(orderId)}
-                      className="font-mono font-bold text-xs break-all hover:text-primary"
-                      title={T("কপি করুন", "Click to copy")}
-                    >
-                      {orderId}
-                    </button>
-                  </p>
-                  <p><span className="text-muted-foreground">{T("পরিশোধযোগ্য", "Pay on delivery")}:</span> <span className="font-bold text-primary">৳ {orderAmount}</span></p>
-                  <p className="text-xs text-muted-foreground pt-1 border-t border-border mt-2">
-                    {T("এই আইডি সংরক্ষণ করুন। স্ট্যাটাস দেখতে পারবেন:", "Save this ID. Check status anytime at:")}
-                  </p>
-                </div>
-                <div className="mt-4">
-                  <a
-                    href={`/track-order?id=${orderId}`}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-bold hover:bg-primary-glow"
-                  >
-                    <Search className="h-4 w-4" />
-                    {T("অর্ডার ট্র্যাক করুন", "Track this order")}
-                  </a>
-                </div>
+                <Link
+                  to="/track-order"
+                  search={{ code: trackingCode ?? undefined } as any}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-bold hover:bg-primary-glow"
+                >
+                  <Search className="h-4 w-4" />
+                  {T("অর্ডার ট্র্যাক করুন", "Track this order")}
+                </Link>
               </div>
             ) : (
               <PaymentFlow
@@ -537,5 +551,6 @@ function JerseyPage() {
         )}
       </section>
     </div>
+    </LoginGate>
   );
 }
