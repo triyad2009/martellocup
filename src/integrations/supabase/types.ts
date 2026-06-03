@@ -453,6 +453,7 @@ export type Database = {
           size: string
           status: string
           total_amount: number
+          tracking_code: string | null
           unit_price: number
           updated_at: string
           user_id: string | null
@@ -480,6 +481,7 @@ export type Database = {
           size: string
           status?: string
           total_amount?: number
+          tracking_code?: string | null
           unit_price?: number
           updated_at?: string
           user_id?: string | null
@@ -507,6 +509,7 @@ export type Database = {
           size?: string
           status?: string
           total_amount?: number
+          tracking_code?: string | null
           unit_price?: number
           updated_at?: string
           user_id?: string | null
@@ -1054,6 +1057,7 @@ export type Database = {
           social_links: Json | null
           status: string
           team_name: string
+          tracking_code: string | null
           updated_at: string
           user_id: string | null
         }
@@ -1073,6 +1077,7 @@ export type Database = {
           social_links?: Json | null
           status?: string
           team_name: string
+          tracking_code?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -1092,6 +1097,7 @@ export type Database = {
           social_links?: Json | null
           status?: string
           team_name?: string
+          tracking_code?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -1437,6 +1443,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      list_admin_user_ids: {
+        Args: never
+        Returns: {
+          user_id: string
+        }[]
+      }
+      lookup_jersey_order: { Args: { _code: string }; Returns: Json }
+      lookup_registration: { Args: { _code: string }; Returns: Json }
       lookup_ticket: {
         Args: { _code: string }
         Returns: {
@@ -1451,6 +1465,7 @@ export type Database = {
         }[]
       }
       redeem_ticket: { Args: { _code: string }; Returns: Json }
+      scan_any_code: { Args: { _code: string }; Returns: Json }
     }
     Enums: {
       app_role:
