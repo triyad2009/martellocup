@@ -2,8 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
 import * as htmlToImage from "html-to-image";
 import { Download, CheckCircle2, Loader2 } from "lucide-react";
-
-const LOGO_URL = "https://i.postimg.cc/sxgdMH6c/FB-IMG-1776993011009.jpg";
+import { useSiteLogo } from "@/lib/settings";
 
 type Props = {
   ticketCode: string;
@@ -19,6 +18,7 @@ export function QRTicket({ ticketCode, payerName, payerPhone, tierName, amount, 
   const slipRef = useRef<HTMLDivElement>(null);
   const [qrDataUrl, setQrDataUrl] = useState<string>("");
   const [downloading, setDownloading] = useState(false);
+  const LOGO_URL = useSiteLogo();
 
   const verifyUrl =
     typeof window !== "undefined"

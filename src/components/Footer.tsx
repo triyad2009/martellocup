@@ -1,11 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { Facebook, Youtube, Instagram, Mail, Phone, MapPin } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
+import { useSiteLogo } from "@/lib/settings";
 import { DeveloperCreditButton } from "./DeveloperCredit";
 import { SilverFooterCarousel } from "./SilverFooterCarousel";
 
 export function Footer() {
   const { t } = useI18n();
+  const logo = useSiteLogo();
   return (
     <footer className="bg-gradient-dark text-dark-foreground mt-20">
       <SilverFooterCarousel />
@@ -16,7 +18,7 @@ export function Footer() {
             <div className="flex items-center gap-2 mb-4">
               <div className="h-10 w-10 rounded-lg overflow-hidden ring-2 ring-primary/40 shadow-glow-red bg-card">
                 <img
-                  src="https://i.postimg.cc/sxgdMH6c/FB-IMG-1776993011009.jpg"
+                  src={logo}
                   alt="Martello Cup"
                   className="h-full w-full object-cover"
                 />

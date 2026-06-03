@@ -6,8 +6,7 @@ import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { useUserRoles } from "@/lib/roles";
 import { DeveloperCreditButton } from "./DeveloperCredit";
-
-const LOGO_URL = "https://i.postimg.cc/sxgdMH6c/FB-IMG-1776993011009.jpg";
+import { useSiteLogo } from "@/lib/settings";
 
 const NAV = [
   { to: "/", key: "nav.home" },
@@ -34,6 +33,7 @@ export function Navbar() {
   const { t, lang, setLang } = useI18n();
   const { user, signOut } = useAuth();
   const { isAdmin } = useUserRoles();
+  const LOGO_URL = useSiteLogo();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [userMenu, setUserMenu] = useState(false);
