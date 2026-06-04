@@ -32,13 +32,13 @@ export function useTournamentSettings() {
     };
     load();
     const channel = supabase
-      .channel("settings-watch")
+      .channel(`settings-watch-${Math.random().toString(36).slice(2)}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "tournament_settings" },
         () => load(),
-      );
-    channel.subscribe();
+      )
+      .subscribe();
     return () => {
       active = false;
       supabase.removeChannel(channel);
