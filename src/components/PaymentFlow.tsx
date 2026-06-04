@@ -78,32 +78,25 @@ export function PaymentFlow({ submissionType, amount, registrationId, jerseyOrde
     setPromoErr(null);
     const code = promoInput.trim().toUpperCase();
     if (!code) return;
-    const { data } = await (supabase as any)
-      .from("promo_codes")
-      .select("*")
-      .eq("code", code)
-      .eq("is_active", true)
-      .maybeSingle();
-    if (!data) {
-      setPromoErr(T("কোডটি সঠিক নয়", "Invalid code"));
+    if (baseAmount == null) { setPromoErr(T("পরিমাণ পাওয়া যায়নি", "Amount unavailable")); return; }
+    const { data } = await (supabase as any).rpc("validate_promo_code", {
+      _code: code, _applies_to: submissionType, _base_amount: baseAmount,
+    });
+    if (!data?.ok) {
+      const reasonMap: Record<string, [string, string]> = {
+        invalid: ["কোডটি সঠিক নয়", "Invalid code"],
+        expired: ["কোডের মেয়াদ শেষ", "Code expired"],
+        limit_reached: ["কোডের সীমা শেষ", "Code limit reached"],
+        not_applicable: ["এই কোড এখানে প্রযোজ্য নয়", "Code not applicable here"],
+      };
+      const [bn, en] = reasonMap[data?.reason] ?? ["কোডটি সঠিক নয়", "Invalid code"];
+      setPromoErr(T(bn, en));
       setPromo(null);
       return;
     }
-    if (data.expires_at && new Date(data.expires_at).getTime() < Date.now()) {
-      setPromoErr(T("কোডের মেয়াদ শেষ", "Code expired")); setPromo(null); return;
-    }
-    if (data.max_uses != null && data.used_count >= data.max_uses) {
-      setPromoErr(T("কোডের সীমা শেষ", "Code limit reached")); setPromo(null); return;
-    }
-    if (data.applies_to !== "all" && data.applies_to !== submissionType) {
-      setPromoErr(T("এই কোড এখানে প্রযোজ্য নয়", "Code not applicable here")); setPromo(null); return;
-    }
-    if (baseAmount == null) { setPromoErr(T("পরিমাণ পাওয়া যায়নি", "Amount unavailable")); return; }
-    const discount = data.discount_type === "percentage"
-      ? Math.round((baseAmount * Number(data.discount_value)) / 100)
-      : Number(data.discount_value);
-    setPromo({ code, discount: Math.min(discount, baseAmount) });
+    setPromo({ code: data.code, discount: Number(data.discount) });
   };
+
 
   const copy = async (text: string) => {
     try {
