@@ -1449,6 +1449,38 @@ export type Database = {
           user_id: string
         }[]
       }
+      list_approved_teams: {
+        Args: never
+        Returns: {
+          category: string
+          created_at: string
+          id: string
+          short_name: string
+          team_name: string
+        }[]
+      }
+      list_members_public: {
+        Args: never
+        Returns: {
+          bio_bn: string
+          bio_en: string
+          bio_sat: string
+          created_at: string
+          facebook_url: string
+          id: string
+          instagram_url: string
+          name: string
+          photo_url: string
+          role_bn: string
+          role_en: string
+          role_sat: string
+          sort_order: number
+          tiktok_url: string
+          updated_at: string
+          whatsapp_url: string
+          youtube_url: string
+        }[]
+      }
       lookup_jersey_order: { Args: { _code: string }; Returns: Json }
       lookup_registration: { Args: { _code: string }; Returns: Json }
       lookup_ticket: {
@@ -1466,6 +1498,10 @@ export type Database = {
       }
       redeem_ticket: { Args: { _code: string }; Returns: Json }
       scan_any_code: { Args: { _code: string }; Returns: Json }
+      validate_promo_code: {
+        Args: { _applies_to: string; _base_amount: number; _code: string }
+        Returns: Json
+      }
     }
     Enums: {
       app_role:

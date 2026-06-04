@@ -33,7 +33,7 @@ function MembersPage() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase.from("members").select("*").order("sort_order", { ascending: true });
+      const { data } = await (supabase as any).rpc("list_members_public");
       setRows(data ?? []);
       setLoading(false);
     })();
