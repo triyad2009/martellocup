@@ -5,6 +5,7 @@ import { AuthProvider } from "@/lib/auth";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { AIAssistant } from "@/components/AIAssistant";
+import { SponsorPopup } from "@/components/SponsorPopup";
 
 function NotFoundComponent() {
   return (
@@ -82,6 +83,7 @@ function RootComponent() {
           </main>
           <Footer />
           <AIAssistant />
+          <SponsorPopup />
         </div>
       </AuthProvider>
     </I18nProvider>
