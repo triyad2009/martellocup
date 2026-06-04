@@ -78,38 +78,19 @@ function TrackOrderPage() {
     setLoading(true);
 
     try {
-      // 1) Tracking code lookups (JRS-... / REG-...)
-      if (trimmed.toUpperCase().startsWith("JRS-")) {
-        const { data } = await (supabase as any)
-          .from("jersey_orders")
-          .select("*")
-          .eq("tracking_code", trimmed.toUpperCase())
-          .maybeSingle();
-        if (data) { setResult({ kind: "jersey", ...(data as any) }); return; }
-      } else if (trimmed.toUpperCase().startsWith("REG-")) {
-        const { data } = await (supabase as any)
-          .from("registrations")
-          .select("*")
-          .eq("tracking_code", trimmed.toUpperCase())
-          .maybeSingle();
-        if (data) { setResult({ kind: "registration", ...(data as any) }); return; }
+      const upper = trimmed.toUpperCase();
+      if (upper.startsWith("JRS-")) {
+        const { data } = await (supabase as any).rpc("lookup_jersey_order", { _code: upper });
+        if (data?.found) { setResult({ kind: "jersey", ...(data as any) }); return; }
+      } else if (upper.startsWith("REG-")) {
+        const { data } = await (supabase as any).rpc("lookup_registration", { _code: upper });
+        if (data?.found) { setResult({ kind: "registration", ...(data as any) }); return; }
       } else {
-        // 2) Fall back to UUID lookup on jersey_orders for legacy URLs
-        const { data } = await (supabase as any)
-          .from("jersey_orders")
-          .select("*")
-          .eq("id", trimmed)
-          .maybeSingle();
-        if (data) { setResult({ kind: "jersey", ...(data as any) }); return; }
-
-        const { data: reg } = await (supabase as any)
-          .from("registrations")
-          .select("*")
-          .eq("id", trimmed)
-          .maybeSingle();
-        if (reg) { setResult({ kind: "registration", ...(reg as any) }); return; }
+        const { data } = await (supabase as any).rpc("scan_any_code", { _code: trimmed });
+        if (data?.found) { setResult({ kind: data.kind, ...(data as any) }); return; }
       }
       setError(T("কিছু পাওয়া যায়নি। কোড চেক করুন।", "Nothing found. Please check the code."));
+
     } finally {
       setLoading(false);
     }
