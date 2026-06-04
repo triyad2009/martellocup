@@ -37,8 +37,8 @@ export function useTournamentSettings() {
         "postgres_changes",
         { event: "*", schema: "public", table: "tournament_settings" },
         () => load(),
-      )
-      .subscribe();
+      );
+    channel.subscribe();
     return () => {
       active = false;
       supabase.removeChannel(channel);
