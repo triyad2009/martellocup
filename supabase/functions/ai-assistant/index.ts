@@ -42,6 +42,36 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_ANON_KEY")!,
     );
+
+    // ---- AUTH: require a signed-in user for any AI call ----
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+    if (!token) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const { data: userData, error: userErr } = await sb.auth.getUser(token);
+    const user = userData?.user;
+    if (userErr || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ---- TRAIN MODE requires admin role ----
+    if (mode === "train") {
+      const { data: roles } = await sb
+        .from("user_roles").select("role").eq("user_id", user.id);
+      const isAdmin = (roles ?? []).some((r: any) => r.role === "super_admin" || r.role === "admin");
+      if (!isAdmin) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+
     const { data: kb } = await sb
       .from("ai_knowledge")
       .select("question,answer_bn,answer_en,category,route,media_urls")
