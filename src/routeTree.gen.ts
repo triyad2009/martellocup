@@ -27,6 +27,7 @@ import { Route as JerseyRouteImport } from './routes/jersey'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as FriendsRouteImport } from './routes/friends'
 import { Route as FixturesRouteImport } from './routes/fixtures'
+import { Route as FifaRouteImport } from './routes/fifa'
 import { Route as FeedRouteImport } from './routes/feed'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -127,6 +128,11 @@ const FixturesRoute = FixturesRouteImport.update({
   path: '/fixtures',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FifaRoute = FifaRouteImport.update({
+  id: '/fifa',
+  path: '/fifa',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FeedRoute = FeedRouteImport.update({
   id: '/feed',
   path: '/feed',
@@ -180,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/feed': typeof FeedRoute
+  '/fifa': typeof FifaRoute
   '/fixtures': typeof FixturesRoute
   '/friends': typeof FriendsRoute
   '/gallery': typeof GalleryRoute
@@ -209,6 +216,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/feed': typeof FeedRoute
+  '/fifa': typeof FifaRoute
   '/fixtures': typeof FixturesRoute
   '/friends': typeof FriendsRoute
   '/gallery': typeof GalleryRoute
@@ -239,6 +247,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/contact': typeof ContactRoute
   '/feed': typeof FeedRoute
+  '/fifa': typeof FifaRoute
   '/fixtures': typeof FixturesRoute
   '/friends': typeof FriendsRoute
   '/gallery': typeof GalleryRoute
@@ -270,6 +279,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/feed'
+    | '/fifa'
     | '/fixtures'
     | '/friends'
     | '/gallery'
@@ -299,6 +309,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/feed'
+    | '/fifa'
     | '/fixtures'
     | '/friends'
     | '/gallery'
@@ -328,6 +339,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/contact'
     | '/feed'
+    | '/fifa'
     | '/fixtures'
     | '/friends'
     | '/gallery'
@@ -358,6 +370,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ContactRoute: typeof ContactRoute
   FeedRoute: typeof FeedRoute
+  FifaRoute: typeof FifaRoute
   FixturesRoute: typeof FixturesRoute
   FriendsRoute: typeof FriendsRoute
   GalleryRoute: typeof GalleryRoute
@@ -508,6 +521,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FixturesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/fifa': {
+      id: '/fifa'
+      path: '/fifa'
+      fullPath: '/fifa'
+      preLoaderRoute: typeof FifaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/feed': {
       id: '/feed'
       path: '/feed'
@@ -593,6 +613,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ContactRoute: ContactRoute,
   FeedRoute: FeedRoute,
+  FifaRoute: FifaRoute,
   FixturesRoute: FixturesRoute,
   FriendsRoute: FriendsRoute,
   GalleryRoute: GalleryRoute,

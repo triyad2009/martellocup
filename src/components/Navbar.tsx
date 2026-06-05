@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Globe, LogIn, LogOut, Shield, User as UserIcon } from "lucide-react";
+import { Menu, X, Globe, LogIn, LogOut, Shield, User as UserIcon, Trophy } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { useUserRoles } from "@/lib/roles";
 import { DeveloperCreditButton } from "./DeveloperCredit";
 import { useSiteLogo } from "@/lib/settings";
+import { Season10Badge } from "./Season10Badge";
 
 const NAV = [
   { to: "/", key: "nav.home" },
