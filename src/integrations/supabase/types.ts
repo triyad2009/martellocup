@@ -1427,6 +1427,212 @@ export type Database = {
         }
         Relationships: []
       }
+      wc_chat_messages: {
+        Row: {
+          country_code: string
+          country_name: string
+          created_at: string
+          display_name: string
+          flag_emoji: string | null
+          id: string
+          message: string
+          photo_url: string | null
+          user_id: string
+        }
+        Insert: {
+          country_code: string
+          country_name: string
+          created_at?: string
+          display_name: string
+          flag_emoji?: string | null
+          id?: string
+          message: string
+          photo_url?: string | null
+          user_id: string
+        }
+        Update: {
+          country_code?: string
+          country_name?: string
+          created_at?: string
+          display_name?: string
+          flag_emoji?: string | null
+          id?: string
+          message?: string
+          photo_url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wc_game_scores: {
+        Row: {
+          created_at: string
+          game_type: string
+          id: string
+          points_earned: number
+          score: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          game_type: string
+          id?: string
+          points_earned?: number
+          score?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          game_type?: string
+          id?: string
+          points_earned?: number
+          score?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wc_participants: {
+        Row: {
+          country_code: string
+          country_name: string
+          created_at: string
+          display_name: string
+          flag_emoji: string | null
+          photo_url: string | null
+          total_points: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          country_code: string
+          country_name: string
+          created_at?: string
+          display_name: string
+          flag_emoji?: string | null
+          photo_url?: string | null
+          total_points?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          country_code?: string
+          country_name?: string
+          created_at?: string
+          display_name?: string
+          flag_emoji?: string | null
+          photo_url?: string | null
+          total_points?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wc_predictions: {
+        Row: {
+          away_score: number
+          away_team: string
+          created_at: string
+          home_score: number
+          home_team: string
+          id: string
+          match_date: string | null
+          match_id: string
+          points_earned: number
+          user_id: string
+        }
+        Insert: {
+          away_score: number
+          away_team: string
+          created_at?: string
+          home_score: number
+          home_team: string
+          id?: string
+          match_date?: string | null
+          match_id: string
+          points_earned?: number
+          user_id: string
+        }
+        Update: {
+          away_score?: number
+          away_team?: string
+          created_at?: string
+          home_score?: number
+          home_team?: string
+          id?: string
+          match_date?: string | null
+          match_id?: string
+          points_earned?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wc_quiz_attempts: {
+        Row: {
+          created_at: string
+          id: string
+          is_correct: boolean
+          points_earned: number
+          question_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_correct: boolean
+          points_earned?: number
+          question_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          points_earned?: number
+          question_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wc_quiz_attempts_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "wc_quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wc_quiz_questions: {
+        Row: {
+          correct_index: number
+          created_at: string
+          id: string
+          is_active: boolean
+          options: Json
+          points: number
+          question_bn: string
+          question_en: string
+        }
+        Insert: {
+          correct_index: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          options: Json
+          points?: number
+          question_bn: string
+          question_en: string
+        }
+        Update: {
+          correct_index?: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          options?: Json
+          points?: number
+          question_bn?: string
+          question_en?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -1501,6 +1707,17 @@ export type Database = {
       validate_promo_code: {
         Args: { _applies_to: string; _base_amount: number; _code: string }
         Returns: Json
+      }
+      wc_award_points: { Args: { _points: number }; Returns: undefined }
+      wc_leaderboard: {
+        Args: { _limit?: number }
+        Returns: {
+          country_code: string
+          country_name: string
+          flag_emoji: string
+          member_count: number
+          total_points: number
+        }[]
       }
     }
     Enums: {
