@@ -51,6 +51,25 @@ export function Navbar() {
 
   return (
     <>
+      {/* FIFA top strip */}
+      <Link
+        to="/fifa"
+        className="block relative overflow-hidden bg-gradient-to-r from-amber-600 via-red-700 to-amber-600 text-white text-center py-1.5 text-[11px] sm:text-xs font-display font-black tracking-widest hover:brightness-110"
+        style={{ backgroundSize: "200% 100%" }}
+      >
+        <motion.div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-r from-amber-600 via-red-700 to-amber-600"
+          animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+          style={{ backgroundSize: "200% 100%" }}
+        />
+        <span className="relative inline-flex items-center gap-2">
+          <Trophy className="h-3.5 w-3.5" />
+          ⚽ FIFA WORLD CUP 2026 — {lang === "bn" ? "লাইভ স্কোর • ডিবেট • কুইজ" : "Live Scores • Debate • Quiz"}
+          <span className="ml-2 px-1.5 py-0.5 bg-black/30 rounded text-[9px]">ENTER →</span>
+        </span>
+      </Link>
       <motion.header
         initial={{ y: -80 }}
         animate={{ y: 0 }}
