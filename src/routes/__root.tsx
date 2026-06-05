@@ -6,6 +6,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { AIAssistant } from "@/components/AIAssistant";
 import { SponsorPopup } from "@/components/SponsorPopup";
+import { LiveScoreWatcher } from "@/components/fifa/LiveScoreWatcher";
 
 function NotFoundComponent() {
   return (
@@ -84,6 +85,7 @@ function RootComponent() {
           <Footer />
           <AIAssistant />
           <SponsorPopup />
+          <LiveScoreWatcher />
         </div>
       </AuthProvider>
     </I18nProvider>
