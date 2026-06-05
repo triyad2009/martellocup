@@ -69,11 +69,15 @@ export function Navbar() {
                 <img src={LOGO_URL} alt="Martello Cup" className="h-full w-full object-cover" />
               </div>
               <div className="block">
-                <div className="font-display font-bold text-base sm:text-lg leading-none tracking-tight">
+                <div className="font-display font-bold text-base sm:text-lg leading-none tracking-tight flex items-center gap-1.5">
                   Martello <span className="text-primary">Cup</span>
+                  <Season10Badge className="hidden sm:inline-flex" />
                 </div>
                 <div className="hidden sm:block font-display text-[10px] text-muted-foreground leading-none mt-1 tracking-widest">
                   FOOTBALL · CONNECTIVITY · HAPPINESS
+                </div>
+                <div className="sm:hidden mt-0.5">
+                  <Season10Badge />
                 </div>
               </div>
             </Link>
