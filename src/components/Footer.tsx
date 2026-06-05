@@ -24,8 +24,8 @@ export function Footer() {
                 />
               </div>
               <div>
-                <div className="font-display font-bold">MARTELLO</div>
-                <div className="font-display text-xs text-primary-glow">CUP</div>
+                <div className="font-display font-bold flex items-center gap-1.5">MARTELLO</div>
+                <div className="font-display text-xs text-primary-glow">CUP · SEASON 10</div>
               </div>
             </div>
             <p className="text-sm text-white/70 leading-relaxed">{t("footer.aboutText")}</p>
