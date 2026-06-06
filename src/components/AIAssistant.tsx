@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
-import { Sparkles, X, Send, Loader2, Bot, Paperclip } from "lucide-react";
+import { Sparkles, X, Send, Loader2, Bot, Paperclip, Trophy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { uploadMedia } from "@/lib/content";
 import { toast } from "sonner";
+import { FrameMaker } from "@/components/fifa/FrameMaker";
+
 
 type Attachment = { url: string; type: "image" | "video" | "file"; name?: string };
 type Msg = {
