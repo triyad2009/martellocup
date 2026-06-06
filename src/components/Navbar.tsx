@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Globe, LogIn, LogOut, Shield, User as UserIcon, Trophy } from "lucide-react";
+import { Menu, X, Globe, LogIn, LogOut, Shield, User as UserIcon } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/lib/auth";
 import { useUserRoles } from "@/lib/roles";
 import { DeveloperCreditButton } from "./DeveloperCredit";
 import { useSiteLogo } from "@/lib/settings";
-import { Season10Badge } from "./Season10Badge";
+
 
 const NAV = [
   { to: "/", key: "nav.home" },
@@ -51,25 +51,6 @@ export function Navbar() {
 
   return (
     <>
-      {/* FIFA top strip */}
-      <Link
-        to="/fifa"
-        className="block relative overflow-hidden bg-gradient-to-r from-amber-600 via-red-700 to-amber-600 text-white text-center py-1.5 text-[11px] sm:text-xs font-display font-black tracking-widest hover:brightness-110"
-        style={{ backgroundSize: "200% 100%" }}
-      >
-        <motion.div
-          aria-hidden
-          className="absolute inset-0 bg-gradient-to-r from-amber-600 via-red-700 to-amber-600"
-          animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-          style={{ backgroundSize: "200% 100%" }}
-        />
-        <span className="relative inline-flex items-center gap-2">
-          <Trophy className="h-3.5 w-3.5" />
-          ⚽ FIFA WORLD CUP 2026 — {lang === "bn" ? "লাইভ স্কোর • ডিবেট • কুইজ" : "Live Scores • Debate • Quiz"}
-          <span className="ml-2 px-1.5 py-0.5 bg-black/30 rounded text-[9px]">ENTER →</span>
-        </span>
-      </Link>
       <motion.header
         initial={{ y: -80 }}
         animate={{ y: 0 }}
@@ -88,15 +69,11 @@ export function Navbar() {
                 <img src={LOGO_URL} alt="Martello Cup" className="h-full w-full object-cover" />
               </div>
               <div className="block">
-                <div className="font-display font-bold text-base sm:text-lg leading-none tracking-tight flex items-center gap-1.5">
+                <div className="font-display font-bold text-base sm:text-lg leading-none tracking-tight">
                   Martello <span className="text-primary">Cup</span>
-                  <Season10Badge className="hidden sm:inline-flex" />
                 </div>
                 <div className="hidden sm:block font-display text-[10px] text-muted-foreground leading-none mt-1 tracking-widest">
                   FOOTBALL · CONNECTIVITY · HAPPINESS
-                </div>
-                <div className="sm:hidden mt-0.5">
-                  <Season10Badge />
                 </div>
               </div>
             </Link>

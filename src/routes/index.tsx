@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowDown, MapPin, Trophy, Users, Goal, Calendar, Sparkles, Newspaper, ArrowRight, MessageCircle, Ticket, Shirt, Heart, UserPlus, Image as ImageIcon } from "lucide-react";
+import { ArrowDown, MapPin, Trophy, Users, Goal, Calendar, Sparkles, Newspaper, ArrowRight, MessageCircle, Ticket, Shirt, Heart, UserPlus, Image as ImageIcon, Zap } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { Countdown } from "@/components/Countdown";
 import { useTournamentSettings } from "@/lib/settings";
@@ -196,7 +196,20 @@ function Hero() {
               <MessageCircle className="h-4 w-4" />
               {lang === "bn" ? "সোশ্যাল ফিড" : "Social Feed"}
             </motion.a>
+            <motion.a
+              href="/fifa"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              animate={{ boxShadow: ["0 0 0 0 rgba(245,158,11,0.6)", "0 0 0 12px rgba(245,158,11,0)", "0 0 0 0 rgba(245,158,11,0)"] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="relative bg-gradient-to-r from-red-600 via-amber-600 to-red-600 text-white font-black px-7 py-3.5 rounded-xl shadow-glow-red inline-flex items-center gap-2 border-2 border-amber-400/50"
+            >
+              <Zap className="h-4 w-4" />
+              {lang === "bn" ? "FIFA বিশ্বকাপ ২০২৬" : "FIFA World Cup 2026"}
+              <span className="ml-1 px-1.5 py-0.5 rounded bg-black/40 text-[9px] font-bold tracking-widest">LIVE</span>
+            </motion.a>
           </motion.div>
+
         </div>
 
         {/* Scroll arrow */}

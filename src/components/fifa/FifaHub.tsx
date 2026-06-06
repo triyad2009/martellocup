@@ -949,6 +949,39 @@ function FixturesPanel() {
 
   return (
     <div className="space-y-2">
+      {/* Live FIFA World Cup stream (FIFA official YouTube channel) */}
+      <div className="rounded-2xl overflow-hidden border border-amber-500/40 bg-black shadow-glow-red mb-4">
+        <div className="px-3 py-2 bg-gradient-to-r from-red-700 via-amber-600 to-red-700 flex items-center justify-between">
+          <div className="flex items-center gap-2 font-bold text-sm">
+            <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
+            {T("FIFA বিশ্বকাপ — লাইভ স্ট্রিম", "FIFA World Cup — Live Stream")}
+          </div>
+          <a
+            href="https://www.youtube.com/@FIFA/live"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[10px] px-2 py-0.5 rounded bg-black/30 font-bold tracking-widest"
+          >
+            YOUTUBE ↗
+          </a>
+        </div>
+        <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
+          <iframe
+            src="https://www.youtube.com/embed/live_stream?channel=UCpcTrCXblq78GZrTUTLWeBw&autoplay=0"
+            title="FIFA World Cup Live"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            className="absolute inset-0 w-full h-full"
+          />
+        </div>
+        <p className="px-3 py-2 text-[11px] text-white/60">
+          {T(
+            "ম্যাচ চলাকালীন স্বয়ংক্রিয় লাইভ — না দেখালে ইউটিউবে যান।",
+            "Auto-live during matches — if nothing plays, open on YouTube.",
+          )}
+        </p>
+      </div>
+
       {(live?.matches || []).length > 0 && (
         <div className="bg-red-600/20 border border-red-500/50 rounded-xl p-3 mb-3">
           <div className="flex items-center gap-2 text-red-300 font-bold text-sm mb-2">
