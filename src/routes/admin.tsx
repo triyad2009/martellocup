@@ -358,9 +358,10 @@ function RegistrationCard({ r, lang, setStatus }: { r: any; lang: "bn" | "en"; s
             {r.description && <p className="mt-1 text-muted-foreground whitespace-pre-wrap">{r.description}</p>}
             {Object.keys(social).length > 0 && (
               <div className="mt-2 flex flex-wrap gap-2">
-                {Object.entries(social).map(([k, v]) => v && (
+                {Object.entries(social).map(([k, v]) => v ? (
                   <a key={k} href={String(v)} target="_blank" rel="noopener noreferrer" className="text-xs px-2 py-1 rounded bg-muted hover:bg-primary hover:text-primary-foreground">{k} ↗</a>
-                ))}
+                ) : null)}
+
               </div>
             )}
             <p className="mt-2 text-xs text-muted-foreground">
