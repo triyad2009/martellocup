@@ -36,6 +36,8 @@ export function AIAssistant() {
   ]);
   const [pending, setPending] = useState<Attachment[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [frameOpen, setFrameOpen] = useState(false);
+
   const fileRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
