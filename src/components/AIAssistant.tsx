@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "@tanstack/react-router";
-import { Sparkles, X, Send, Loader2, Bot, Paperclip } from "lucide-react";
+import { Sparkles, X, Send, Loader2, Bot, Paperclip, Trophy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { uploadMedia } from "@/lib/content";
 import { toast } from "sonner";
+import { FrameMaker } from "@/components/fifa/FrameMaker";
+
 
 type Attachment = { url: string; type: "image" | "video" | "file"; name?: string };
 type Msg = {
@@ -34,6 +36,8 @@ export function AIAssistant() {
   ]);
   const [pending, setPending] = useState<Attachment[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [frameOpen, setFrameOpen] = useState(false);
+
   const fileRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -209,9 +213,20 @@ export function AIAssistant() {
                 )}
               </div>
 
+              {/* Quick tools row */}
+              <div className="px-4 pt-2 flex flex-wrap gap-2">
+                <button
+                  onClick={() => setFrameOpen(true)}
+                  className="text-xs px-3 py-1.5 rounded-full bg-gradient-to-r from-red-600 via-amber-500 to-red-600 text-white font-bold border border-amber-300 inline-flex items-center gap-1.5 shadow-md hover:scale-105 transition"
+                >
+                  <Trophy className="h-3.5 w-3.5" />
+                  {uiLang === "bn" ? "বিশ্বকাপ ফ্রেম বানান" : "World Cup Frame"}
+                </button>
+              </div>
+
               {/* Suggestions */}
               {messages.length <= 1 && (
-                <div className="px-4 pb-2 flex flex-wrap gap-2">
+                <div className="px-4 pb-2 pt-2 flex flex-wrap gap-2">
                   {suggestions.map((s) => (
                     <button
                       key={s}
@@ -223,6 +238,7 @@ export function AIAssistant() {
                   ))}
                 </div>
               )}
+
 
               {/* Input */}
               <div className="p-3 border-t border-border bg-card">
@@ -280,6 +296,8 @@ export function AIAssistant() {
           </motion.div>
         )}
       </AnimatePresence>
+      <FrameMaker open={frameOpen} onClose={() => setFrameOpen(false)} />
     </>
   );
 }
+

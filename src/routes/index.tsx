@@ -198,16 +198,17 @@ function Hero() {
             </motion.a>
             <motion.a
               href="/fifa"
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.95 }}
-              animate={{ boxShadow: ["0 0 0 0 rgba(245,158,11,0.6)", "0 0 0 12px rgba(245,158,11,0)", "0 0 0 0 rgba(245,158,11,0)"] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="relative bg-gradient-to-r from-red-600 via-amber-600 to-red-600 text-white font-black px-7 py-3.5 rounded-xl shadow-glow-red inline-flex items-center gap-2 border-2 border-amber-400/50"
+              animate={{ boxShadow: ["0 0 0 0 rgba(245,158,11,0.7)", "0 0 0 14px rgba(245,158,11,0)", "0 0 0 0 rgba(245,158,11,0)"] }}
+              transition={{ duration: 0.9, repeat: Infinity, ease: "easeOut" }}
+              className="relative bg-gradient-to-r from-red-600 via-amber-500 to-red-600 text-white font-black px-7 py-3.5 rounded-xl shadow-glow-red inline-flex items-center gap-2 border-2 border-amber-300"
             >
-              <Zap className="h-4 w-4" />
+              <Zap className="h-4 w-4 animate-pulse" />
               {lang === "bn" ? "FIFA বিশ্বকাপ ২০২৬" : "FIFA World Cup 2026"}
-              <span className="ml-1 px-1.5 py-0.5 rounded bg-black/40 text-[9px] font-bold tracking-widest">LIVE</span>
+              <span className="ml-1 px-1.5 py-0.5 rounded bg-black/50 text-[9px] font-black tracking-widest animate-pulse">LIVE</span>
             </motion.a>
+
           </motion.div>
 
         </div>

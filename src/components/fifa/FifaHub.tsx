@@ -949,38 +949,51 @@ function FixturesPanel() {
 
   return (
     <div className="space-y-2">
-      {/* Live FIFA World Cup stream (FIFA official YouTube channel) */}
-      <div className="rounded-2xl overflow-hidden border border-amber-500/40 bg-black shadow-glow-red mb-4">
+      {/* Live FIFA World Cup stream — Toffee / T-Sports */}
+      <div className="rounded-2xl overflow-hidden border border-amber-500/40 bg-gradient-to-br from-slate-900 to-black shadow-glow-red mb-4">
         <div className="px-3 py-2 bg-gradient-to-r from-red-700 via-amber-600 to-red-700 flex items-center justify-between">
           <div className="flex items-center gap-2 font-bold text-sm">
             <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
-            {T("FIFA বিশ্বকাপ — লাইভ স্ট্রিম", "FIFA World Cup — Live Stream")}
+            {T("FIFA বিশ্বকাপ — লাইভ দেখুন", "FIFA World Cup — Watch Live")}
           </div>
+          <span className="text-[10px] px-2 py-0.5 rounded bg-black/40 font-bold tracking-widest">LIVE</span>
+        </div>
+        <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
           <a
-            href="https://www.youtube.com/@FIFA/live"
+            href="https://toffeelive.com/en/channels"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[10px] px-2 py-0.5 rounded bg-black/30 font-bold tracking-widest"
+            className="group flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-pink-600 to-rose-700 hover:scale-[1.02] transition shadow-lg"
           >
-            YOUTUBE ↗
+            <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center font-black text-xl">T</div>
+            <div className="flex-1 text-left">
+              <div className="font-black text-lg leading-none">Toffee</div>
+              <div className="text-[11px] text-white/80 mt-1">{T("বাংলাদেশে লাইভ দেখুন", "Live in Bangladesh")}</div>
+            </div>
+            <span className="text-[10px] font-bold tracking-widest opacity-80 group-hover:opacity-100">OPEN →</span>
+          </a>
+          <a
+            href="https://www.tsports.com/live"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 hover:scale-[1.02] transition shadow-lg"
+          >
+            <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center font-black text-xl">T</div>
+            <div className="flex-1 text-left">
+              <div className="font-black text-lg leading-none">T-Sports</div>
+              <div className="text-[11px] text-white/80 mt-1">{T("বাংলাদেশের অফিসিয়াল স্পোর্টস", "Bangladesh Official Sports")}</div>
+            </div>
+            <span className="text-[10px] font-bold tracking-widest opacity-80 group-hover:opacity-100">OPEN →</span>
           </a>
         </div>
-        <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-          <iframe
-            src="https://www.youtube.com/embed/live_stream?channel=UCpcTrCXblq78GZrTUTLWeBw&autoplay=0"
-            title="FIFA World Cup Live"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-            className="absolute inset-0 w-full h-full"
-          />
-        </div>
-        <p className="px-3 py-2 text-[11px] text-white/60">
+        <p className="px-4 pb-3 text-[11px] text-white/60">
           {T(
-            "ম্যাচ চলাকালীন স্বয়ংক্রিয় লাইভ — না দেখালে ইউটিউবে যান।",
-            "Auto-live during matches — if nothing plays, open on YouTube.",
+            "Toffee বা T-Sports অ্যাপ/সাইটে গিয়ে FIFA World Cup লাইভ ম্যাচ উপভোগ করুন।",
+            "Open Toffee or T-Sports app/site to watch FIFA World Cup live.",
           )}
         </p>
       </div>
+
 
       {(live?.matches || []).length > 0 && (
         <div className="bg-red-600/20 border border-red-500/50 rounded-xl p-3 mb-3">

@@ -306,34 +306,94 @@ function RegistrationsManager({ lang }: { lang: "bn" | "en" }) {
       ) : (
         <div className="space-y-3">
           {rows.map((r) => (
-            <div key={r.id} className="rounded-xl border border-border p-4 flex flex-col sm:flex-row sm:items-center gap-3">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <p className="font-semibold truncate">{r.team_name}</p>
-                  <StatusBadge status={r.status} />
-                </div>
-                <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                  {r.coach_name} · {r.coach_phone} · {Array.isArray(r.players_data) ? r.players_data.length : 0} {lang === "bn" ? "খেলোয়াড়" : "players"}
-                </p>
-              </div>
-              <div className="flex gap-2 flex-wrap">
-                <button onClick={() => setStatus(r.id, "approved")} className="text-xs px-3 py-1.5 rounded-md bg-success text-success-foreground font-semibold">
-                  {lang === "bn" ? "অনুমোদন" : "Approve"}
-                </button>
-                <button onClick={() => setStatus(r.id, "rejected")} className="text-xs px-3 py-1.5 rounded-md bg-destructive text-destructive-foreground font-semibold">
-                  {lang === "bn" ? "বাতিল" : "Reject"}
-                </button>
-                <button onClick={() => setStatus(r.id, "pending")} className="text-xs px-3 py-1.5 rounded-md border border-border font-semibold">
-                  {lang === "bn" ? "অপেক্ষমাণ" : "Pending"}
-                </button>
-              </div>
-            </div>
+            <RegistrationCard key={r.id} r={r} lang={lang} setStatus={setStatus} />
           ))}
         </div>
       )}
     </section>
   );
 }
+
+function RegistrationCard({ r, lang, setStatus }: { r: any; lang: "bn" | "en"; setStatus: (id: string, status: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const players: any[] = Array.isArray(r.players_data) ? r.players_data : [];
+  const social = (r.social_links && typeof r.social_links === "object") ? r.social_links : {};
+  return (
+    <div className="rounded-xl border border-border p-4">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <p className="font-semibold truncate">{r.team_name}</p>
+            {r.short_name && <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-muted">{r.short_name}</span>}
+            {r.category && <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-primary/10 text-primary">{r.category}</span>}
+            <StatusBadge status={r.status} />
+          </div>
+          <p className="text-xs text-muted-foreground mt-0.5 truncate">
+            {r.coach_name} · {r.coach_phone} · {players.length} {lang === "bn" ? "খেলোয়াড়" : "players"}
+            {r.tracking_code && <> · <code className="text-primary">{r.tracking_code}</code></>}
+          </p>
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          <button onClick={() => setOpen((v) => !v)} className="text-xs px-3 py-1.5 rounded-md border border-border font-semibold">
+            {open ? (lang === "bn" ? "বন্ধ" : "Hide") : (lang === "bn" ? "বিস্তারিত" : "Details")}
+          </button>
+          <button onClick={() => setStatus(r.id, "approved")} className="text-xs px-3 py-1.5 rounded-md bg-success text-success-foreground font-semibold">
+            {lang === "bn" ? "অনুমোদন" : "Approve"}
+          </button>
+          <button onClick={() => setStatus(r.id, "rejected")} className="text-xs px-3 py-1.5 rounded-md bg-destructive text-destructive-foreground font-semibold">
+            {lang === "bn" ? "বাতিল" : "Reject"}
+          </button>
+          <button onClick={() => setStatus(r.id, "pending")} className="text-xs px-3 py-1.5 rounded-md border border-border font-semibold">
+            {lang === "bn" ? "অপেক্ষমাণ" : "Pending"}
+          </button>
+        </div>
+      </div>
+      {open && (
+        <div className="mt-4 pt-4 border-t border-border grid sm:grid-cols-2 gap-4 text-sm">
+          <div>
+            <h4 className="font-bold text-xs uppercase text-muted-foreground mb-1">{lang === "bn" ? "দলের তথ্য" : "Team Info"}</h4>
+            <p><b>{lang === "bn" ? "ক্যাপ্টেন:" : "Captain:"}</b> {r.captain_name}</p>
+            <p><b>{lang === "bn" ? "কোচ ইমেইল:" : "Coach email:"}</b> {r.coach_email || "—"}</p>
+            <p><b>{lang === "bn" ? "ঠিকানা:" : "Address:"}</b> {r.address || "—"}</p>
+            {r.description && <p className="mt-1 text-muted-foreground whitespace-pre-wrap">{r.description}</p>}
+            {Object.keys(social).length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {Object.entries(social).map(([k, v]) => v ? (
+                  <a key={k} href={String(v)} target="_blank" rel="noopener noreferrer" className="text-xs px-2 py-1 rounded bg-muted hover:bg-primary hover:text-primary-foreground">{k} ↗</a>
+                ) : null)}
+
+              </div>
+            )}
+            <p className="mt-2 text-xs text-muted-foreground">
+              {lang === "bn" ? "জমা:" : "Submitted:"} {new Date(r.created_at).toLocaleString()}
+            </p>
+          </div>
+          <div>
+            <h4 className="font-bold text-xs uppercase text-muted-foreground mb-1">
+              {lang === "bn" ? "খেলোয়াড় তালিকা" : "Players"} ({players.length})
+            </h4>
+            {players.length === 0 ? (
+              <p className="text-xs text-muted-foreground">—</p>
+            ) : (
+              <ul className="space-y-1 max-h-64 overflow-y-auto pr-1">
+                {players.map((p, i) => (
+                  <li key={i} className="text-xs flex items-center justify-between gap-2 bg-muted/40 rounded px-2 py-1">
+                    <span className="truncate">
+                      <b>#{p.jersey_number || i + 1}</b> {p.name || p.player_name || "—"}
+                      {p.position && <span className="text-muted-foreground"> · {p.position}</span>}
+                    </span>
+                    {p.phone && <span className="text-muted-foreground shrink-0">{p.phone}</span>}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
