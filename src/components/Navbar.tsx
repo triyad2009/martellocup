@@ -23,6 +23,7 @@ const NAV = [
   { to: "/news", key: "nav.news" },
   { to: "/sponsors", key: "nav.sponsors" },
   { to: "/about", key: "nav.about" },
+  { to: "/committee", key: "nav.committee" },
   { to: "/contact", key: "nav.contact" },
   { to: "/members", key: "nav.members" },
   { to: "/feed", key: "nav.feed" },
