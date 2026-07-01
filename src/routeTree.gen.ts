@@ -30,6 +30,7 @@ import { Route as FixturesRouteImport } from './routes/fixtures'
 import { Route as FifaRouteImport } from './routes/fifa'
 import { Route as FeedRouteImport } from './routes/feed'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CommitteeRouteImport } from './routes/committee'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
@@ -143,6 +144,11 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommitteeRoute = CommitteeRouteImport.update({
+  id: '/committee',
+  path: '/committee',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -184,6 +190,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/committee': typeof CommitteeRoute
   '/contact': typeof ContactRoute
   '/feed': typeof FeedRoute
   '/fifa': typeof FifaRoute
@@ -214,6 +221,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/committee': typeof CommitteeRoute
   '/contact': typeof ContactRoute
   '/feed': typeof FeedRoute
   '/fifa': typeof FifaRoute
@@ -245,6 +253,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/committee': typeof CommitteeRoute
   '/contact': typeof ContactRoute
   '/feed': typeof FeedRoute
   '/fifa': typeof FifaRoute
@@ -277,6 +286,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/auth'
+    | '/committee'
     | '/contact'
     | '/feed'
     | '/fifa'
@@ -307,6 +317,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/auth'
+    | '/committee'
     | '/contact'
     | '/feed'
     | '/fifa'
@@ -337,6 +348,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/auth'
+    | '/committee'
     | '/contact'
     | '/feed'
     | '/fifa'
@@ -368,6 +380,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
+  CommitteeRoute: typeof CommitteeRoute
   ContactRoute: typeof ContactRoute
   FeedRoute: typeof FeedRoute
   FifaRoute: typeof FifaRoute
@@ -542,6 +555,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/committee': {
+      id: '/committee'
+      path: '/committee'
+      fullPath: '/committee'
+      preLoaderRoute: typeof CommitteeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -611,6 +631,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
+  CommitteeRoute: CommitteeRoute,
   ContactRoute: ContactRoute,
   FeedRoute: FeedRoute,
   FifaRoute: FifaRoute,
