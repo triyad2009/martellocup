@@ -17,6 +17,8 @@ import {
   JerseyProductsManager, JerseyOrdersManager, MembersManager, SponsorPackagesManager, PromoCodesManager,
   AIKnowledgeManager,
 } from "@/components/admin/ContentManagers";
+import { PortalCredentialsManager } from "@/components/admin/PortalCredentialsManager";
+import { KeyRound } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
