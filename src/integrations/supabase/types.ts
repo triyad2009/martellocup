@@ -962,6 +962,238 @@ export type Database = {
         }
         Relationships: []
       }
+      portal_credentials: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          label: string
+          last_login_at: string | null
+          password_hash: string
+          role: string
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          label: string
+          last_login_at?: string | null
+          password_hash: string
+          role?: string
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          label?: string
+          last_login_at?: string | null
+          password_hash?: string
+          role?: string
+          updated_at?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      portal_expense_slips: {
+        Row: {
+          created_at: string
+          expense_id: string
+          file_type: string | null
+          file_url: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          expense_id: string
+          file_type?: string | null
+          file_url: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          expense_id?: string
+          file_type?: string | null
+          file_url?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_expense_slips_expense_id_fkey"
+            columns: ["expense_id"]
+            isOneToOne: false
+            referencedRelation: "portal_expenses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portal_expenses: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          decided_at: string | null
+          decided_by_credential: string | null
+          decision_note: string | null
+          description: string | null
+          entry_date: string
+          id: string
+          requested_by_credential: string | null
+          status: string
+          title: string
+          updated_at: string
+          vendor: string | null
+        }
+        Insert: {
+          amount: number
+          category?: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by_credential?: string | null
+          decision_note?: string | null
+          description?: string | null
+          entry_date?: string
+          id?: string
+          requested_by_credential?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          vendor?: string | null
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by_credential?: string | null
+          decision_note?: string | null
+          description?: string | null
+          entry_date?: string
+          id?: string
+          requested_by_credential?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          vendor?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_expenses_decided_by_credential_fkey"
+            columns: ["decided_by_credential"]
+            isOneToOne: false
+            referencedRelation: "portal_credentials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "portal_expenses_requested_by_credential_fkey"
+            columns: ["requested_by_credential"]
+            isOneToOne: false
+            referencedRelation: "portal_credentials"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portal_income: {
+        Row: {
+          amount: number
+          collected_by: string | null
+          created_at: string
+          created_by_credential: string | null
+          entry_date: string
+          id: string
+          method: string
+          note: string | null
+          receipt_url: string | null
+          source_name: string
+          source_submission_id: string | null
+          source_type: string
+        }
+        Insert: {
+          amount: number
+          collected_by?: string | null
+          created_at?: string
+          created_by_credential?: string | null
+          entry_date?: string
+          id?: string
+          method?: string
+          note?: string | null
+          receipt_url?: string | null
+          source_name: string
+          source_submission_id?: string | null
+          source_type?: string
+        }
+        Update: {
+          amount?: number
+          collected_by?: string | null
+          created_at?: string
+          created_by_credential?: string | null
+          entry_date?: string
+          id?: string
+          method?: string
+          note?: string | null
+          receipt_url?: string | null
+          source_name?: string
+          source_submission_id?: string | null
+          source_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_income_created_by_credential_fkey"
+            columns: ["created_by_credential"]
+            isOneToOne: false
+            referencedRelation: "portal_credentials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "portal_income_source_submission_id_fkey"
+            columns: ["source_submission_id"]
+            isOneToOne: true
+            referencedRelation: "payment_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portal_sessions: {
+        Row: {
+          created_at: string
+          credential_id: string
+          expires_at: string
+          id: string
+          token_hash: string
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          credential_id: string
+          expires_at: string
+          id?: string
+          token_hash: string
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          credential_id?: string
+          expires_at?: string
+          id?: string
+          token_hash?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_sessions_credential_id_fkey"
+            columns: ["credential_id"]
+            isOneToOne: false
+            referencedRelation: "portal_credentials"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1638,6 +1870,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_create_portal_credential: {
+        Args: {
+          _label: string
+          _password: string
+          _role: string
+          _username: string
+        }
+        Returns: Json
+      }
+      admin_set_portal_credential_active: {
+        Args: { _active: boolean; _id: string }
+        Returns: Json
+      }
       get_or_create_conversation: {
         Args: { other_user: string }
         Returns: string
@@ -1702,6 +1947,88 @@ export type Database = {
           used_at: string
         }[]
       }
+      portal_add_income: {
+        Args: {
+          _amount: number
+          _collected_by: string
+          _entry_date: string
+          _method: string
+          _note: string
+          _receipt_url: string
+          _source_name: string
+          _token: string
+        }
+        Returns: Json
+      }
+      portal_decide_expense: {
+        Args: {
+          _decision: string
+          _expense_id: string
+          _note: string
+          _token: string
+        }
+        Returns: Json
+      }
+      portal_list_expenses: {
+        Args: { _token: string }
+        Returns: {
+          amount: number
+          category: string
+          created_at: string
+          decided_at: string
+          decided_by_credential: string
+          decision_note: string
+          description: string
+          entry_date: string
+          id: string
+          requested_by_credential: string
+          slips: Json
+          status: string
+          title: string
+          vendor: string
+        }[]
+      }
+      portal_list_income: {
+        Args: { _token: string }
+        Returns: {
+          amount: number
+          collected_by: string | null
+          created_at: string
+          created_by_credential: string | null
+          entry_date: string
+          id: string
+          method: string
+          note: string | null
+          receipt_url: string | null
+          source_name: string
+          source_submission_id: string | null
+          source_type: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "portal_income"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      portal_login: {
+        Args: { _password: string; _user_agent?: string; _username: string }
+        Returns: Json
+      }
+      portal_submit_expense: {
+        Args: {
+          _amount: number
+          _category: string
+          _description: string
+          _entry_date: string
+          _slip_urls: string[]
+          _title: string
+          _token: string
+          _vendor: string
+        }
+        Returns: Json
+      }
+      portal_validate_token: { Args: { _token: string }; Returns: Json }
       redeem_ticket: { Args: { _code: string }; Returns: Json }
       scan_any_code: { Args: { _code: string }; Returns: Json }
       validate_promo_code: {

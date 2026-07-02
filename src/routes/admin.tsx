@@ -17,6 +17,8 @@ import {
   JerseyProductsManager, JerseyOrdersManager, MembersManager, SponsorPackagesManager, PromoCodesManager,
   AIKnowledgeManager,
 } from "@/components/admin/ContentManagers";
+import { PortalCredentialsManager } from "@/components/admin/PortalCredentialsManager";
+import { KeyRound } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
@@ -39,7 +41,7 @@ type TabId =
   | "settings" | "hero" | "teams" | "players" | "fixtures" | "results" | "points"
   | "news" | "gallery" | "sponsors" | "sponsor_packages" | "promo_codes" | "about" | "contact" | "members"
   | "registrations" | "tiers" | "methods" | "payments"
-  | "jerseys" | "jersey_orders" | "ai" | "roles";
+  | "jerseys" | "jersey_orders" | "ai" | "portal_creds" | "roles";
 
 function AdminPage() {
   const { user, loading: authLoading } = useAuth();
@@ -107,6 +109,7 @@ function AdminPage() {
     { id: "jerseys", label: lang === "bn" ? "জার্সি" : "Jerseys", icon: Shirt },
     { id: "jersey_orders", label: lang === "bn" ? "জার্সি অর্ডার" : "Jersey Orders", icon: Package },
     { id: "ai", label: lang === "bn" ? "AI সহকারী" : "AI Assistant", icon: Sparkles },
+    { id: "portal_creds", label: lang === "bn" ? "ফিনান্স পোর্টাল" : "Finance Portal", icon: KeyRound },
     ...(isSuperAdmin ? [{ id: "roles" as TabId, label: lang === "bn" ? "ভূমিকা" : "Roles", icon: Shield }] : []),
   ];
 
@@ -170,6 +173,7 @@ function AdminPage() {
       {tab === "jerseys" && <JerseyProductsManager lang={uiLang} />}
       {tab === "jersey_orders" && <JerseyOrdersManager lang={uiLang} />}
       {tab === "ai" && <AIKnowledgeManager lang={uiLang} />}
+      {tab === "portal_creds" && <PortalCredentialsManager lang={uiLang} />}
       {tab === "roles" && isSuperAdmin && <RolesManager lang={uiLang} currentUserId={user.id} />}
     </div>
   );
