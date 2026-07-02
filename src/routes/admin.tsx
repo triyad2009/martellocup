@@ -173,6 +173,7 @@ function AdminPage() {
       {tab === "jerseys" && <JerseyProductsManager lang={uiLang} />}
       {tab === "jersey_orders" && <JerseyOrdersManager lang={uiLang} />}
       {tab === "ai" && <AIKnowledgeManager lang={uiLang} />}
+      {tab === "portal_creds" && <PortalCredentialsManager lang={uiLang} />}
       {tab === "roles" && isSuperAdmin && <RolesManager lang={uiLang} currentUserId={user.id} />}
     </div>
   );
