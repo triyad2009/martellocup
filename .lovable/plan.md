@@ -1,51 +1,87 @@
-## কী বানাব
+# Martello Finance Portal (`/portal`)
 
-### ১. Season-10 vibe (সব জায়গায়)
-- Navbar logo এর পাশে animated "SEASON 10" badge (gradient + pulse)
-- Hero section এ S10 watermark + intro animation (framer-motion)
-- Footer এ "Season 10 — 2026" tagline
-- নতুন CSS token: `--s10-gold`, gradient + glow
+A private tournament finance portal, separate from the regular website login. Only people the admin issues a username + password to can enter.
 
-### ২. FIFA WORLD CUP option (Navbar এ prominent button)
-Navbar এর উপরে আলাদা glowing button ("⚽ FIFA WORLD CUP 2026") যেটা সব page এ দেখাবে — gradient animation সহ।
+## 1. Access & Unlock Experience
 
-নতুন route: `/fifa` — sub-tabs সহ একটা hub:
-- **Fixtures & Live Scores** — TheSportsDB free API থেকে World Cup matches fetch (দেশ, তারিখ, সময়, venue)। Live match হলে auto-poll প্রতি ৩০ সেকেন্ডে → score পরিবর্তন হলে toast popup
-- **Debate Chat** — global room (একটাই)
-- **Quiz** — MCQ, সঠিক উত্তরে পয়েন্ট
-- **Predict** — upcoming match এর score guess
-- **Mini Game** — penalty shootout (click timing based)
-- **Leaderboard** — Top 10 দল (পয়েন্ট descending)
+- New route: `/portal`
+- **Login form** — username + password (admin-generated, not tied to Supabase auth email accounts).
+- On successful login: a full-screen **camera-lens shutter animation** (multi-blade iris opens like a DSLR lens) reveals the dashboard behind it. ~1.2s.
+- Portal session stored in `localStorage` as a signed token (24h expiry), separately from Supabase auth — so this portal is independent from normal user accounts.
+- Logout button clears the token.
 
-### ৩. Debate join flow
-`/fifa/debate` এ ঢুকলে যদি registered না হয়:
-- Name (auto from profile), পছন্দের দেশ select (32 World Cup teams dropdown), profile photo upload
-- Save করলে chat এ ঢুকবে; নিজের team badge দেখাবে প্রতি message এ
-- যেকোনো game/quiz/predict খেললে পয়েন্ট নিজের team এ যোগ হবে
+## 2. Admin — Credential Management
 
-### ৪. Database (নতুন tables)
-- `wc_participants` (user_id PK, display_name, country_code, country_name, photo_url, total_points)
-- `wc_chat_messages` (id, user_id, country_code, message, created_at) + realtime
-- `wc_quiz_questions` (id, question_bn/en, options jsonb, correct_index, points)
-- `wc_quiz_attempts` (user_id, question_id, is_correct, points_earned)  — unique(user_id, question_id) যাতে repeat না হয়
-- `wc_predictions` (user_id, match_id text, home_score, away_score, points_earned)
-- `wc_game_scores` (user_id, game_type, score, points, created_at)
-- View: `wc_team_leaderboard` — country_code, country_name, total_points, member_count, ORDER BY total_points DESC LIMIT 10
-- RLS: সবাই read পারবে chat/leaderboard; নিজের attempts/predictions নিজে write
+New tab in the existing Admin panel: **"Finance Portal"**.
+- Generate credential: enter a label (e.g. "Treasurer Rakib") → system auto-generates username + strong password → shown **once** with copy button.
+- List all credentials with: label, username, created date, last login, active toggle, revoke button.
+- Passwords stored as bcrypt-style hash (via pgcrypto `crypt()`), never in plaintext.
 
-### ৫. Live Score API integration
-TheSportsDB free endpoints (no key দরকার):
-- `https://www.thesportsdb.com/api/v1/json/3/eventsseason.php?id=4429&s=2026` (World Cup)
-- Live: `https://www.thesportsdb.com/api/v1/json/3/eventslive.php?s=Soccer`
-- Server function এ proxy + cache (CORS safe)
-- Frontend: TanStack Query, refetchInterval: 30s live match থাকলে
-- Score change detect → Sonner toast + sound notification (existing scanner sound reuse)
+## 3. Portal Dashboard (after unlock)
 
-### ৬. Technical structure
-- `src/routes/fifa.tsx` — layout with tabs (`/fifa`, `/fifa/debate`, `/fifa/quiz`, `/fifa/predict`, `/fifa/game`, `/fifa/leaderboard`)
-- `src/lib/fifa.functions.ts` — serverFn: `getWorldCupFixtures`, `getLiveScores`
-- `src/lib/fifa-countries.ts` — 32 teams data (flag emoji, code, name)
-- `src/components/fifa/*` — DebateChat, QuizCard, PredictCard, PenaltyGame, LiveScoreToast, JoinDebateModal
-- Login required everywhere (existing `LoginGate`)
+Tabs:
 
-### বড় কাজ — approve করলে শুরু করব। কোনো কিছু বদলাতে চাইলে এখনই বলুন।
+### a) Overview
+- Total Income, Total Expenses, Net Balance — big cards.
+- Monthly bar chart (recharts) and category donut.
+
+### b) Income Ledger
+- Auto-fed from every **approved** `payment_submissions` row (tickets, jerseys, sponsorships) + manual entries.
+- Manual entry form: amount, source (donor/sponsor name), collected_by (which committee member), method (cash/bkash/bank), note, date, optional receipt image upload.
+- Columns: Date, Source, Collected By, Method, Amount, Receipt.
+
+### c) Expense Requests
+- Submit expense: title, category (equipment, food, transport, prize, misc), amount, vendor/shop name, description, **shop slip upload** (image/pdf, multiple allowed), date.
+- Status flow: `pending → approved / rejected` by an admin-level portal user.
+- List view with filter by status; click row → detail modal showing all slips.
+
+### d) Transactions (all-in-one)
+- Unified timeline: every income + expense in one sortable/filterable table.
+- Filters: date range, type, category, collected_by.
+- Search.
+
+### e) Export
+- "Download PDF Report" button → generates a branded PDF (Martello logo top-left, tournament name, date range, summary totals, full transaction table, expense breakdown) using `jspdf` + `jspdf-autotable`.
+- Options: choose date range + include/exclude expense slips as appendix images.
+
+## 4. Auto-Sync from Existing Systems
+
+- DB trigger on `payment_submissions`: when status flips to `approved`, insert a matching row into `portal_income` (idempotent on submission id).
+- Backfill migration inserts all currently-approved submissions.
+
+## 5. Technical Details
+
+**New tables** (all with GRANTs + RLS scoped to `service_role` only — the portal talks through server functions, not direct client access):
+- `portal_credentials` — id, label, username (unique), password_hash, is_active, created_by, last_login_at, role (`viewer` / `manager` / `treasurer`).
+- `portal_sessions` — id, credential_id, token_hash, expires_at, ip, user_agent.
+- `portal_income` — id, source_submission_id (nullable), amount, source_name, collected_by, method, note, receipt_url, entry_date, created_by_credential.
+- `portal_expenses` — id, title, category, amount, vendor, description, entry_date, status, requested_by_credential, decided_by_credential, decided_at.
+- `portal_expense_slips` — id, expense_id, file_url, file_type.
+
+**Server functions** (`src/lib/portal.functions.ts`, all use `requireSupabaseAuth` for admin-only ops OR verify portal token for portal ops):
+- `adminCreatePortalCredential` (admin only) — returns plaintext once.
+- `adminListPortalCredentials` (admin only).
+- `adminRevokePortalCredential` (admin only).
+- `portalLogin(username, password)` → issues token.
+- `portalMe(token)` → validates + returns credential info.
+- `portalAddIncome`, `portalListIncome`.
+- `portalSubmitExpense`, `portalListExpenses`, `portalDecideExpense`.
+- `portalExportData(dateRange)` → returns JSON for PDF generation client-side.
+
+**Files**:
+- `src/routes/portal.tsx` — login form + camera-lens shutter → dashboard.
+- `src/components/portal/CameraShutter.tsx` — SVG-based iris animation.
+- `src/components/portal/IncomeTab.tsx`, `ExpensesTab.tsx`, `TransactionsTab.tsx`, `OverviewTab.tsx`, `ExportTab.tsx`.
+- `src/components/admin/PortalCredentialsManager.tsx` — new admin tab.
+- `src/lib/portal.functions.ts` — server functions.
+- `src/lib/portal-session.ts` — token storage helpers.
+- Add "Finance Portal" tab to `src/routes/admin.tsx`.
+
+Portal is **not** added to the public Navbar — access is by direct URL `/portal` only (shared privately by admins).
+
+## Confirm to proceed
+
+Shall I build this exactly as above? Or would you like to change:
+- Any tab structure
+- Password vs OTP-based portal login
+- PDF library / branding tweaks
