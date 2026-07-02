@@ -496,7 +496,7 @@ function ExpensesTab({ token, cred, expenses, onChange }: { token: string; cred:
       _token: token, _title: f.title, _category: f.category, _amount: Number(f.amount),
       _vendor: f.vendor || null, _description: f.description || null,
       _entry_date: f.entry_date, _slip_urls: f.slips,
-    });
+    } as any);
     setSaving(false);
     if (error || !(data as any)?.ok) return toast.error(error?.message || "Failed");
     toast.success("Expense submitted");
