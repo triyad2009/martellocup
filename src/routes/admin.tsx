@@ -41,7 +41,7 @@ type TabId =
   | "settings" | "hero" | "teams" | "players" | "fixtures" | "results" | "points"
   | "news" | "gallery" | "sponsors" | "sponsor_packages" | "promo_codes" | "about" | "contact" | "members"
   | "registrations" | "tiers" | "methods" | "payments"
-  | "jerseys" | "jersey_orders" | "ai" | "roles";
+  | "jerseys" | "jersey_orders" | "ai" | "portal_creds" | "roles";
 
 function AdminPage() {
   const { user, loading: authLoading } = useAuth();
