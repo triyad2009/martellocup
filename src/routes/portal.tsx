@@ -384,7 +384,7 @@ function IncomeTab({ token, income, onChange }: { token: string; income: Income[
       _token: token, _amount: Number(f.amount), _source_name: f.source_name,
       _collected_by: f.collected_by || null, _method: f.method, _note: f.note || null,
       _receipt_url: f.receipt_url || null, _entry_date: f.entry_date,
-    });
+    } as any);
     setSaving(false);
     if (error || !(data as any)?.ok) return toast.error(error?.message || "Failed");
     toast.success("Income added");
