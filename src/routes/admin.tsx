@@ -109,6 +109,7 @@ function AdminPage() {
     { id: "jerseys", label: lang === "bn" ? "জার্সি" : "Jerseys", icon: Shirt },
     { id: "jersey_orders", label: lang === "bn" ? "জার্সি অর্ডার" : "Jersey Orders", icon: Package },
     { id: "ai", label: lang === "bn" ? "AI সহকারী" : "AI Assistant", icon: Sparkles },
+    { id: "portal_creds", label: lang === "bn" ? "ফিনান্স পোর্টাল" : "Finance Portal", icon: KeyRound },
     ...(isSuperAdmin ? [{ id: "roles" as TabId, label: lang === "bn" ? "ভূমিকা" : "Roles", icon: Shield }] : []),
   ];
 
