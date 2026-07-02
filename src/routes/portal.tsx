@@ -203,8 +203,8 @@ function Dashboard({ token, cred, onLogout }: { token: string; cred: Credential;
     ]);
     if (inc.error) toast.error(inc.error.message);
     if (exp.error) toast.error(exp.error.message);
-    setIncome((inc.data ?? []) as Income[]);
-    setExpenses((exp.data ?? []) as Expense[]);
+    setIncome((inc.data ?? []) as unknown as Income[]);
+    setExpenses((exp.data ?? []) as unknown as Expense[]);
     setLoading(false);
   };
 
