@@ -9,6 +9,7 @@ import { Footer } from "@/components/Footer";
 import { AIAssistant } from "@/components/AIAssistant";
 import { SponsorPopup } from "@/components/SponsorPopup";
 import { LiveScoreWatcher } from "@/components/fifa/LiveScoreWatcher";
+import { ThemeApplier } from "@/lib/settings";
 
 function NotFoundComponent() {
   return (
