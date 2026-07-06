@@ -82,6 +82,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
         <AuthProvider>
+          <ThemeApplier />
           <div className="min-h-screen flex flex-col">
             <Navbar />
             <main className="flex-1">
