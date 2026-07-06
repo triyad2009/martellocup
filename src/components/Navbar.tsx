@@ -29,6 +29,7 @@ const NAV = [
   { to: "/feed", key: "nav.feed" },
   { to: "/friends", key: "nav.friends" },
   { to: "/messages", key: "nav.messages" },
+  { to: "/portal", key: "nav.portal" },
 ] as const;
 
 export function Navbar() {
