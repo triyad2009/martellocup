@@ -9,6 +9,7 @@ import { Footer } from "@/components/Footer";
 import { AIAssistant } from "@/components/AIAssistant";
 import { SponsorPopup } from "@/components/SponsorPopup";
 import { LiveScoreWatcher } from "@/components/fifa/LiveScoreWatcher";
+import { ThemeApplier } from "@/lib/settings";
 
 function NotFoundComponent() {
   return (
@@ -81,6 +82,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <I18nProvider>
         <AuthProvider>
+          <ThemeApplier />
           <div className="min-h-screen flex flex-col">
             <Navbar />
             <main className="flex-1">
