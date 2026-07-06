@@ -256,6 +256,55 @@ function SettingsManager({ lang }: { lang: "bn" | "en" }) {
           placeholder="https://..." />
       </Field>
 
+      {/* Theme switcher — Classic (Red) ↔ The Tenth Tide (Sea Blue & White) */}
+      <div className="rounded-xl border border-border bg-gradient-to-br from-sky-50/60 to-white dark:from-sky-950/30 dark:to-transparent p-4 space-y-3">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="font-display font-bold text-base flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-primary" />
+              {lang === "bn" ? "সাইট থিম" : "Site Theme"}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {lang === "bn"
+                ? "Classic (লাল) থেকে The Tenth Tide (সি ব্লু ও সাদা) — সুইচ চাপলে পুরো সাইটের কালার পাল্টে যাবে।"
+                : "Switch between Classic (Red) and The Tenth Tide (Sea Blue & White). Applies site-wide instantly."}
+            </p>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            { id: "classic", label: lang === "bn" ? "ক্লাসিক (লাল)" : "Classic (Red)", swatches: ["#D71920", "#0f1230", "#ffffff"] },
+            { id: "tide", label: lang === "bn" ? "The Tenth Tide" : "The Tenth Tide", swatches: ["#1a6fb8", "#7fc4e8", "#ffffff"] },
+          ].map((opt) => {
+            const active = (row.theme_mode ?? "classic") === opt.id;
+            return (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => setRow({ ...row, theme_mode: opt.id })}
+                className={`text-left rounded-lg border-2 p-3 transition-all ${
+                  active
+                    ? "border-primary shadow-glow-red bg-primary/5"
+                    : "border-border hover:border-primary/40 bg-background"
+                }`}
+              >
+                <div className="flex items-center gap-1.5 mb-2">
+                  {opt.swatches.map((c) => (
+                    <span key={c} className="h-5 w-5 rounded-full ring-2 ring-white shadow" style={{ background: c }} />
+                  ))}
+                </div>
+                <div className="font-semibold text-sm">{opt.label}</div>
+                {active && (
+                  <div className="mt-1 text-[11px] text-primary font-bold inline-flex items-center gap-1">
+                    <Check className="h-3 w-3" /> {lang === "bn" ? "সিলেক্টেড" : "Active"}
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       <button
         onClick={save}
         disabled={saving}
