@@ -1611,6 +1611,7 @@ export type Database = {
           location: string
           season_name: string
           tagline: string
+          theme_mode: string
           tournament_start: string
           updated_at: string
         }
@@ -1622,6 +1623,7 @@ export type Database = {
           location?: string
           season_name?: string
           tagline?: string
+          theme_mode?: string
           tournament_start?: string
           updated_at?: string
         }
@@ -1633,6 +1635,7 @@ export type Database = {
           location?: string
           season_name?: string
           tagline?: string
+          theme_mode?: string
           tournament_start?: string
           updated_at?: string
         }
