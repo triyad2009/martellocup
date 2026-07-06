@@ -205,6 +205,7 @@ function SettingsManager({ lang }: { lang: "bn" | "en" }) {
         location: row.location,
         tournament_start: row.tournament_start,
         hero_logo_url: row.hero_logo_url,
+        theme_mode: row.theme_mode ?? "classic",
       })
       .eq("id", row.id);
     setSaving(false);
