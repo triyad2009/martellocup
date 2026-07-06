@@ -25,6 +25,7 @@ export const dict: Dict = {
  "nav.feed": { bn: "ফিড", en: "Feed", sat: "আঁলাপ-ঘর" },
  "nav.friends": { bn: "বন্ধু", en: "Friends", sat: "গাঁতি" },
  "nav.messages": { bn: "মেসেজ", en: "Messages", sat: "খবর" },
+ "nav.portal": { bn: "পোর্টাল", en: "Portal", sat: "পোর্টাল" },
 
   // Hero
   "hero.title": { bn: "মার্টেলো কাপ", en: "MARTELLO CUP", sat: "মার্টেলো কাপ" },
