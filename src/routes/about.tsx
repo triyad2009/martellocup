@@ -5,6 +5,16 @@ import { useI18n } from "@/lib/i18n";
 import { useSingletonRow, useTable } from "@/lib/content";
 
 export const Route = createFileRoute("/about")({
+  head: () => ({
+    meta: [
+      { title: "About Martello Cup — Season 10 (The Tenth Tide)" },
+      { name: "description", content: "Learn about Martello Cup — the official Martello football tournament. Mission, vision, history and the Season 10 (The Tenth Tide) organizing team." },
+      { property: "og:title", content: "About Martello Cup" },
+      { property: "og:description", content: "The story, mission and vision behind Martello Cup Season 10." },
+      { property: "og:url", content: "https://martellocup.lovable.app/about" },
+    ],
+    links: [{ rel: "canonical", href: "https://martellocup.lovable.app/about" }],
+  }),
   component: AboutPage,
 });
 

@@ -5,6 +5,16 @@ import { useI18n } from "@/lib/i18n";
 import { useTable } from "@/lib/content";
 
 export const Route = createFileRoute("/gallery")({
+  head: () => ({
+    meta: [
+      { title: "Photo Gallery · Martello Cup Season 10" },
+      { name: "description", content: "Photos and highlights from Martello Cup Season 10 (The Tenth Tide) — matchday moments, celebrations and behind the scenes." },
+      { property: "og:title", content: "Martello Cup Gallery — Season 10" },
+      { property: "og:description", content: "The best photos from Martello Cup Season 10." },
+      { property: "og:url", content: "https://martellocup.lovable.app/gallery" },
+    ],
+    links: [{ rel: "canonical", href: "https://martellocup.lovable.app/gallery" }],
+  }),
   component: GalleryPage,
 });
 

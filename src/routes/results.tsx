@@ -5,6 +5,16 @@ import { useI18n } from "@/lib/i18n";
 import { useTable } from "@/lib/content";
 
 export const Route = createFileRoute("/results")({
+  head: () => ({
+    meta: [
+      { title: "Match Results · Martello Cup Season 10" },
+      { name: "description", content: "Latest match results, scores, scorers and man-of-the-match for Martello Cup Season 10 (The Tenth Tide)." },
+      { property: "og:title", content: "Martello Cup Results — Season 10" },
+      { property: "og:description", content: "All Martello Cup Season 10 results with scorers and MOTM." },
+      { property: "og:url", content: "https://martellocup.lovable.app/results" },
+    ],
+    links: [{ rel: "canonical", href: "https://martellocup.lovable.app/results" }],
+  }),
   component: ResultsPage,
 });
 
