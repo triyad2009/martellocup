@@ -33,28 +33,91 @@ function NotFoundComponent() {
   );
 }
 
+const SITE_URL = "https://martellocup.lovable.app";
+const SITE_TITLE = "Martello Cup — Season 10 (The Tenth Tide) Official Football Tournament";
+const SITE_DESC = "Martello Cup Season 10 (The Tenth Tide) — the official football tournament of Martello. Live fixtures, results, points table, team registration, tickets, jersey shop, FIFA World Cup 2026 hub, and season news.";
+const SITE_IMAGE = "https://storage.googleapis.com/gpt-engineer-file-uploads/tDq1dI3ZrQWssm7Zr4YN6NdE3842/social-images/social-1777021169850-1000150813.webp";
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Martello Cup" },
-      { name: "description", content: "Martello Cup Session-10" },
+      { title: SITE_TITLE },
+      { name: "description", content: SITE_DESC },
       { name: "author", content: "TAHSINULLAH RIYAD" },
-      { property: "og:title", content: "Martello Cup" },
-      { property: "og:description", content: "Martello Cup Session-10" },
+      { name: "application-name", content: "Martello Cup" },
+      { name: "apple-mobile-web-app-title", content: "Martello Cup" },
+      { name: "theme-color", content: "#1a6fb8" },
+      { name: "keywords", content: "Martello Cup, Martello Cup Season 10, The Tenth Tide, Martello football tournament, Martello Cup fixtures, Martello Cup results, Martello Cup tickets, Martello Cup registration, FIFA World Cup 2026, Martello" },
+      { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
+      { name: "googlebot", content: "index, follow, max-image-preview:large, max-snippet:-1" },
+      { name: "google", content: "notranslate" },
+      { property: "og:site_name", content: "Martello Cup" },
+      { property: "og:title", content: SITE_TITLE },
+      { property: "og:description", content: SITE_DESC },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: SITE_URL },
+      { property: "og:locale", content: "bn_BD" },
+      { property: "og:locale:alternate", content: "en_US" },
+      { property: "og:image", content: SITE_IMAGE },
+      { property: "og:image:alt", content: "Martello Cup Season 10 — The Tenth Tide" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Martello Cup" },
-      { name: "twitter:description", content: "Martello Cup Session-10" },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/tDq1dI3ZrQWssm7Zr4YN6NdE3842/social-images/social-1777021169850-1000150813.webp" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/tDq1dI3ZrQWssm7Zr4YN6NdE3842/social-images/social-1777021169850-1000150813.webp" },
+      { name: "twitter:title", content: SITE_TITLE },
+      { name: "twitter:description", content: SITE_DESC },
+      { name: "twitter:image", content: SITE_IMAGE },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "canonical", href: SITE_URL },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": `${SITE_URL}/#organization`,
+              name: "Martello Cup",
+              alternateName: ["Martello Cup Season 10", "The Tenth Tide", "মার্টেলো কাপ"],
+              url: SITE_URL,
+              logo: SITE_IMAGE,
+              sameAs: [SITE_URL],
+            },
+            {
+              "@type": "WebSite",
+              "@id": `${SITE_URL}/#website`,
+              url: SITE_URL,
+              name: "Martello Cup",
+              description: SITE_DESC,
+              publisher: { "@id": `${SITE_URL}/#organization` },
+              potentialAction: {
+                "@type": "SearchAction",
+                target: `${SITE_URL}/news?q={search_term_string}`,
+                "query-input": "required name=search_term_string",
+              },
+              inLanguage: ["bn", "en"],
+            },
+            {
+              "@type": "SportsEvent",
+              name: "Martello Cup Season 10 — The Tenth Tide",
+              alternateName: "Martello Cup",
+              sport: "Football",
+              description: SITE_DESC,
+              url: SITE_URL,
+              image: SITE_IMAGE,
+              eventStatus: "https://schema.org/EventScheduled",
+              eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+              organizer: { "@id": `${SITE_URL}/#organization` },
+            },
+          ],
+        }),
+      },
     ],
   }),
   shellComponent: RootShell,

@@ -5,6 +5,16 @@ import { useI18n } from "@/lib/i18n";
 import { useTable } from "@/lib/content";
 
 export const Route = createFileRoute("/fixtures")({
+  head: () => ({
+    meta: [
+      { title: "Fixtures & Schedule · Martello Cup Season 10" },
+      { name: "description", content: "Full match schedule for Martello Cup Season 10 (The Tenth Tide) — dates, times, venues and matchday details." },
+      { property: "og:title", content: "Martello Cup Fixtures — Season 10" },
+      { property: "og:description", content: "Every fixture of Martello Cup Season 10 with kickoff time and venue." },
+      { property: "og:url", content: "https://martellocup.lovable.app/fixtures" },
+    ],
+    links: [{ rel: "canonical", href: "https://martellocup.lovable.app/fixtures" }],
+  }),
   component: FixturesPage,
 });
 

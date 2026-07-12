@@ -13,6 +13,7 @@ import { Route as TrackOrderRouteImport } from './routes/track-order'
 import { Route as TicketsRouteImport } from './routes/tickets'
 import { Route as TeamsRouteImport } from './routes/teams'
 import { Route as SponsorsRouteImport } from './routes/sponsors'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ScanTicketsRouteImport } from './routes/scan-tickets'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as RegistrationRouteImport } from './routes/registration'
@@ -58,6 +59,11 @@ const TeamsRoute = TeamsRouteImport.update({
 const SponsorsRoute = SponsorsRouteImport.update({
   id: '/sponsors',
   path: '/sponsors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ScanTicketsRoute = ScanTicketsRouteImport.update({
@@ -215,6 +221,7 @@ export interface FileRoutesByFullPath {
   '/registration': typeof RegistrationRoute
   '/results': typeof ResultsRoute
   '/scan-tickets': typeof ScanTicketsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
   '/teams': typeof TeamsRoute
   '/tickets': typeof TicketsRoute
@@ -247,6 +254,7 @@ export interface FileRoutesByTo {
   '/registration': typeof RegistrationRoute
   '/results': typeof ResultsRoute
   '/scan-tickets': typeof ScanTicketsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
   '/teams': typeof TeamsRoute
   '/tickets': typeof TicketsRoute
@@ -280,6 +288,7 @@ export interface FileRoutesById {
   '/registration': typeof RegistrationRoute
   '/results': typeof ResultsRoute
   '/scan-tickets': typeof ScanTicketsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/sponsors': typeof SponsorsRoute
   '/teams': typeof TeamsRoute
   '/tickets': typeof TicketsRoute
@@ -314,6 +323,7 @@ export interface FileRouteTypes {
     | '/registration'
     | '/results'
     | '/scan-tickets'
+    | '/sitemap.xml'
     | '/sponsors'
     | '/teams'
     | '/tickets'
@@ -346,6 +356,7 @@ export interface FileRouteTypes {
     | '/registration'
     | '/results'
     | '/scan-tickets'
+    | '/sitemap.xml'
     | '/sponsors'
     | '/teams'
     | '/tickets'
@@ -378,6 +389,7 @@ export interface FileRouteTypes {
     | '/registration'
     | '/results'
     | '/scan-tickets'
+    | '/sitemap.xml'
     | '/sponsors'
     | '/teams'
     | '/tickets'
@@ -411,6 +423,7 @@ export interface RootRouteChildren {
   RegistrationRoute: typeof RegistrationRoute
   ResultsRoute: typeof ResultsRoute
   ScanTicketsRoute: typeof ScanTicketsRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SponsorsRoute: typeof SponsorsRoute
   TeamsRoute: typeof TeamsRoute
   TicketsRoute: typeof TicketsRoute
@@ -447,6 +460,13 @@ declare module '@tanstack/react-router' {
       path: '/sponsors'
       fullPath: '/sponsors'
       preLoaderRoute: typeof SponsorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/scan-tickets': {
@@ -670,6 +690,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegistrationRoute: RegistrationRoute,
   ResultsRoute: ResultsRoute,
   ScanTicketsRoute: ScanTicketsRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   SponsorsRoute: SponsorsRoute,
   TeamsRoute: TeamsRoute,
   TicketsRoute: TicketsRoute,

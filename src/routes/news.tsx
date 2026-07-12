@@ -5,6 +5,16 @@ import { useI18n } from "@/lib/i18n";
 import { useTable } from "@/lib/content";
 
 export const Route = createFileRoute("/news")({
+  head: () => ({
+    meta: [
+      { title: "News & Updates · Martello Cup Season 10" },
+      { name: "description", content: "Latest Martello Cup news, announcements, match previews and reports for Season 10 (The Tenth Tide)." },
+      { property: "og:title", content: "Martello Cup News — Season 10" },
+      { property: "og:description", content: "Official Martello Cup news and announcements." },
+      { property: "og:url", content: "https://martellocup.lovable.app/news" },
+    ],
+    links: [{ rel: "canonical", href: "https://martellocup.lovable.app/news" }],
+  }),
   component: NewsPage,
 });
 

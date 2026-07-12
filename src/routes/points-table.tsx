@@ -5,6 +5,16 @@ import { useI18n } from "@/lib/i18n";
 import { useTable } from "@/lib/content";
 
 export const Route = createFileRoute("/points-table")({
+  head: () => ({
+    meta: [
+      { title: "Points Table & Standings · Martello Cup Season 10" },
+      { name: "description", content: "Live standings and points table for Martello Cup Season 10 — wins, draws, losses, goal difference and points." },
+      { property: "og:title", content: "Martello Cup Points Table — Season 10" },
+      { property: "og:description", content: "Live points table for Martello Cup Season 10 (The Tenth Tide)." },
+      { property: "og:url", content: "https://martellocup.lovable.app/points-table" },
+    ],
+    links: [{ rel: "canonical", href: "https://martellocup.lovable.app/points-table" }],
+  }),
   component: PointsPage,
 });
 

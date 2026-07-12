@@ -5,6 +5,16 @@ import { useI18n } from "@/lib/i18n";
 import { useTable } from "@/lib/content";
 
 export const Route = createFileRoute("/teams")({
+  head: () => ({
+    meta: [
+      { title: "Teams & Squads · Martello Cup Season 10" },
+      { name: "description", content: "All participating teams, coaches and squads of Martello Cup Season 10 (The Tenth Tide)." },
+      { property: "og:title", content: "Martello Cup Teams — Season 10" },
+      { property: "og:description", content: "Meet every team competing in Martello Cup Season 10." },
+      { property: "og:url", content: "https://martellocup.lovable.app/teams" },
+    ],
+    links: [{ rel: "canonical", href: "https://martellocup.lovable.app/teams" }],
+  }),
   component: TeamsPage,
 });
 
