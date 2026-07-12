@@ -32,17 +32,21 @@ function Hero() {
   const seasonText = settings?.season_name || t("hero.season");
   const locationText = settings?.location || t("hero.location");
 
-  const [started, setStarted] = useState(() => Date.now() >= startDate.getTime());
+  const [started, setStarted] = useState(false);
   useEffect(() => {
-    if (started) return;
+    const check = () => Date.now() >= startDate.getTime();
+    if (check()) {
+      setStarted(true);
+      return;
+    }
     const id = setInterval(() => {
-      if (Date.now() >= startDate.getTime()) {
+      if (check()) {
         setStarted(true);
         clearInterval(id);
       }
     }, 1000);
     return () => clearInterval(id);
-  }, [startDate, started]);
+  }, [startDate]);
 
   return (
     <section className="relative min-h-[calc(100vh-7rem)] overflow-hidden bg-gradient-hero animate-gradient flex items-center">
