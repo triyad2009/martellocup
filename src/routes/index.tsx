@@ -7,6 +7,7 @@ import { Countdown } from "@/components/Countdown";
 import { useTournamentSettings } from "@/lib/settings";
 import { useSingletonRow, useTable } from "@/lib/content";
 import { SponsorShowcase } from "@/components/SponsorShowcase";
+import { Hero3DMount } from "@/components/Hero3DMount";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -72,6 +73,9 @@ function Hero() {
         ))}
       </div>
 
+      {/* Subtle 3D layer (desktop only) */}
+      <Hero3DMount />
+
       {/* Floating trophy/ball icons */}
       <motion.div
         className="absolute top-20 right-[8%] text-white/10 hidden md:block"
@@ -88,7 +92,7 @@ function Hero() {
         <Goal className="h-28 w-28" />
       </motion.div>
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 py-12 w-full">
+      <div className="relative mx-auto max-w-7xl 2xl:max-w-[1500px] px-4 sm:px-6 lg:px-10 py-12 lg:py-20 w-full">
         <div className="text-center text-white">
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
@@ -229,7 +233,7 @@ function StatsBar() {
   ];
   return (
     <section className="bg-card border-y border-border py-10">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="mx-auto max-w-7xl 2xl:max-w-[1500px] px-4 sm:px-6 grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-10">
         {stats.map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="text-center">
             <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-primary text-white mb-3 shadow-glow-red">
@@ -263,7 +267,7 @@ function HighlightsSection() {
       { icon: Trophy, to: "/points-table", title: lang === "bn" ? "পয়েন্ট টেবিল" : "Points Table", desc: lang === "bn" ? "লাইভ স্ট্যান্ডিং" : "Live standings" },
     ];
     return (
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 py-14">
+      <section className="mx-auto max-w-7xl 2xl:max-w-[1500px] px-4 sm:px-6 py-14">
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-3">
             <Sparkles className="h-3.5 w-3.5 text-primary" />
@@ -275,7 +279,7 @@ function HighlightsSection() {
             {lang === "bn" ? "Martello Cup এর সবকিছু এক জায়গায়" : "Everything Martello Cup, in one place"}
           </h2>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
           {features.map((f, i) => (
             <motion.div
               key={f.to}
@@ -304,7 +308,7 @@ function HighlightsSection() {
   const uiLang: "bn" | "en" = lang === "en" ? "en" : "bn";
 
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 py-14 grid lg:grid-cols-2 gap-8">
+    <section className="mx-auto max-w-7xl 2xl:max-w-[1500px] px-4 sm:px-6 py-14 lg:py-20 grid lg:grid-cols-2 gap-8 lg:gap-12">
       {upcoming.length > 0 && (
         <div>
           <SectionHeader icon={<Calendar className="h-5 w-5" />} title={lang === "bn" ? "আসন্ন ম্যাচ" : "Upcoming Matches"} to="/fixtures" lang={uiLang} />
