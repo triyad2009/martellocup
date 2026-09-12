@@ -11,7 +11,7 @@ export function Footer() {
   return (
     <footer className="bg-gradient-dark text-dark-foreground mt-20">
       <SilverFooterCarousel />
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12 sm:py-16">
+      <div className="mx-auto max-w-7xl 2xl:max-w-[1500px] px-4 sm:px-6 py-12 sm:py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* About */}
           <div>

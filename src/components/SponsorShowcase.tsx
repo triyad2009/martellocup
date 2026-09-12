@@ -36,7 +36,7 @@ export function SponsorShowcase({ compact = false }: { compact?: boolean }) {
   if (loading || rows.length === 0) return null;
 
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 py-10 sm:py-14">
+    <section className="mx-auto max-w-7xl 2xl:max-w-[1500px] px-4 sm:px-6 py-10 sm:py-14">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
