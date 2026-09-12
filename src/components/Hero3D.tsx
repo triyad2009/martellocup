@@ -35,7 +35,7 @@ function Orb({
         roughness={0.25}
         metalness={0.6}
         transparent
-        opacity={0.55}
+        opacity={0.45}
       />
     </mesh>
   );
@@ -53,7 +53,7 @@ function Ring({ position, scale }: { position: [number, number, number]; scale: 
   return (
     <mesh ref={ref} position={position} scale={scale}>
       <torusGeometry args={[1.6, 0.03, 12, 90]} />
-      <meshStandardMaterial color="#ffffff" transparent opacity={0.28} roughness={0.4} />
+      <meshStandardMaterial color="#ffffff" transparent opacity={0.2} roughness={0.4} />
     </mesh>
   );
 }
@@ -74,20 +74,20 @@ function Scene() {
         />
       </Environment>
 
-      <Orb position={[-3.2, 0.8, 0]} radius={0.75} speed={0.5} color="#8fd0ff" />
-      <Orb position={[3.4, -0.6, -1]} radius={1.05} speed={0.35} color="#ffffff" />
-      <Orb position={[1.2, 1.6, -2]} radius={0.45} speed={0.7} color="#ffd27a" />
-      <Orb position={[-1.8, -1.5, -1.5]} radius={0.35} speed={0.6} color="#7fb6e8" />
+      <Orb position={[-5.2, 1.2, -3]} radius={0.5} speed={0.5} color="#8fd0ff" />
+      <Orb position={[5.4, -1.2, -4]} radius={0.6} speed={0.35} color="#ffffff" />
+      <Orb position={[4.2, 2.2, -5]} radius={0.32} speed={0.7} color="#ffd27a" />
+      <Orb position={[-4.2, -2.2, -4]} radius={0.28} speed={0.6} color="#7fb6e8" />
 
-      <Ring position={[-3.6, -1.4, -1]} scale={0.9} />
-      <Ring position={[3.2, 1.5, -2]} scale={1.25} />
+      <Ring position={[-5.6, -1.8, -4]} scale={0.8} />
+      <Ring position={[5.2, 2.0, -5]} scale={1.0} />
     </>
   );
 }
 
 export default function Hero3D() {
   return (
-    <div className="absolute inset-0 pointer-events-none opacity-70">
+    <div className="absolute inset-0 pointer-events-none opacity-60">
       <Canvas
         dpr={[1, 1.5]}
         camera={{ position: [0, 0, 7], fov: 55 }}
