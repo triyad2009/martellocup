@@ -74,10 +74,10 @@ function Scene() {
         />
       </Environment>
 
-      <Orb position={[-5.2, 1.2, -3]} radius={0.5} speed={0.5} color="#8fd0ff" />
-      <Orb position={[5.4, -1.2, -4]} radius={0.6} speed={0.35} color="#ffffff" />
-      <Orb position={[4.2, 2.2, -5]} radius={0.32} speed={0.7} color="#ffd27a" />
-      <Orb position={[-4.2, -2.2, -4]} radius={0.28} speed={0.6} color="#7fb6e8" />
+      <Orb position={[-5.2, 1.2, -3]} radius={0.22} speed={0.5} color="#8fd0ff" />
+      <Orb position={[5.4, -1.2, -4]} radius={0.26} speed={0.35} color="#ffffff" />
+      <Orb position={[4.2, 2.2, -5]} radius={0.16} speed={0.7} color="#ffd27a" />
+      <Orb position={[-4.2, -2.2, -4]} radius={0.14} speed={0.6} color="#7fb6e8" />
 
       <Ring position={[-5.6, -1.8, -4]} scale={0.8} />
       <Ring position={[5.2, 2.0, -5]} scale={1.0} />
@@ -87,7 +87,7 @@ function Scene() {
 
 export default function Hero3D() {
   return (
-    <div className="absolute inset-0 pointer-events-none opacity-60">
+    <div className="absolute inset-0 pointer-events-none opacity-50">
       <Canvas
         dpr={[1, 1.5]}
         camera={{ position: [0, 0, 7], fov: 55 }}
