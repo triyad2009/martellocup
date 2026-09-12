@@ -8,7 +8,6 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { AIAssistant } from "@/components/AIAssistant";
 import { SponsorPopup } from "@/components/SponsorPopup";
-import { LiveScoreWatcher } from "@/components/fifa/LiveScoreWatcher";
 import { ThemeApplier } from "@/lib/settings";
 
 function NotFoundComponent() {
@@ -35,7 +34,7 @@ function NotFoundComponent() {
 
 const SITE_URL = "https://martellocup.lovable.app";
 const SITE_TITLE = "Martello Cup — Season 10 (The Tenth Tide) Official Football Tournament";
-const SITE_DESC = "Martello Cup Season 10 (The Tenth Tide) — the official football tournament of Martello. Live fixtures, results, points table, team registration, tickets, jersey shop, FIFA World Cup 2026 hub, and season news.";
+const SITE_DESC = "Martello Cup Season 10 (The Tenth Tide) — the official football tournament of Martello. Live fixtures, results, points table, team registration, tickets, jersey shop, and season news.";
 const SITE_IMAGE = "https://storage.googleapis.com/gpt-engineer-file-uploads/tDq1dI3ZrQWssm7Zr4YN6NdE3842/social-images/social-1777021169850-1000150813.webp";
 
 export const Route = createRootRoute({
@@ -49,7 +48,7 @@ export const Route = createRootRoute({
       { name: "application-name", content: "Martello Cup" },
       { name: "apple-mobile-web-app-title", content: "Martello Cup" },
       { name: "theme-color", content: "#1a6fb8" },
-      { name: "keywords", content: "Martello Cup, Martello Cup Season 10, The Tenth Tide, Martello football tournament, Martello Cup fixtures, Martello Cup results, Martello Cup tickets, Martello Cup registration, FIFA World Cup 2026, Martello" },
+      { name: "keywords", content: "Martello Cup, Martello Cup Season 10, The Tenth Tide, Martello football tournament, Martello Cup fixtures, Martello Cup results, Martello Cup tickets, Martello Cup registration, Martello" },
       { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
       { name: "googlebot", content: "index, follow, max-image-preview:large, max-snippet:-1" },
       { name: "google", content: "notranslate" },
@@ -154,7 +153,6 @@ function RootComponent() {
             <Footer />
             <AIAssistant />
             <SponsorPopup />
-            <LiveScoreWatcher />
           </div>
         </AuthProvider>
       </I18nProvider>

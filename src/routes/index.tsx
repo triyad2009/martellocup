@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowDown, MapPin, Trophy, Users, Goal, Calendar, Sparkles, Newspaper, ArrowRight, MessageCircle, Ticket, Shirt, Heart, UserPlus, Image as ImageIcon, Zap } from "lucide-react";
+import { ArrowDown, MapPin, Trophy, Users, Goal, Calendar, Sparkles, Newspaper, ArrowRight, MessageCircle, Ticket, Shirt, Heart, UserPlus, Image as ImageIcon } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { Countdown } from "@/components/Countdown";
 import { useTournamentSettings } from "@/lib/settings";

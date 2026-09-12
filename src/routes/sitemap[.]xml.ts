@@ -25,7 +25,6 @@ const entries: SitemapEntry[] = [
   { path: "/tickets", changefreq: "weekly", priority: "0.8" },
   { path: "/jersey", changefreq: "weekly", priority: "0.7" },
   { path: "/registration", changefreq: "weekly", priority: "0.8" },
-  { path: "/fifa", changefreq: "daily", priority: "0.8" },
   { path: "/feed", changefreq: "hourly", priority: "0.7" },
   { path: "/contact", changefreq: "monthly", priority: "0.5" },
   { path: "/auth", changefreq: "yearly", priority: "0.3" },
