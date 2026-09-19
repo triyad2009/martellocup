@@ -6,6 +6,13 @@ import { useI18n } from "@/lib/i18n";
 import { useSingletonRow } from "@/lib/content";
 
 export const Route = createFileRoute("/contact")({
+  head: () => ({
+    meta: [
+      { title: "Contact Martello Cup" },
+      { name: "description", content: "Contact the Martello Cup team for tournament, registration, ticket, sponsorship and general enquiries." },
+    ],
+    links: [{ rel: "canonical", href: `https://martellocup.mvp.bd/contact` }],
+  }),
   component: ContactPage,
 });
 
