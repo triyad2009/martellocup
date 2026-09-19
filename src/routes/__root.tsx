@@ -32,7 +32,7 @@ function NotFoundComponent() {
   );
 }
 
-const SITE_URL = "https://martellocup.lovable.app";
+const SITE_URL = "https://martellocup.mvp.bd";
 const SITE_TITLE = "Martello Cup — Season 10 (The Tenth Tide) Official Football Tournament";
 const SITE_DESC = "Martello Cup Season 10 (The Tenth Tide) — the official football tournament of Martello. Live fixtures, results, points table, team registration, tickets, jersey shop, and season news.";
 const SITE_IMAGE = "https://storage.googleapis.com/gpt-engineer-file-uploads/tDq1dI3ZrQWssm7Zr4YN6NdE3842/social-images/social-1777021169850-1000150813.webp";
