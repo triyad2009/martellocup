@@ -10,6 +10,13 @@ import { SponsorShowcase } from "@/components/SponsorShowcase";
 import { Hero3DMount } from "@/components/Hero3DMount";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Martello Cup — Season 10 (The Tenth Tide)" },
+      { name: "description", content: "Official Martello Cup Season 10 football tournament website with fixtures, results, teams, players, news, tickets and registration." },
+    ],
+    links: [{ rel: "canonical", href: `https://martellocup.mvp.bd` }],
+  }),
   component: Index,
 });
 
