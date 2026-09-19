@@ -9,6 +9,13 @@ import { LoginGate } from "@/components/LoginGate";
 import { OrderSlip } from "@/components/OrderSlip";
 
 export const Route = createFileRoute("/registration")({
+  head: () => ({
+    meta: [
+      { title: "Martello Cup Team Registration — Season 10" },
+      { name: "description", content: "Register a team for Martello Cup Season 10 and find official registration information." },
+    ],
+    links: [{ rel: "canonical", href: `https://martellocup.mvp.bd/registration` }],
+  }),
   component: RegistrationPage,
 });
 
