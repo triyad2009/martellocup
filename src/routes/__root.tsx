@@ -35,7 +35,8 @@ function NotFoundComponent() {
 const SITE_URL = "https://martellocup.mvp.bd";
 const SITE_TITLE = "Martello Cup — Season 10 (The Tenth Tide) Official Football Tournament";
 const SITE_DESC = "Martello Cup Season 10 (The Tenth Tide) — the official football tournament of Martello. Live fixtures, results, points table, team registration, tickets, jersey shop, and season news.";
-const SITE_IMAGE = "https://storage.googleapis.com/gpt-engineer-file-uploads/tDq1dI3ZrQWssm7Zr4YN6NdE3842/social-images/social-1777021169850-1000150813.webp";
+const SITE_IMAGE = "https://i.postimg.cc/CMnbC49V/MTLO-LOGO-FINAL.png";
+const SITE_LOGO = "https://i.postimg.cc/CMnbC49V/MTLO-LOGO-FINAL.png";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -67,6 +68,10 @@ export const Route = createRootRoute({
       { name: "twitter:image", content: SITE_IMAGE },
     ],
     links: [
+      { rel: "icon", href: SITE_LOGO },
+      { rel: "shortcut icon", href: SITE_LOGO },
+      { rel: "apple-touch-icon", href: SITE_LOGO },
+      { rel: "image_src", href: SITE_LOGO },
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
@@ -84,7 +89,8 @@ export const Route = createRootRoute({
               name: "Martello Cup",
               alternateName: ["Martello Cup Season 10", "The Tenth Tide", "মার্টেলো কাপ"],
               url: SITE_URL,
-              logo: SITE_IMAGE,
+              logo: SITE_LOGO,
+              image: SITE_LOGO,
               sameAs: [SITE_URL],
             },
             {
@@ -108,7 +114,7 @@ export const Route = createRootRoute({
               sport: "Football",
               description: SITE_DESC,
               url: SITE_URL,
-              image: SITE_IMAGE,
+              image: SITE_LOGO,
               eventStatus: "https://schema.org/EventScheduled",
               eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
               organizer: { "@id": `${SITE_URL}/#organization` },
