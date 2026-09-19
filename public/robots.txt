@@ -1,5 +1,12 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /auth
+Disallow: /messages
+Disallow: /portal
+Disallow: /scan-tickets
+Disallow: /new-post
+
 
 # AI / Answer engines
 User-agent: GPTBot
