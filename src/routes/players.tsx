@@ -5,6 +5,13 @@ import { useI18n } from "@/lib/i18n";
 import { useTable } from "@/lib/content";
 
 export const Route = createFileRoute("/players")({
+  head: () => ({
+    meta: [
+      { title: "Martello Cup Players — Season 10" },
+      { name: "description", content: "Explore player information and participating football players in Martello Cup Season 10." },
+    ],
+    links: [{ rel: "canonical", href: `https://martellocup.mvp.bd/players` }],
+  }),
   component: PlayersPage,
 });
 
