@@ -15,14 +15,14 @@ export type TournamentSettings = {
 
 // Classic red logo (original)
 export const CLASSIC_LOGO_URL =
-  "https://i.postimg.cc/sxgdMH6c/FB-IMG-1776993011009.jpg";
+  "https://i.postimg.cc/CMnbC49V/MTLO-LOGO-FINAL.png";
 
 // The Tenth Tide — Season 10 official logo
 export const TIDE_LOGO_URL =
-  "https://i.postimg.cc/JhvWD0D6/IMG-20260706-WA0009.jpg";
+  "https://i.postimg.cc/CMnbC49V/MTLO-LOGO-FINAL.png";
 
 // Fallback logo for SSR / first render before settings load
-export const DEFAULT_LOGO_URL = CLASSIC_LOGO_URL;
+export const DEFAULT_LOGO_URL = "https://i.postimg.cc/CMnbC49V/MTLO-LOGO-FINAL.png";
 
 export function useTournamentSettings() {
   const [settings, setSettings] = useState<TournamentSettings | null>(null);
