@@ -6,6 +6,13 @@ import { PaymentFlow } from "@/components/PaymentFlow";
 import { LoginGate } from "@/components/LoginGate";
 
 export const Route = createFileRoute("/tickets")({
+  head: () => ({
+    meta: [
+      { title: "Martello Cup Tickets — Season 10" },
+      { name: "description", content: "Find Martello Cup Season 10 ticket information and ticket purchasing options." },
+    ],
+    links: [{ rel: "canonical", href: `https://martellocup.mvp.bd/tickets` }],
+  }),
   component: TicketsPage,
 });
 
