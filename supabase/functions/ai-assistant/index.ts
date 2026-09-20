@@ -62,13 +62,14 @@ serve(async (req) => {
 
     const authHeader = req.headers.get("Authorization") ?? "";
     const token = authHeader.replace(/^Bearer\s+/i, "").trim();
-    if (!token) return json({ error: "Unauthorized" }, 401);
-
-    const { data: userData, error: userErr } = await sb.auth.getUser(token);
-    const user = userData?.user;
-    if (userErr || !user) return json({ error: "Unauthorized" }, 401);
+    let user: any = null;
 
     if (mode === "train") {
+      if (!token) return json({ error: "Unauthorized" }, 401);
+      const { data: userData, error: userErr } = await sb.auth.getUser(token);
+      user = userData?.user;
+      if (userErr || !user) return json({ error: "Unauthorized" }, 401);
+
       const { data: roles } = await sb.from("user_roles").select("role").eq("user_id", user.id);
       const isAdmin = (roles ?? []).some((r: any) => r.role === "super_admin" || r.role === "admin");
       if (!isAdmin) return json({ error: "Forbidden" }, 403);
