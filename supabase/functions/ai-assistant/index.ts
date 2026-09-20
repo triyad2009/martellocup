@@ -7,70 +7,72 @@ const corsHeaders = {
 };
 
 const SITE_PAGES = [
-  { path: "/", name: "Home" },
-  { path: "/fixtures", name: "Fixtures" },
-  { path: "/results", name: "Results" },
-  { path: "/points-table", name: "Points Table" },
-  { path: "/teams", name: "Teams" },
-  { path: "/players", name: "Players" },
-  { path: "/news", name: "News" },
-  { path: "/gallery", name: "Gallery" },
-  { path: "/sponsors", name: "Sponsors" },
-  { path: "/jersey", name: "Jersey Shop" },
-  { path: "/tickets", name: "Tickets" },
-  { path: "/registration", name: "Team Registration" },
-  { path: "/feed", name: "Social Feed" },
-  { path: "/feed/new", name: "Create a Post" },
-  { path: "/members", name: "Members" },
-  { path: "/profile", name: "User Profile" },
-  { path: "/track-order", name: "Track Order" },
-  { path: "/about", name: "About" },
-  { path: "/contact", name: "Contact" },
-  { path: "/auth", name: "Login / Sign up" },
+  { path: "/", name: "Home" }, { path: "/fixtures", name: "Fixtures" },
+  { path: "/results", name: "Results" }, { path: "/points-table", name: "Points Table" },
+  { path: "/teams", name: "Teams" }, { path: "/players", name: "Players" },
+  { path: "/news", name: "News" }, { path: "/gallery", name: "Gallery" },
+  { path: "/sponsors", name: "Sponsors" }, { path: "/jersey", name: "Jersey Shop" },
+  { path: "/tickets", name: "Tickets" }, { path: "/registration", name: "Team Registration" },
+  { path: "/feed", name: "Social Feed" }, { path: "/feed/new", name: "Create a Post" },
+  { path: "/members", name: "Members" }, { path: "/profile", name: "User Profile" },
+  { path: "/track-order", name: "Track Order" }, { path: "/about", name: "About" },
+  { path: "/contact", name: "Contact" }, { path: "/auth", name: "Login / Sign up" },
 ];
+
+async function callOpenAI(input: any, apiKey: string) {
+  const resp = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "gpt-5.6-luna",
+      input,
+      store: false,
+    }),
+  });
+  const body = await resp.text();
+  let data: any;
+  try { data = JSON.parse(body); } catch { data = {}; }
+  if (!resp.ok) {
+    throw new Error(data?.error?.message || `OpenAI API error (${resp.status})`);
+  }
+  return data;
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  const json = (payload: any, status = 200) =>
+    new Response(JSON.stringify(payload), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+
   try {
-    const { messages, lang = "bn", attachments = [], mode = "chat" } =
-      await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY missing");
+    const { messages = [], lang = "bn", attachments = [], mode = "chat" } = await req.json();
+    const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+    if (!OPENAI_API_KEY) return json({ error: "OPENAI_API_KEY missing" }, 500);
 
     const sb = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_ANON_KEY")!,
     );
 
-    // ---- AUTH: require a signed-in user for any AI call ----
     const authHeader = req.headers.get("Authorization") ?? "";
     const token = authHeader.replace(/^Bearer\s+/i, "").trim();
-    if (!token) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    if (!token) return json({ error: "Unauthorized" }, 401);
+
     const { data: userData, error: userErr } = await sb.auth.getUser(token);
     const user = userData?.user;
-    if (userErr || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    if (userErr || !user) return json({ error: "Unauthorized" }, 401);
 
-    // ---- TRAIN MODE requires admin role ----
     if (mode === "train") {
-      const { data: roles } = await sb
-        .from("user_roles").select("role").eq("user_id", user.id);
+      const { data: roles } = await sb.from("user_roles").select("role").eq("user_id", user.id);
       const isAdmin = (roles ?? []).some((r: any) => r.role === "super_admin" || r.role === "admin");
-      if (!isAdmin) {
-        return new Response(JSON.stringify({ error: "Forbidden" }), {
-          status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
+      if (!isAdmin) return json({ error: "Forbidden" }, 403);
     }
-
 
     const { data: kb } = await sb
       .from("ai_knowledge")
@@ -78,149 +80,109 @@ serve(async (req) => {
       .eq("is_active", true)
       .order("sort_order");
 
-    const kbText = (kb ?? [])
-      .map((k: any) => {
-        const media = (k.media_urls ?? []).filter(Boolean);
-        return `- Q: ${k.question}
+    const kbText = (kb ?? []).map((k: any) => {
+      const media = (k.media_urls ?? []).filter(Boolean);
+      return `- Q: ${k.question}
   Category: ${k.category || "general"}
   A(${lang}): ${lang === "bn" ? k.answer_bn : k.answer_en}${k.route ? `\n  Route: ${k.route}` : ""}${media.length ? `\n  Media: ${media.join(" | ")}` : ""}`;
-      })
-      .join("\n");
+    }).join("\n");
 
     const pagesText = SITE_PAGES.map((p) => `${p.path} → ${p.name}`).join("\n");
 
-    // ---- TRAIN MODE: parse admin instruction → KB rows ----
     if (mode === "train") {
       const trainSystem = `You are a knowledge-base extractor for the Martello Cup website assistant.
 Convert the admin's instruction into one or more knowledge entries.
-Return STRICT JSON in this exact shape (no markdown):
-{ "entries": [
-  { "question": "...", "answer_bn": "...", "answer_en": "...", "category": "general|venue|tickets|registration|jersey|sponsor|feed|payment|profile|other", "route": "/optional-path-or-empty" }
-] }
-- "answer_bn" must be Bangla, "answer_en" must be English.
+Return STRICT JSON only, with this exact shape:
+{"entries":[{"question":"...","answer_bn":"...","answer_en":"...","category":"general|venue|tickets|registration|jersey|sponsor|feed|payment|profile|other","route":"/optional-path-or-empty"}]}
+- answer_bn must be Bangla and answer_en must be English.
 - Keep answers concise and helpful.
-- If the admin attached images, assume those are reference media for the topic; mention them naturally in answers.
 - If admin provides multiple distinct facts, create multiple entries.`;
-
-      const trainResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
-          messages: [
-            { role: "system", content: trainSystem },
-            ...messages,
-          ],
-          response_format: { type: "json_object" },
-        }),
-      });
-      if (!trainResp.ok) {
-        const t = await trainResp.text();
-        return new Response(JSON.stringify({ error: "AI gateway error", detail: t }), {
-          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const td = await trainResp.json();
+      const input = [
+        { role: "developer", content: [{ type: "input_text", text: trainSystem }] },
+        ...messages.map((m: any) => ({
+          role: m.role === "assistant" ? "assistant" : "user",
+          content: [{ type: "input_text", text: String(m.content ?? "") }],
+        })),
+      ];
+      const data = await callOpenAI(input, OPENAI_API_KEY);
+      const raw = data.output_text ?? "";
       let entries: any[] = [];
       try {
-        const parsed = JSON.parse(td.choices?.[0]?.message?.content || "{}");
+        const parsed = JSON.parse(raw);
         entries = Array.isArray(parsed.entries) ? parsed.entries : [];
-      } catch { /* ignore */ }
-      return new Response(JSON.stringify({ entries }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      } catch {
+        const match = raw.match(/\{[\s\S]*\}/);
+        if (match) {
+          try {
+            const parsed = JSON.parse(match[0]);
+            entries = Array.isArray(parsed.entries) ? parsed.entries : [];
+          } catch {}
+        }
+      }
+      return json({ entries });
     }
 
-    // ---- CHAT MODE ----
     const systemPrompt = `You are the Martello Cup website helper. You ONLY answer questions about how to use this website — what it offers and how users can do things here. Do NOT answer general/world questions. If asked something off-topic, politely refuse and steer back to the site.
-
 Respond in ${lang === "bn" ? "Bangla" : "English"} (match user). Be concise, friendly, premium-tone.
-
 When the user asks to go to/open a page, end your reply with a single line:
 NAVIGATE: /path
-(Use one of the listed paths exactly. Only emit NAVIGATE when the user clearly wants to go somewhere.)
-
-When the user asks to SEE a picture/photo/venue/map and the matching admin-trained knowledge has Media URLs, end your reply with a separate line:
+Use one listed path exactly. Only emit NAVIGATE when the user clearly wants to go somewhere.
+When the user asks to SEE a picture/photo/venue/map and matching admin-trained knowledge has Media URLs, end with:
 IMAGES: url1 | url2 | url3
-(Only include this when relevant media exist in the knowledge base.)
-
+Only include this when relevant media exist.
 AVAILABLE PAGES:
 ${pagesText}
-
-ADMIN-TRAINED KNOWLEDGE (use Media URLs when user asks to see things):
+ADMIN-TRAINED KNOWLEDGE:
 ${kbText || "(none yet)"}
-
 CORE WEBSITE CAPABILITIES:
 - Browse fixtures, results, points table, teams, players, news, gallery
-- Register a team (Registration page) with payment
+- Register a team with payment
 - Buy tickets and get a downloadable slip with a 15-digit code from Profile after approval
 - Buy jerseys
-- Apply as sponsor (Gold/Silver/Bronze) with payment + admin approval
+- Apply as sponsor with payment + admin approval
 - Use Social Feed: post text/image/video, like, comment (login required)
-- Profile: track all your tickets, jerseys, sponsor & team applications
+- Profile: track tickets, jerseys, sponsor and team applications
 - Promo codes available at jersey/ticket/sponsor checkout
 - Multi-language: Bangla / English / Satkhira dialect`;
 
-    // Build messages with multimodal support: last user message can include attachments
-    const apiMessages: any[] = [{ role: "system", content: systemPrompt }];
-    const userMsgs = [...messages];
-    const last = userMsgs[userMsgs.length - 1];
-    if (last && last.role === "user" && Array.isArray(attachments) && attachments.length > 0) {
-      const parts: any[] = [{ type: "text", text: last.content || "" }];
+    const input: any[] = [
+      { role: "developer", content: [{ type: "input_text", text: systemPrompt }] },
+    ];
+
+    for (const m of messages) {
+      input.push({
+        role: m.role === "assistant" ? "assistant" : "user",
+        content: [{ type: "input_text", text: String(m.content ?? "") }],
+      });
+    }
+
+    const lastUser = input[input.length - 1];
+    if (lastUser?.role === "user" && Array.isArray(attachments) && attachments.length > 0) {
+      const parts: any[] = [{ type: "input_text", text: String(messages[messages.length - 1]?.content ?? "") }];
       for (const a of attachments) {
-        if (a?.url) parts.push({ type: "image_url", image_url: { url: a.url } });
+        if (a?.type === "image" && a?.url) {
+          parts.push({ type: "input_image", image_url: a.url });
+        }
       }
-      userMsgs[userMsgs.length - 1] = { role: "user", content: parts };
-    }
-    apiMessages.push(...userMsgs);
-
-    const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: apiMessages,
-      }),
-    });
-
-    if (resp.status === 429) {
-      return new Response(JSON.stringify({ error: "Rate limit, try again shortly." }), {
-        status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    if (resp.status === 402) {
-      return new Response(JSON.stringify({ error: "AI credits exhausted." }), {
-        status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-    if (!resp.ok) {
-      const t = await resp.text();
-      return new Response(JSON.stringify({ error: "AI gateway error", detail: t }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      input[input.length - 1] = { role: "user", content: parts };
     }
 
-    const data = await resp.json();
-    const text = data.choices?.[0]?.message?.content ?? "";
+    const data = await callOpenAI(input, OPENAI_API_KEY);
+    const text = data.output_text ?? "";
     let navigate: string | null = null;
     let images: string[] = [];
+
     let cleaned = text.replace(/NAVIGATE:\s*(\/[^\s]*)/g, (_: string, p: string) => {
-      navigate = p; return "";
+      navigate = p;
+      return "";
     });
     cleaned = cleaned.replace(/IMAGES:\s*([^\n]+)/g, (_: string, p: string) => {
       images = p.split("|").map((s: string) => s.trim()).filter(Boolean);
       return "";
     }).trim();
 
-    return new Response(JSON.stringify({ text: cleaned, navigate, images }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ text: cleaned, navigate, images });
   } catch (e) {
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: e instanceof Error ? e.message : "Unknown error" }, 500);
   }
 });
